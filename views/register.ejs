@@ -1,14 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CekUangku</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<h2>Register</h2>
-<form method="post">
-<input type="email" name="email" placeholder="Email" required><br>
-<input type="password" name="password" placeholder="Password" required><br>
-<button type="submit">Register</button>
-</form>
+
+<div class="split-screen">
+    <!-- Panel Kiri -->
+    <div class="left-pane" style="background: linear-gradient(135deg, #7209b7 0%, #f72585 100%);">
+        <div class="circle-bg c1"></div>
+        <div class="circle-bg c2"></div>
+        <!-- Gambar Ilustrasi Berbeda -->
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/user-sign-up-4486949-3734415.png" alt="Register Illustration">
+        <h2>Bergabung Sekarang</h2>
+        <p>Buat akun gratis dan mulai kontrol finansial Anda hari ini.</p>
+    </div>
+
+    <!-- Panel Kanan: Form Register -->
+    <div class="right-pane">
+        <div class="form-container">
+            <div class="welcome-text">
+                <h2>Create Account</h2>
+                <p>Lengkapi data untuk mendaftar</p>
+            </div>
+
+            <% if (typeof message != 'undefined' && message.length > 0) { %>
+                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+                    <%= message %>
+                </div>
+            <% } %>
+
+            <form action="/auth/register" method="POST">
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" class="form-control" placeholder="Jhon Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="name@company.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="background-color: #f72585;">Join Now</button>
+            </form>
+
+            <a href="/auth/login" class="btn-link">Sudah punya akun? Login</a>
+            
+            <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #999;">
+                &copy; 2023 CekUangku Inc.
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,273 @@
+<!-- views/transactions.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - CekUangku</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* REUSE STYLE DASHBOARD + TAMBAHAN KHUSUS TRANSAKSI */
+        body { display: flex; height: 100vh; overflow: hidden; background: #f3f4f6; }
+        
+        /* --- SIDEBAR (SAMA PERSIS DENGAN DASHBOARD) --- */
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4361ee;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: #eff6ff;
+            color: #4361ee;
+            border-right: 3px solid #4361ee;
+        }
+        .menu-item i { width: 25px; }
+
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 40px; height: 40px;
+            background: #4361ee; color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .page-header { margin-bottom: 25px; }
+        .page-header h2 { color: #1f2937; }
+
+        /* LAYOUT GRID: Kiri Form, Kanan List */
+        .transaction-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; /* Form 1/3, List 2/3 */
+            gap: 25px;
+        }
+
+        /* FORM CARD */
+        .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        .form-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: #4361ee; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #4b5563; }
+        .form-control {
+            width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;
+        }
+        .form-control:focus { border-color: #4361ee; }
+
+        /* Tombol Simpan */
+        .btn-submit {
+            width: 100%; padding: 12px; background: #4361ee; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-submit:hover { background: #3f37c9; }
+
+        /* LIST CARD */
+        .list-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* ITEM TRANSAKSI */
+        .trans-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .trans-item:last-child { border-bottom: none; }
+        
+        .trans-info { display: flex; align-items: center; gap: 15px; }
+        .trans-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        /* Warna Icon berdasarkan tipe */
+        .bg-income { background: #d1fae5; color: #059669; }
+        .bg-expense { background: #fee2e2; color: #dc2626; }
+        
+        .trans-text h4 { font-size: 0.95rem; margin-bottom: 2px; color: #1f2937; }
+        .trans-text p { font-size: 0.8rem; color: #9ca3af; }
+        
+        .trans-amount { font-weight: 700; font-size: 1rem; }
+        .text-green { color: #10b981; }
+        .text-red { color: #ef4444; }
+
+        @media (max-width: 768px) {
+            .transaction-grid { grid-template-columns: 1fr; }
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR (SAMA PERSIS DENGAN DASHBOARD) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-wallet"></i> CekUangku
+        </div>
+        <div class="sidebar-menu">
+            <!-- Link Dashboard -->
+            <a href="/dashboard" class="menu-item">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <!-- Link Transactions (ACTIVE) -->
+            <a href="/transactions" class="menu-item active">
+                <i class="fas fa-exchange-alt"></i> Transactions
+            </a>
+            <a href="/reports" class="menu-item"><i class="fas fa-chart-pie"></i> Reports</a>
+            <a href="#" class="menu-item"><i class="fas fa-bullseye"></i> Budget</a>
+            <a href="#" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        <div class="user-profile">
+            <div class="avatar"><%= (typeof user !== 'undefined' && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
+            <div style="flex:1;">
+               <div style="font-weight: 600; font-size: 0.9rem;"><%= (typeof user !== 'undefined' && user.nama) ? user.nama : 'User' %></div>
+                <div style="font-size: 0.8rem; color: #6b7280;">Online</div>
+            </div>
+            <a href="/auth/logout" title="Logout" style="color: #ef4444; text-decoration: none;"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <!-- KONTEN UTAMA -->
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Transaction Management</h2>
+        </div>
+
+        <div class="transaction-grid">
+            
+            <!-- KOLOM KIRI: FORM INPUT TRANSAKSI -->
+            <div class="form-card">
+                <div class="form-title"><i class="fas fa-plus-circle"></i> Add New Transaction</div>
+                <form action="/transactions/add" method="POST">
+                    
+                    <div class="form-group">
+                        <label>Tipe Transaksi</label>
+                        <select name="type" class="form-control" onchange="changeColor(this)">
+                            <option value="expense">Pengeluaran (Expense)</option>
+                            <option value="income">Pemasukan (Income)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select name="category" class="form-control">
+                            <option value="Food">Makanan & Minuman</option>
+                            <option value="Transport">Transportasi</option>
+                            <option value="Shopping">Belanja</option>
+                            <option value="Bills">Tagihan (Listrik/Air)</option>
+                            <option value="Salary">Gaji</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Other">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <input type="text" name="description" class="form-control" placeholder="Contoh: Makan Siang" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jumlah (Rp)</label>
+                        <input type="number" name="amount" class="form-control" placeholder="0" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Simpan Transaksi</button>
+                </form>
+            </div>
+
+            <!-- KOLOM KANAN: RIWAYAT TRANSAKSI -->
+            <div class="list-card">
+                <div class="form-title">Recent History</div>
+                
+                <% if (transactions.length > 0) { %>
+                    <% transactions.forEach(function(trans) { %>
+                        <div class="trans-item">
+                            <div class="trans-info">
+                                <!-- Icon dinamis berdasarkan tipe -->
+                                <% if(trans.type === 'income') { %>
+                                    <div class="trans-icon bg-income"><i class="fas fa-arrow-down"></i></div>
+                                <% } else { %>
+                                    <div class="trans-icon bg-expense"><i class="fas fa-arrow-up"></i></div>
+                                <% } %>
+                                
+                                <div class="trans-text">
+                                    <h4><%= trans.description %></h4>
+                                    <p><%= trans.category %> • <%= new Date(trans.date).toLocaleDateString() %></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Jumlah Uang -->
+                            <% if(trans.type === 'income') { %>
+                                <div class="trans-amount text-green">+ Rp <%= parseInt(trans.amount).toLocaleString('id-ID') %></div>
+                            <% } else { %>
+                                <div class="trans-amount text-red">- Rp <%= parseInt(trans.amount).toLocaleString('id-ID') %></div>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p style="text-align:center; color:#999; margin-top:20px;">Belum ada transaksi.</p>
+                <% } %>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Script kecil untuk ubah warna tombol saat ganti tipe (opsional)
+        function changeColor(select) {
+            const btn = document.querySelector('.btn-submit');
+            if(select.value === 'income') {
+                btn.style.background = '#10b981'; // Hijau
+            } else {
+                btn.style.background = '#4361ee'; // Biru (atau merah untuk expense jika diinginkan)
+            }
+        }
+    </script>
+</body>
+</html>

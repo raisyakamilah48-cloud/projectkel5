@@ -1,0 +1,159 @@
+<!-- views/reports.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - CekUangku</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* STYLE DASAR (SAMA DENGAN DASHBOARD) */
+        body { display: flex; height: 100vh; overflow: hidden; background: #f3f4f6; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px; background: #fff; display: flex; flex-direction: column;
+            border-right: 1px solid #e5e7eb; transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 20px; display: flex; align-items: center; gap: 10px;
+            color: #4361ee; font-weight: 700; font-size: 1.2rem; border-bottom: 1px solid #f0f0f0;
+        }
+        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-item {
+            display: flex; align-items: center; padding: 12px 25px;
+            color: #6b7280; text-decoration: none; font-weight: 500; transition: 0.3s; cursor: pointer;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: #eff6ff; color: #4361ee; border-right: 3px solid #4361ee;
+        }
+        .menu-item i { width: 25px; }
+
+        .user-profile {
+            padding: 20px; border-top: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px;
+        }
+        .avatar {
+            width: 40px; height: 40px; background: #4361ee; color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 30px; }
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { color: #1f2937; }
+
+        /* KHUSUS CHART REPORTS */
+        .chart-container {
+            background: white; padding: 30px; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: 500px; /* Tinggi chart besar */
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; }
+            .chart-container { height: 350px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-wallet"></i> CekUangku
+        </div>
+        <div class="sidebar-menu">
+            <a href="/dashboard" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="/transactions" class="menu-item"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <!-- MENU INI AKTIF -->
+            <a href="/reports" class="menu-item active"><i class="fas fa-chart-pie"></i> Reports</a>
+            <a href="#" class="menu-item"><i class="fas fa-bullseye"></i> Budget</a>
+            <a href="#" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+        <div class="user-profile">
+            <!-- PENGAMAN AVATAR -->
+            <div class="avatar"><%= (typeof user !== 'undefined' && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
+            <div style="flex:1;">
+                <div style="font-weight: 600; font-size: 0.9rem;"><%= (typeof user !== 'undefined' && user.nama) ? user.nama : 'User' %></div>
+                <div style="font-size: 0.8rem; color: #6b7280;">Online</div>
+            </div>
+            <a href="/auth/logout" title="Logout" style="color: #ef4444; text-decoration: none;"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <!-- KONTEN UTAMA: GRAFIK BESAR -->
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Monthly Financial Trend</h2>
+            <button class="btn btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.9rem; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="mainTrendChart"></canvas>
+        </div>
+    </main>
+
+    <script>
+        // GRAFIK GARIS BESAR (INCOME VS EXPENSE)
+        const ctx = document.getElementById('mainTrendChart').getContext('2d');
+        
+        const mainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
+                datasets: [
+                    {
+                        label: 'Pemasukan (Income)',
+                        data: [12000000, 15000000, 11000000, 18000000, 14000000, 20000000],
+                        borderColor: '#10b981', // Hijau
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4, // Melengkung halus
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#10b981',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Pengeluaran (Expense)',
+                        data: [8000000, 9500000, 7000000, 12000000, 9000000, 11000000],
+                        borderColor: '#ef4444', // Merah
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#ef4444',
+                        pointBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { font: { size: 14, family: 'Poppins' } } },
+                    title: { display: true, text: 'Analisa Keuangan 6 Bulan Terakhir', font: { size: 16 } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5] },
+                        ticks: { callback: function(value) { return 'Rp ' + value / 1000 + 'k'; } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
