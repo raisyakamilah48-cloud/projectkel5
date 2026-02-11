@@ -1,0 +1,239 @@
+/* public/css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-orange: #f72585;
+    --text-color: #333;
+    --bg-light: #f8f9fa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    background-color: var(--bg-light);
+}
+
+/* Layout Split Screen */
+.split-screen {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Bagian Kiri (Ilustrasi) */
+.left-pane {
+    flex: 1;
+    background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.left-pane img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+    z-index: 2;
+}
+
+.left-pane h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    z-index: 2;
+}
+
+.left-pane p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 80%;
+    z-index: 2;
+}
+
+/* Elemen dekoratif latar belakang */
+.circle-bg {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+}
+.c1 { width: 300px; height: 300px; top: -50px; left: -50px; }
+.c2 { width: 200px; height: 200px; bottom: 50px; right: -50px; }
+
+/* Bagian Kanan (Form) */
+.right-pane {
+    flex: 1;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    position: relative;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.welcome-text {
+    margin-bottom: 30px;
+}
+
+.welcome-text h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.welcome-text p {
+    color: #666;
+}
+
+/* Styling Form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Tombol */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.btn-link {
+    background: none;
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Social Login */
+.social-login {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+.divider span { padding: 0 10px; }
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icons a {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.social-icons a:hover {
+    background-color: var(--bg-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Responsive Design: Mobile */
+@media (max-width: 768px) {
+    .split-screen {
+        flex-direction: column;
+    }
+    .left-pane {
+        flex: 0 0 35%; /* Ilustrasi memakan sedikit space di atas */
+        padding: 20px;
+    }
+    .left-pane h2 { font-size: 1.5rem; }
+    .left-pane img { max-width: 60%; margin-bottom: 10px; }
+    .right-pane {
+        flex: 1;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        margin-top: -20px; /* Overlap effect */
+        z-index: 10;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+    }
+}
