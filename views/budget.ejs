@@ -290,6 +290,7 @@
             <a href="/transactions" class="nav-link"><i class="fas fa-exchange-alt"></i> Transaksi</a>
             <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a>
             <a href="/budget" class="nav-link active"><i class="fas fa-bullseye"></i> Anggaran</a>
+            <a href="/categories" class="nav-link"><i class="fas fa-tags"></i> Kategori</a>
             <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
             <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
             <a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> Tentang</a>
@@ -377,22 +378,20 @@
                     <form action="/budget/add" method="POST" id="budgetForm">
                         <div class="form-group">
                             <label class="form-label">Kategori</label>
-                            <select name="category" class="form-input">
-                                <% if (categories && categories.length > 0) { %>
+                            <% if (categories && categories.length > 0) { %>
+                                <select name="category" class="form-input">
                                     <% categories.forEach(function(cat) { %>
                                         <option value="<%= cat.name %>"><%= cat.name %></option>
                                     <% }) %>
-                                <% } else { %>
-                                    <option value="Makanan & Minuman">Makanan & Minuman</option>
-                                    <option value="Transportasi">Transportasi</option>
-                                    <option value="Belanja">Belanja</option>
-                                    <option value="Tagihan">Tagihan</option>
-                                    <option value="Hiburan">Hiburan</option>
-                                    <option value="Kesehatan">Kesehatan</option>
-                                    <option value="Pendidikan">Pendidikan</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                <% } %>
-                            </select>
+                                </select>
+                            <% } else { %>
+                                <select name="category" class="form-input">
+                                    <option value="">-- Belum ada kategori --</option>
+                                </select>
+                                <p style="margin-top:6px;font-size:0.75rem;color:var(--text-muted);">
+                                    <i class="fas fa-info-circle"></i> <a href="/categories" style="color:var(--primary);">Tambah kategori pengeluaran</a> terlebih dahulu
+                                </p>
+                            <% } %>
                         </div>
 
                         <div class="form-group">

@@ -446,6 +446,7 @@
             <a href="/transactions" class="nav-link active"><i class="fas fa-exchange-alt"></i> Transaksi</a>
             <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a>
             <a href="/budget" class="nav-link"><i class="fas fa-bullseye"></i> Anggaran</a>
+            <a href="/categories" class="nav-link"><i class="fas fa-tags"></i> Kategori</a>
 
             <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
             <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
@@ -536,21 +537,20 @@
                         <!-- Category -->
                         <div class="form-group">
                             <label class="form-label">Kategori</label>
-                            <select name="category" class="form-input" id="categorySelect">
-                                <% if (categories && categories.length > 0) { %>
+                            <% if (categories && categories.length > 0) { %>
+                                <select name="category" class="form-input" id="categorySelect">
                                     <% categories.forEach(function(cat) { %>
-                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                        <option value="<%= cat.name %>" data-type="<%= cat.type %>"><%= cat.name %></option>
                                     <% }) %>
-                                <% } else { %>
-                                    <option value="Makanan & Minuman">Makanan & Minuman</option>
-                                    <option value="Transportasi">Transportasi</option>
-                                    <option value="Belanja">Belanja</option>
-                                    <option value="Tagihan">Tagihan</option>
-                                    <option value="Gaji">Gaji</option>
-                                    <option value="Freelance">Freelance</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                <% } %>
-                            </select>
+                                </select>
+                            <% } else { %>
+                                <select name="category" class="form-input" id="categorySelect">
+                                    <option value="Lainnya">-- Belum ada kategori --</option>
+                                </select>
+                                <p style="margin-top:6px;font-size:0.75rem;color:var(--text-muted);">
+                                    <i class="fas fa-info-circle"></i> <a href="/categories" style="color:var(--primary);">Tambah kategori</a> terlebih dahulu
+                                </p>
+                            <% } %>
                         </div>
 
                         <!-- Description -->
@@ -632,7 +632,7 @@
     </main>
 
     <script>
-        // === Type Toggle ===
+        // === Type Toggle + Category Filter ===
         function setType(type) {
             document.getElementById('typeInput').value = type;
             const btnExpense = document.getElementById('btnExpense');
@@ -648,7 +648,25 @@
                 btnIncome.className = 'type-btn';
                 submitBtn.className = 'btn-submit';
             }
+
+            // Filter categories by type
+            var select = document.getElementById('categorySelect');
+            var options = select.querySelectorAll('option');
+            var firstVisible = null;
+            options.forEach(function(opt) {
+                var optType = opt.getAttribute('data-type');
+                if (!optType || optType === type) {
+                    opt.style.display = '';
+                    if (!firstVisible) firstVisible = opt;
+                } else {
+                    opt.style.display = 'none';
+                }
+            });
+            if (firstVisible) select.value = firstVisible.value;
         }
+
+        // Filter on page load
+        setType('expense');
 
         // === Format Rupiah (auto titik) ===
         function formatRupiah(el) {

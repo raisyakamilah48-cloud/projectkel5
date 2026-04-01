@@ -15,8 +15,8 @@ function cekLogin(req, res, next) {
 router.get('/', cekLogin, function(req, res, next) {
     const userId = req.session.user.id;
 
-    // Query 1: Ambil semua kategori dari tabel categories
-    db.query("SELECT * FROM categories ORDER BY name ASC", function(err, categories) {
+    // Query 1: Ambil kategori milik user
+    db.query("SELECT * FROM categories WHERE user_id = ? ORDER BY type ASC, name ASC", [userId], function(err, categories) {
         if (err) { console.log("Categories Error:", err); categories = []; }
 
         // Query 2: Ambil transaksi user

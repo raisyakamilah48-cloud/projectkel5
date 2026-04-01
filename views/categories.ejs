@@ -1,0 +1,396 @@
+<!-- views/categories.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kategori - CekUangku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4361ee; --primary-dark: #3730a3; --accent: #06b6d4;
+            --success: #10b981; --success-light: #d1fae5;
+            --danger: #ef4444; --danger-light: #fee2e2;
+            --warning: #f59e0b; --warning-light: #fef3c7;
+            --info: #6366f1; --info-light: #e0e7ff;
+            --bg: #f0f2f5; --card-bg: #ffffff;
+            --text-primary: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8;
+            --border: #e2e8f0; --sidebar-w: 260px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); height: 100vh; display: flex; flex-direction: column; border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; z-index: 100; transition: transform .3s ease; }
+        .sidebar-brand { padding: 24px 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-brand .brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); }
+        .sidebar-brand .brand-name { font-size: 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); padding: 12px 16px 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all .2s ease; margin-bottom: 2px; }
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active { background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(6, 182, 212, 0.05)); color: var(--primary); font-weight: 600; }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; }
+        .user-info { flex: 1; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .user-info .status { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .btn-logout { color: var(--text-muted); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: var(--danger); }
+
+        /* ---- MAIN ---- */
+        .main-area { margin-left: var(--sidebar-w); flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .top-header { background: var(--card-bg); padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .page-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+        .page-title p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+        .content-area { padding: 28px 32px; }
+
+        /* ---- STATS ---- */
+        .cat-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg); border-radius: 14px; padding: 18px 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; transition: all .3s; animation: slideUp .4s ease forwards; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); }
+        .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+        .stat-icon.green { background: var(--success-light); color: var(--success); }
+        .stat-icon.red { background: var(--danger-light); color: var(--danger); }
+        .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .stat-value { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+        /* ---- GRID ---- */
+        .cat-grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; border: 1px solid var(--border); }
+        .card-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .card-title i { color: var(--primary); }
+
+        /* ---- FORM ---- */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; color: var(--text-primary); background: #fafbfc; outline: none; transition: all .2s; }
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
+
+        /* Type Toggle */
+        .type-toggle { display: flex; gap: 8px; }
+        .type-btn { flex: 1; padding: 11px; border: 2px solid var(--border); border-radius: 10px; background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--text-secondary); }
+        .type-btn:hover { border-color: var(--text-muted); }
+        .type-btn.active-expense { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+        .type-btn.active-income { border-color: var(--success); background: var(--success-light); color: var(--success); }
+
+        .btn-submit { width: 100%; padding: 13px; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all .3s; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); }
+
+        /* ---- CATEGORY LIST ---- */
+        .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .cat-count { font-size: 0.8rem; color: var(--text-muted); background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+        .search-bar { position: relative; margin-bottom: 16px; }
+        .search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-bar input { width: 100%; padding: 10px 14px 10px 40px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; background: #fafbfc; transition: all .2s; }
+        .search-bar input:focus { border-color: var(--primary); background: white; }
+
+        .section-label { font-size: 0.75rem; font-weight: 600; padding: 8px 16px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+
+        .cat-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; margin-bottom: 6px; transition: all .2s; border: 1px solid transparent; }
+        .cat-item:hover { background: #f8fafc; border-color: var(--border); }
+        .cat-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .cat-icon-circle { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .cat-name-text { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+        .cat-type-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 2px; }
+        .badge-expense { background: var(--danger-light); color: var(--danger); }
+        .badge-income { background: var(--success-light); color: var(--success); }
+        .cat-actions { display: flex; align-items: center; gap: 6px; }
+        .btn-icon { width: 32px; height: 32px; border: none; background: transparent; color: var(--text-muted); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; font-size: 0.8rem; }
+        .btn-icon.edit:hover { background: var(--warning-light); color: var(--warning); }
+        .btn-icon.delete:hover { background: var(--danger-light); color: var(--danger); }
+
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); opacity: 0.4; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .empty-state p { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* ---- MODAL ---- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; border-radius: 16px; padding: 28px; width: 420px; max-width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: slideUp .3s ease; }
+        .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
+        .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .btn-modal { flex: 1; padding: 10px; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+        .btn-cancel { background: #f1f5f9; color: var(--text-secondary); }
+        .btn-cancel:hover { background: #e2e8f0; }
+        .btn-save { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+        .btn-save:hover { transform: translateY(-1px); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .cat-grid { animation: slideUp .4s ease .1s forwards; opacity: 0; }
+
+        @media (max-width: 1100px) { .cat-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+            .cat-stats { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) { .content-area { padding: 20px 16px; } }
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
+        .menu-toggle:hover { background: #f1f5f9; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-wallet"></i></div>
+            <span class="brand-name">CekUangku</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Menu Utama</div>
+            <a href="/dashboard" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="/transactions" class="nav-link"><i class="fas fa-exchange-alt"></i> Transaksi</a>
+            <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a>
+            <a href="/budget" class="nav-link"><i class="fas fa-bullseye"></i> Anggaran</a>
+            <a href="/categories" class="nav-link active"><i class="fas fa-tags"></i> Kategori</a>
+            <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
+            <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
+            <a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> Tentang</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar"><%= (user && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
+                <div class="user-info">
+                    <div class="name"><%= (user && user.nama) ? user.nama : 'User' %></div>
+                    <div class="status">Online</div>
+                </div>
+                <a href="/auth/logout" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-area">
+        <header class="top-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars" style="font-size:1.2rem;"></i>
+                </button>
+                <div class="page-title">
+                    <h2><i class="fas fa-tags" style="color:var(--primary);margin-right:8px;"></i>Kelola Kategori</h2>
+                    <p>Tambah, edit, atau hapus kategori pemasukan & pengeluaran</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <%
+                var incomeCats = categories.filter(function(c) { return c.type === 'income'; });
+                var expenseCats = categories.filter(function(c) { return c.type === 'expense'; });
+            %>
+
+            <!-- STATS -->
+            <div class="cat-stats">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-tags"></i></div>
+                    <div><div class="stat-label">Total Kategori</div><div class="stat-value"><%= categories.length %></div></div>
+                </div>
+                <div class="stat-card" style="animation-delay:.1s;">
+                    <div class="stat-icon green"><i class="fas fa-arrow-down"></i></div>
+                    <div><div class="stat-label">Pemasukan</div><div class="stat-value"><%= incomeCats.length %></div></div>
+                </div>
+                <div class="stat-card" style="animation-delay:.15s;">
+                    <div class="stat-icon red"><i class="fas fa-arrow-up"></i></div>
+                    <div><div class="stat-label">Pengeluaran</div><div class="stat-value"><%= expenseCats.length %></div></div>
+                </div>
+            </div>
+
+            <!-- GRID -->
+            <div class="cat-grid">
+
+                <!-- FORM -->
+                <div class="card" style="height:fit-content;position:sticky;top:96px;">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Kategori Baru</div>
+
+                    <form action="/categories/add" method="POST">
+                        <div class="form-group">
+                            <label class="form-label">Nama Kategori</label>
+                            <input type="text" name="name" class="form-input" placeholder="Contoh: Investasi, Sewa, dll" required maxlength="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Jenis Kategori</label>
+                            <div class="type-toggle">
+                                <button type="button" class="type-btn active-expense" id="btnExpense" onclick="setCatType('expense')">
+                                    <i class="fas fa-arrow-up"></i> Pengeluaran
+                                </button>
+                                <button type="button" class="type-btn" id="btnIncome" onclick="setCatType('income')">
+                                    <i class="fas fa-arrow-down"></i> Pemasukan
+                                </button>
+                            </div>
+                            <input type="hidden" name="type" id="catTypeInput" value="expense">
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-plus"></i> Tambah Kategori
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 10px;">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
+                            <i class="fas fa-lightbulb" style="color:var(--warning);"></i> <strong>Tips:</strong>
+                        </p>
+                        <ul style="font-size: 0.75rem; color: var(--text-muted); padding-left: 16px; line-height: 1.8;">
+                            <li>Kategori <strong>Pengeluaran</strong> muncul saat catat pengeluaran</li>
+                            <li>Kategori <strong>Pemasukan</strong> muncul saat catat pemasukan</li>
+                            <li>Kategori juga digunakan di halaman Anggaran</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- LIST -->
+                <div class="card">
+                    <div class="cat-header">
+                        <div class="card-title" style="margin-bottom:0;"><i class="fas fa-list"></i> Daftar Kategori</div>
+                        <span class="cat-count"><%= categories.length %> kategori</span>
+                    </div>
+
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchCat" placeholder="Cari kategori..." oninput="filterCategories()">
+                    </div>
+
+                    <% if (categories.length > 0) { %>
+
+                        <% if (expenseCats.length > 0) { %>
+                            <div class="section-label" style="color:var(--danger);">
+                                <i class="fas fa-arrow-up"></i> Pengeluaran (<%= expenseCats.length %>)
+                            </div>
+                            <% expenseCats.forEach(function(cat) { %>
+                                <div class="cat-item" data-name="<%= cat.name.toLowerCase() %>">
+                                    <div class="cat-left">
+                                        <div class="cat-icon-circle" style="background:var(--danger-light);color:var(--danger);"><i class="fas fa-tag"></i></div>
+                                        <div>
+                                            <div class="cat-name-text"><%= cat.name %></div>
+                                            <span class="cat-type-badge badge-expense">Pengeluaran</span>
+                                        </div>
+                                    </div>
+                                    <div class="cat-actions">
+                                        <button class="btn-icon edit" title="Edit" onclick="openEditModal(<%= cat.id %>, '<%= cat.name.replace(/'/g, "\\'") %>', '<%= cat.type %>')">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus kategori <%= cat.name %>?')">
+                                            <button type="submit" class="btn-icon delete" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+
+                        <% if (incomeCats.length > 0) { %>
+                            <div class="section-label" style="color:var(--success);margin-top:12px;">
+                                <i class="fas fa-arrow-down"></i> Pemasukan (<%= incomeCats.length %>)
+                            </div>
+                            <% incomeCats.forEach(function(cat) { %>
+                                <div class="cat-item" data-name="<%= cat.name.toLowerCase() %>">
+                                    <div class="cat-left">
+                                        <div class="cat-icon-circle" style="background:var(--success-light);color:var(--success);"><i class="fas fa-tag"></i></div>
+                                        <div>
+                                            <div class="cat-name-text"><%= cat.name %></div>
+                                            <span class="cat-type-badge badge-income">Pemasukan</span>
+                                        </div>
+                                    </div>
+                                    <div class="cat-actions">
+                                        <button class="btn-icon edit" title="Edit" onclick="openEditModal(<%= cat.id %>, '<%= cat.name.replace(/'/g, "\\'") %>', '<%= cat.type %>')">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus kategori <%= cat.name %>?')">
+                                            <button type="submit" class="btn-icon delete" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <h3>Belum ada kategori</h3>
+                            <p>Tambahkan kategori pemasukan & pengeluaran di form sebelah kiri</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <div class="modal-title"><i class="fas fa-pen" style="color:var(--primary);margin-right:8px;"></i>Edit Kategori</div>
+            <form id="editForm" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Nama Kategori</label>
+                    <input type="text" name="name" id="editName" class="form-input" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jenis Kategori</label>
+                    <div class="type-toggle">
+                        <button type="button" class="type-btn" id="editBtnExpense" onclick="setEditType('expense')">
+                            <i class="fas fa-arrow-up"></i> Pengeluaran
+                        </button>
+                        <button type="button" class="type-btn" id="editBtnIncome" onclick="setEditType('income')">
+                            <i class="fas fa-arrow-down"></i> Pemasukan
+                        </button>
+                    </div>
+                    <input type="hidden" name="type" id="editTypeInput">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-cancel" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" class="btn-modal btn-save">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add form type toggle
+        function setCatType(type) {
+            document.getElementById('catTypeInput').value = type;
+            var btnE = document.getElementById('btnExpense');
+            var btnI = document.getElementById('btnIncome');
+            if (type === 'income') { btnI.className = 'type-btn active-income'; btnE.className = 'type-btn'; }
+            else { btnE.className = 'type-btn active-expense'; btnI.className = 'type-btn'; }
+        }
+
+        // Search
+        function filterCategories() {
+            var q = document.getElementById('searchCat').value.toLowerCase();
+            document.querySelectorAll('.cat-item').forEach(function(item) {
+                var name = item.getAttribute('data-name') || '';
+                item.style.display = name.includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        // Edit Modal
+        function openEditModal(id, name, type) {
+            document.getElementById('editForm').action = '/categories/edit/' + id;
+            document.getElementById('editName').value = name;
+            setEditType(type);
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function setEditType(type) {
+            document.getElementById('editTypeInput').value = type;
+            var btnE = document.getElementById('editBtnExpense');
+            var btnI = document.getElementById('editBtnIncome');
+            if (type === 'income') { btnI.className = 'type-btn active-income'; btnE.className = 'type-btn'; }
+            else { btnE.className = 'type-btn active-expense'; btnI.className = 'type-btn'; }
+        }
+
+        function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
+        document.getElementById('editModal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+    </script>
+</body>
+</html>

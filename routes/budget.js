@@ -34,8 +34,8 @@ router.get('/', cekLogin, function(req, res) {
         db.query(qExpenses, [userId, currentMonth, currentYear], function(err, expenses) {
             if (err) { console.log("Expense Error:", err); expenses = []; }
 
-            // Query 3: Ambil kategori untuk dropdown form
-            db.query("SELECT * FROM categories ORDER BY name", function(err, categories) {
+            // Query 3: Ambil kategori pengeluaran milik user
+            db.query("SELECT * FROM categories WHERE user_id = ? AND type = 'expense' ORDER BY name", [userId], function(err, categories) {
                 if (err) { console.log("Categories Error:", err); categories = []; }
 
                 // Build expense lookup

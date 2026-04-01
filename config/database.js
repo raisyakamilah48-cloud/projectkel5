@@ -58,7 +58,10 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
     const createCategoriesTable = `
       CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL
+        user_id INT NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        type VARCHAR(20) NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `;
 
