@@ -1,0 +1,272 @@
+<!-- views/about.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - CekUangku</title>
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Utama -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* =========================================
+           STYLE TENTANG KAMI (TEMA BIRU)
+           ========================================= */
+        :root {
+            --primary-blue: #4361ee;
+            --secondary-blue: #3f37c9;
+            --light-blue: #4cc9f0;
+            --dark-footer: #1a2c55;
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f8f9fa; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main { flex: 1; }
+        a { text-decoration: none; }
+
+        /* --- NAVBAR --- */
+        .landing-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 50px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-blue); display: flex; align-items: center; gap: 10px; }
+        
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #555; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-blue); }
+
+        .nav-buttons a {
+            text-decoration: none; margin-left: 15px; padding: 10px 25px;
+            border-radius: 8px; font-weight: 600; transition: all 0.3s;
+            display: inline-block; font-size: 0.9rem;
+        }
+        .btn-outline-nav { border: 2px solid var(--primary-blue); color: var(--primary-blue); background: transparent; }
+        .btn-outline-nav:hover { background: var(--primary-blue); color: white; }
+        .btn-fill-nav { background: var(--primary-blue); color: white; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2); }
+        .btn-fill-nav:hover { background: var(--secondary-blue); transform: translateY(-2px); }
+
+        /* --- HERO ABOUT --- */
+        .about-hero {
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+            padding: 100px 50px;
+            text-align: center;
+        }
+        .about-hero h1 {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        .about-hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* --- CONTENT SECTION --- */
+        .story-section {
+            padding: 80px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        .story-text { flex: 1; }
+        .story-text h2 { font-size: 2rem; color: #333; margin-bottom: 20px; }
+        .story-text p { color: #666; line-height: 1.8; margin-bottom: 20px; }
+        .story-image { flex: 1; }
+        .story-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(67, 97, 238, 0.15);
+        }
+
+        /* --- VALUES GRID --- */
+        .values-section {
+            background: white;
+            padding: 80px 50px;
+            text-align: center;
+        }
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+        .value-card {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+        .value-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.1);
+        }
+        .value-icon {
+            width: 60px; height: 60px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 20px auto;
+        }
+        .value-card h3 { margin-bottom: 10px; color: #333; }
+        .value-card p { font-size: 0.9rem; color: #666; }
+
+        /* --- FOOTER --- */
+        .site-footer {
+            background-color: var(--dark-footer);
+            color: white;
+            padding: 60px 50px 20px 50px;
+            margin-top: auto;
+        }
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-col h3 { font-size: 1.2rem; margin-bottom: 20px; color: white; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a { color: #cbd5e1; text-decoration: none; transition: 0.3s; }
+        .footer-col ul li a:hover { color: var(--light-blue); }
+        .footer-bottom { text-align: center; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 0.85rem; color: #94a3b8; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .about-hero h1 { font-size: 2.2rem; padding: 0 20px; }
+            .story-section { flex-direction: column; padding: 40px 20px; }
+            .nav-links { display: none; } /* Simplifikasi mobile */
+            .landing-nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .nav-links { display: flex; justify-content: center; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR (SAMA DENGAN LANDING TAPI TANPA HARGA) -->
+    <nav class="landing-nav">
+        <a href="/" class="logo">
+            <i class="fas fa-wallet"></i> CekUangku
+        </a>
+
+        <div class="nav-links">
+            <a href="/">Beranda</a>
+            <a href="/#features">Fitur</a>
+            <!-- Harga sudah dihapus -->
+            <a href="/about" class="active">Tentang Kami</a>
+        </div>
+
+        <div class="nav-buttons">
+            <% if (user) { %>
+                <a href="/dashboard" class="btn-fill-nav">Dashboard</a>
+            <% } else { %>
+                <a href="/auth/login" class="btn-outline-nav">Login</a>
+                <a href="/auth/register" class="btn-fill-nav">Register</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HERO ABOUT -->
+        <section class="about-hero">
+            <h1>Tentang CekUangku</h1>
+            <p>Kami berdedikasi untuk memberdayakan setiap individu mencapai kebebasan finansial melalui teknologi yang sederhana, aman, dan cerdas.</p>
+        </section>
+
+        <!-- CERITA KAMI -->
+        <section class="story-section">
+            <div class="story-text">
+                <h2>Misi Kami</h2>
+                <p>CekUangku didirikan dengan satu tujuan sederhana: membuat manajemen keuangan pribadi menjadi mudah diakses oleh semua orang, tanpa harus menjadi ahli ekonomi.</p>
+                <p>Kami percaya bahwa dengan pencatatan yang tepat dan analisis yang jelas, siapa pun dapat merencanakan masa depan keuangan mereka lebih baik. Kami menggabungkan desain yang intuitif dengan keamanan data tingkat tinggi untuk memastikan pengalaman pengguna yang terbaik.</p>
+            </div>
+            <div class="story-image">
+                <!-- Gambar Placeholder Team/Illustrasi -->
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tim CekUangku">
+            </div>
+        </section>
+
+        <!-- NILAI KAMI -->
+        <section class="values-section">
+            <h2>Nilai Kami</h2>
+            <p style="color: #666; max-width: 600px; margin: 0 auto;">Tiga pilar utama yang mendasari setiap fitur yang kami kembangkan.</p>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Keamanan</h3>
+                    <p>Data Anda adalah prioritas kami. Kami menggunakan enkripsi end-to-end untuk melindungi privasi finansial Anda.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>Transparansi</h3>
+                    <p>Tidak ada biaya tersembunyi. Kami menampilkan laporan keuangan Anda dengan jujur dan terperinci.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Kemudahan</h3>
+                    <p>Antarmuka yang dirancang agar semua orang, dari pelajar hingga profesional, dapat menggunakannya dengan santai.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div class="logo" style="color: white; margin-bottom: 15px;">
+                    <i class="fas fa-wallet"></i> CekUangku
+                </div>
+                <p>Sahabat terbaik dalam mengelola keuangan pribadi Anda.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Bantuan</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hubungi Kami</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Sosial</h3>
+                <div style="display: flex; gap: 10px;">
+                    <a href="#" style="color: white;"><i class="fab fa-facebook fa-lg"></i></a>
+                    <a href="#" style="color: white;"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" style="color: white;"><i class="fab fa-instagram fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 CekUangku Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

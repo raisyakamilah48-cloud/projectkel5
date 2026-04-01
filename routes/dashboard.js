@@ -6,7 +6,7 @@ function cekLogin(req, res, next){
   if(req.session.user){
     next();
   } else {
-    res.redirect('/users/login'); // Rute login yang ini salah seharusnya /auth/login
+    res.redirect('/auth/login');
   }
 }
 

@@ -4,269 +4,688 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transactions - CekUangku</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Transaksi - CekUangku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* REUSE STYLE DASHBOARD + TAMBAHAN KHUSUS TRANSAKSI */
-        body { display: flex; height: 100vh; overflow: hidden; background: #f3f4f6; }
-        
-        /* --- SIDEBAR (SAMA PERSIS DENGAN DASHBOARD) --- */
+        /* =============================================
+           TRANSACTIONS — PREMIUM MODERN DESIGN
+           ============================================= */
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3730a3;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --info: #6366f1;
+            --info-light: #e0e7ff;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        /* ---- SIDEBAR ---- */
         .sidebar {
-            width: 250px;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #e5e7eb;
-            transition: all 0.3s;
+            width: var(--sidebar-w);
+            background: var(--card-bg);
+            height: 100vh;
+            display: flex; flex-direction: column;
+            border-right: 1px solid var(--border);
+            position: fixed; left: 0; top: 0; z-index: 100;
+            transition: transform .3s ease;
         }
-        .sidebar-header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #4361ee;
-            font-weight: 700;
-            font-size: 1.2rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 25px;
-            color: #6b7280;
-            text-decoration: none;
-            font-weight: 500;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .menu-item:hover, .menu-item.active {
-            background: #eff6ff;
-            color: #4361ee;
-            border-right: 3px solid #4361ee;
-        }
-        .menu-item i { width: 25px; }
 
-        .user-profile {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .sidebar-brand {
+            padding: 24px 24px 20px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid var(--border);
         }
-        .avatar {
+
+        .sidebar-brand .brand-icon {
             width: 40px; height: 40px;
-            background: #4361ee; color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
         }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
+        .sidebar-brand .brand-name {
+            font-size: 1.25rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .page-header { margin-bottom: 25px; }
-        .page-header h2 { color: #1f2937; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
 
-        /* LAYOUT GRID: Kiri Form, Kanan List */
-        .transaction-grid {
+        .nav-label {
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.2px; color: var(--text-muted);
+            padding: 12px 16px 8px;
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 16px; border-radius: 10px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: all .2s ease; margin-bottom: 2px;
+        }
+
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(6, 182, 212, 0.05));
+            color: var(--primary); font-weight: 600;
+        }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+
+        .user-card {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; background: #f8fafc; border-radius: 12px;
+        }
+
+        .user-avatar {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 1rem;
+        }
+
+        .user-info { flex: 1; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .user-info .status { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+
+        .btn-logout { color: var(--text-muted); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: var(--danger); }
+
+        /* ---- MAIN ---- */
+        .main-area { margin-left: var(--sidebar-w); flex: 1; overflow-y: auto; overflow-x: hidden; }
+
+        .top-header {
+            background: var(--card-bg); padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        .page-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+        .page-title p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+
+        .content-area { padding: 28px 32px; }
+
+        /* ---- MINI STATS ---- */
+        .mini-stats {
             display: grid;
-            grid-template-columns: 1fr 2fr; /* Form 1/3, List 2/3 */
-            gap: 25px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        /* FORM CARD */
-        .form-card {
-            background: white;
-            padding: 25px;
+        .mini-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 14px;
+            transition: all .3s ease;
+        }
+
+        .mini-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); }
+
+        .mini-icon {
+            width: 44px; height: 44px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            height: fit-content;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
         }
-        .form-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: #4361ee; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #4b5563; }
-        .form-control {
-            width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;
-        }
-        .form-control:focus { border-color: #4361ee; }
 
-        /* Tombol Simpan */
-        .btn-submit {
-            width: 100%; padding: 12px; background: #4361ee; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .btn-submit:hover { background: #3f37c9; }
+        .mini-icon.green { background: var(--success-light); color: var(--success); }
+        .mini-icon.red { background: var(--danger-light); color: var(--danger); }
+        .mini-icon.blue { background: var(--info-light); color: var(--primary); }
 
-        /* LIST CARD */
-        .list-card {
+        .mini-text .mini-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .mini-text .mini-value { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+        /* ---- TRANSACTION GRID ---- */
+        .trans-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1rem; font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .card-title i { color: var(--primary); }
+
+        /* ---- FORM ---- */
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background: #fafbfc;
+            outline: none;
+            transition: all .2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
-        /* ITEM TRANSAKSI */
-        .trans-item {
+        .form-input::placeholder { color: var(--text-muted); }
+
+        /* Type Toggle */
+        .type-toggle {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #f3f4f6;
+            gap: 8px;
+            margin-bottom: 16px;
         }
-        .trans-item:last-child { border-bottom: none; }
-        
-        .trans-info { display: flex; align-items: center; gap: 15px; }
-        .trans-icon {
-            width: 45px; height: 45px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-        }
-        /* Warna Icon berdasarkan tipe */
-        .bg-income { background: #d1fae5; color: #059669; }
-        .bg-expense { background: #fee2e2; color: #dc2626; }
-        
-        .trans-text h4 { font-size: 0.95rem; margin-bottom: 2px; color: #1f2937; }
-        .trans-text p { font-size: 0.8rem; color: #9ca3af; }
-        
-        .trans-amount { font-weight: 700; font-size: 1rem; }
-        .text-green { color: #10b981; }
-        .text-red { color: #ef4444; }
 
-        @media (max-width: 768px) {
-            .transaction-grid { grid-template-columns: 1fr; }
-            body { flex-direction: column; overflow: auto; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; }
+        .type-btn {
+            flex: 1;
+            padding: 11px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            color: var(--text-secondary);
         }
+
+        .type-btn:hover { border-color: var(--text-muted); }
+
+        .type-btn.active-expense {
+            border-color: var(--danger);
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .type-btn.active-income {
+            border-color: var(--success);
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        /* Amount Input */
+        .amount-wrapper {
+            position: relative;
+        }
+
+        .amount-wrapper .currency-label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .amount-wrapper .form-input {
+            padding-left: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-submit.income-mode {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-submit.income-mode:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ---- TRANSACTION LIST ---- */
+        .trans-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .trans-count {
+            font-size: 0.8rem; color: var(--text-muted);
+            background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 600;
+        }
+
+        .trans-list { list-style: none; }
+
+        .trans-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            transition: all .2s;
+            border: 1px solid transparent;
+        }
+
+        .trans-item:hover {
+            background: #f8fafc;
+            border-color: var(--border);
+        }
+
+        .trans-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+
+        .trans-icon {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .trans-icon.income-icon { background: var(--success-light); color: var(--success); }
+        .trans-icon.expense-icon { background: var(--danger-light); color: var(--danger); }
+
+        .trans-desc .desc-text { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+        .trans-desc .desc-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+        .trans-right { display: flex; align-items: center; gap: 12px; }
+
+        .trans-amount { font-weight: 700; font-size: 0.95rem; text-align: right; }
+        .trans-amount.positive { color: var(--success); }
+        .trans-amount.negative { color: var(--danger); }
+
+        .btn-delete {
+            width: 32px; height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-delete:hover { background: var(--danger-light); color: var(--danger); }
+
+        /* ---- EMPTY STATE ---- */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); opacity: 0.4; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .empty-state p { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* ---- SEARCH BAR ---- */
+        .search-bar {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            background: #fafbfc;
+            transition: all .2s;
+        }
+
+        .search-bar input:focus { border-color: var(--primary); background: white; }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mini-card { animation: slideUp .4s ease forwards; }
+        .mini-card:nth-child(1) { animation-delay: .05s; }
+        .mini-card:nth-child(2) { animation-delay: .1s; }
+        .mini-card:nth-child(3) { animation-delay: .15s; }
+        .trans-grid { animation: slideUp .4s ease .2s forwards; opacity: 0; }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 1100px) { .trans-grid { grid-template-columns: 1fr; } }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+        }
+
+        @media (max-width: 600px) {
+            .content-area { padding: 20px 16px; }
+            .mini-stats { grid-template-columns: 1fr; }
+            .trans-grid { grid-template-columns: 1fr; }
+        }
+
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
+        .menu-toggle:hover { background: #f1f5f9; }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR (SAMA PERSIS DENGAN DASHBOARD) -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-wallet"></i> CekUangku
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-wallet"></i></div>
+            <span class="brand-name">CekUangku</span>
         </div>
-        <div class="sidebar-menu">
-            <!-- Link Dashboard -->
-            <a href="/dashboard" class="menu-item">
-                <i class="fas fa-home"></i> Dashboard
-            </a>
-            <!-- Link Transactions (ACTIVE) -->
-            <a href="/transactions" class="menu-item active">
-                <i class="fas fa-exchange-alt"></i> Transactions
-            </a>
-            <a href="/reports" class="menu-item"><i class="fas fa-chart-pie"></i> Reports</a>
-            <a href="#" class="menu-item"><i class="fas fa-bullseye"></i> Budget</a>
-            <a href="#" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
-        </div>
-        <div class="user-profile">
-            <div class="avatar"><%= (typeof user !== 'undefined' && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
-            <div style="flex:1;">
-               <div style="font-weight: 600; font-size: 0.9rem;"><%= (typeof user !== 'undefined' && user.nama) ? user.nama : 'User' %></div>
-                <div style="font-size: 0.8rem; color: #6b7280;">Online</div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Menu Utama</div>
+            <a href="/dashboard" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="/transactions" class="nav-link active"><i class="fas fa-exchange-alt"></i> Transaksi</a>
+            <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a>
+            <a href="/budget" class="nav-link"><i class="fas fa-bullseye"></i> Anggaran</a>
+
+            <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
+            <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
+            <a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> Tentang</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar"><%= (user && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
+                <div class="user-info">
+                    <div class="name"><%= (user && user.nama) ? user.nama : 'User' %></div>
+                    <div class="status">Online</div>
+                </div>
+                <a href="/auth/logout" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
             </div>
-            <a href="/auth/logout" title="Logout" style="color: #ef4444; text-decoration: none;"><i class="fas fa-sign-out-alt"></i></a>
         </div>
-    </nav>
+    </aside>
 
-    <!-- KONTEN UTAMA -->
-    <main class="main-content">
-        <div class="page-header">
-            <h2>Transaction Management</h2>
-        </div>
+    <!-- ===== MAIN AREA ===== -->
+    <main class="main-area">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars" style="font-size:1.2rem;"></i>
+                </button>
+                <div class="page-title">
+                    <h2><i class="fas fa-exchange-alt" style="color:var(--primary);margin-right:8px;"></i>Kelola Transaksi</h2>
+                    <p>Catat dan kelola pemasukan & pengeluaranmu</p>
+                </div>
+            </div>
+        </header>
 
-        <div class="transaction-grid">
-            
-            <!-- KOLOM KIRI: FORM INPUT TRANSAKSI -->
-            <div class="form-card">
-                <div class="form-title"><i class="fas fa-plus-circle"></i> Add New Transaction</div>
-                <form action="/transactions/add" method="POST">
-                    
-                    <div class="form-group">
-                        <label>Tipe Transaksi</label>
-                        <select name="type" class="form-control" onchange="changeColor(this)">
-                            <option value="expense">Pengeluaran (Expense)</option>
-                            <option value="income">Pemasukan (Income)</option>
-                        </select>
+        <div class="content-area">
+
+            <%
+                const sIncome = parseFloat(stats.totalIncome) || 0;
+                const sExpense = parseFloat(stats.totalExpense) || 0;
+                const sBalance = sIncome - sExpense;
+            %>
+
+            <!-- MINI STATS -->
+            <div class="mini-stats">
+                <div class="mini-card">
+                    <div class="mini-icon green"><i class="fas fa-arrow-down"></i></div>
+                    <div class="mini-text">
+                        <div class="mini-label">Total Pemasukan</div>
+                        <div class="mini-value" style="color:var(--success);">Rp <%= sIncome.toLocaleString('id-ID') %></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Kategori</label>
-                        <select name="category" class="form-control">
-                            <option value="Food">Makanan & Minuman</option>
-                            <option value="Transport">Transportasi</option>
-                            <option value="Shopping">Belanja</option>
-                            <option value="Bills">Tagihan (Listrik/Air)</option>
-                            <option value="Salary">Gaji</option>
-                            <option value="Freelance">Freelance</option>
-                            <option value="Other">Lainnya</option>
-                        </select>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-icon red"><i class="fas fa-arrow-up"></i></div>
+                    <div class="mini-text">
+                        <div class="mini-label">Total Pengeluaran</div>
+                        <div class="mini-value" style="color:var(--danger);">Rp <%= sExpense.toLocaleString('id-ID') %></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Deskripsi</label>
-                        <input type="text" name="description" class="form-control" placeholder="Contoh: Makan Siang" required>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-icon blue"><i class="fas fa-wallet"></i></div>
+                    <div class="mini-text">
+                        <div class="mini-label">Saldo</div>
+                        <div class="mini-value"><%= sBalance >= 0 ? '' : '-' %>Rp <%= Math.abs(sBalance).toLocaleString('id-ID') %></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Jumlah (Rp)</label>
-                        <input type="number" name="amount" class="form-control" placeholder="0" required>
-                    </div>
-
-                    <button type="submit" class="btn-submit">Simpan Transaksi</button>
-                </form>
+                </div>
             </div>
 
-            <!-- KOLOM KANAN: RIWAYAT TRANSAKSI -->
-            <div class="list-card">
-                <div class="form-title">Recent History</div>
-                
-                <% if (transactions.length > 0) { %>
-                    <% transactions.forEach(function(trans) { %>
-                        <div class="trans-item">
-                            <div class="trans-info">
-                                <!-- Icon dinamis berdasarkan tipe -->
-                                <% if(trans.type === 'income') { %>
-                                    <div class="trans-icon bg-income"><i class="fas fa-arrow-down"></i></div>
-                                <% } else { %>
-                                    <div class="trans-icon bg-expense"><i class="fas fa-arrow-up"></i></div>
-                                <% } %>
-                                
-                                <div class="trans-text">
-                                    <h4><%= trans.description %></h4>
-                                    <p><%= trans.category %> • <%= new Date(trans.date).toLocaleDateString() %></p>
-                                </div>
-                            </div>
-                            
-                            <!-- Jumlah Uang -->
-                            <% if(trans.type === 'income') { %>
-                                <div class="trans-amount text-green">+ Rp <%= parseInt(trans.amount).toLocaleString('id-ID') %></div>
-                            <% } else { %>
-                                <div class="trans-amount text-red">- Rp <%= parseInt(trans.amount).toLocaleString('id-ID') %></div>
-                            <% } %>
+            <!-- MAIN GRID: Form + List -->
+            <div class="trans-grid">
+
+                <!-- FORM CARD -->
+                <div class="card" style="height:fit-content;position:sticky;top:96px;">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Transaksi</div>
+
+                    <form action="/transactions/add" method="POST" id="transForm">
+
+                        <!-- Type Toggle -->
+                        <div class="form-label">Tipe Transaksi</div>
+                        <div class="type-toggle">
+                            <button type="button" class="type-btn active-expense" id="btnExpense" onclick="setType('expense')">
+                                <i class="fas fa-arrow-up"></i> Pengeluaran
+                            </button>
+                            <button type="button" class="type-btn" id="btnIncome" onclick="setType('income')">
+                                <i class="fas fa-arrow-down"></i> Pemasukan
+                            </button>
                         </div>
-                    <% }) %>
-                <% } else { %>
-                    <p style="text-align:center; color:#999; margin-top:20px;">Belum ada transaksi.</p>
-                <% } %>
+                        <input type="hidden" name="type" id="typeInput" value="expense">
+
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label class="form-label">Kategori</label>
+                            <select name="category" class="form-input" id="categorySelect">
+                                <% if (categories && categories.length > 0) { %>
+                                    <% categories.forEach(function(cat) { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }) %>
+                                <% } else { %>
+                                    <option value="Makanan & Minuman">Makanan & Minuman</option>
+                                    <option value="Transportasi">Transportasi</option>
+                                    <option value="Belanja">Belanja</option>
+                                    <option value="Tagihan">Tagihan</option>
+                                    <option value="Gaji">Gaji</option>
+                                    <option value="Freelance">Freelance</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label class="form-label">Deskripsi</label>
+                            <input type="text" name="description" class="form-input" placeholder="Contoh: Makan siang di kantin" required>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="form-group">
+                            <label class="form-label">Jumlah</label>
+                            <div class="amount-wrapper">
+                                <span class="currency-label">Rp</span>
+                                <input type="text" id="amountDisplay" class="form-input" placeholder="0" required oninput="formatRupiah(this)" autocomplete="off">
+                                <input type="hidden" name="amount" id="amountRaw">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-save"></i> Simpan Transaksi
+                        </button>
+                    </form>
+                </div>
+
+                <!-- TRANSACTION LIST -->
+                <div class="card">
+                    <div class="trans-header">
+                        <div class="card-title" style="margin-bottom:0;"><i class="fas fa-history"></i> Riwayat Transaksi</div>
+                        <span class="trans-count"><%= transactions.length %> transaksi</span>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Cari transaksi..." oninput="filterTransactions()">
+                    </div>
+
+                    <% if (transactions.length > 0) { %>
+                        <ul class="trans-list" id="transList">
+                            <% transactions.forEach(function(t) { %>
+                                <li class="trans-item" data-desc="<%= t.description.toLowerCase() %>" data-cat="<%= (t.category || '').toLowerCase() %>">
+                                    <div class="trans-left">
+                                        <div class="trans-icon <%= t.type === 'income' ? 'income-icon' : 'expense-icon' %>">
+                                            <i class="fas fa-<%= t.type === 'income' ? 'arrow-down' : 'arrow-up' %>"></i>
+                                        </div>
+                                        <div class="trans-desc">
+                                            <div class="desc-text"><%= t.description %></div>
+                                            <div class="desc-meta">
+                                                <i class="fas fa-tag" style="font-size:0.65rem;"></i> <%= t.category || 'Lainnya' %> 
+                                                &nbsp;•&nbsp; 
+                                                <i class="fas fa-calendar" style="font-size:0.65rem;"></i> <%= new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="trans-right">
+                                        <div class="trans-amount <%= t.type === 'income' ? 'positive' : 'negative' %>">
+                                            <%= t.type === 'income' ? '+' : '-' %> Rp <%= parseInt(t.amount).toLocaleString('id-ID') %>
+                                        </div>
+                                        <form action="/transactions/delete/<%= t.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus transaksi ini?')">
+                                            <button type="submit" class="btn-delete" title="Hapus">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>Belum ada transaksi</h3>
+                            <p>Mulai dengan menambahkan transaksi pertamamu di form sebelah kiri</p>
+                        </div>
+                    <% } %>
+                </div>
 
             </div>
-
         </div>
     </main>
 
     <script>
-        // Script kecil untuk ubah warna tombol saat ganti tipe (opsional)
-        function changeColor(select) {
-            const btn = document.querySelector('.btn-submit');
-            if(select.value === 'income') {
-                btn.style.background = '#10b981'; // Hijau
+        // === Type Toggle ===
+        function setType(type) {
+            document.getElementById('typeInput').value = type;
+            const btnExpense = document.getElementById('btnExpense');
+            const btnIncome = document.getElementById('btnIncome');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (type === 'income') {
+                btnIncome.className = 'type-btn active-income';
+                btnExpense.className = 'type-btn';
+                submitBtn.className = 'btn-submit income-mode';
             } else {
-                btn.style.background = '#4361ee'; // Biru (atau merah untuk expense jika diinginkan)
+                btnExpense.className = 'type-btn active-expense';
+                btnIncome.className = 'type-btn';
+                submitBtn.className = 'btn-submit';
             }
+        }
+
+        // === Format Rupiah (auto titik) ===
+        function formatRupiah(el) {
+            // Ambil hanya angka
+            let value = el.value.replace(/\D/g, '');
+            // Simpan angka asli ke hidden input
+            document.getElementById('amountRaw').value = value;
+            // Format dengan titik ribuan
+            if (value) {
+                el.value = parseInt(value).toLocaleString('id-ID');
+            } else {
+                el.value = '';
+            }
+        }
+
+        // Validasi sebelum submit — pastikan amount terisi
+        document.getElementById('transForm').addEventListener('submit', function(e) {
+            const raw = document.getElementById('amountRaw').value;
+            if (!raw || parseInt(raw) <= 0) {
+                e.preventDefault();
+                alert('Masukkan jumlah yang valid!');
+            }
+        });
+
+        // === Search/Filter ===
+        function filterTransactions() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.trans-item');
+            items.forEach(function(item) {
+                const desc = item.getAttribute('data-desc') || '';
+                const cat = item.getAttribute('data-cat') || '';
+                if (desc.includes(query) || cat.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

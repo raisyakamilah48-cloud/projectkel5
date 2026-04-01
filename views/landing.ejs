@@ -1,0 +1,516 @@
+<!-- views/landing.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CekUangku - Kelola Keuangan Cerdas</title>
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Utama (Jika ada file style.css global) -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* =========================================
+           CUSTOM STYLE LANDING PAGE (TEMA BIRU)
+           ========================================= */
+        :root {
+            --primary-blue: #4361ee;
+            --secondary-blue: #3f37c9;
+            --light-blue: #4cc9f0;
+            --dark-footer: #1a2c55;
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f8f9fa; 
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        a { text-decoration: none; }
+
+        /* --- NAVBAR (LOGO - NAVIGASI - TOMBOL) --- */
+        .landing-nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 50px; 
+            background: white; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--primary-blue); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+
+        /* Menu Navigasi Tengah */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #555;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Tombol Kanan (Auth) */
+        .nav-buttons a {
+            text-decoration: none; 
+            margin-left: 15px; 
+            padding: 10px 25px;
+            border-radius: 8px; 
+            font-weight: 600; 
+            transition: all 0.3s;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline-nav { 
+            border: 2px solid var(--primary-blue); 
+            color: var(--primary-blue); 
+            background: transparent;
+        }
+        .btn-outline-nav:hover { 
+            background: var(--primary-blue); 
+            color: white; 
+        }
+        
+        .btn-fill-nav { 
+            background: var(--primary-blue); 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
+        }
+        .btn-fill-nav:hover { 
+            background: var(--secondary-blue); 
+            transform: translateY(-2px);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 80px 50px; 
+            min-height: 80vh; 
+            background: white;
+        }
+        
+        .hero-text { 
+            flex: 1; 
+            padding-right: 50px; 
+            max-width: 600px;
+        }
+        
+        .hero-text h1 { 
+            font-size: 3.5rem; 
+            line-height: 1.2; 
+            margin-bottom: 25px; 
+            color: #1f2937; 
+            font-weight: 700;
+        }
+        
+        .hero-text span {
+            background: linear-gradient(120deg, var(--primary-blue), var(--secondary-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+  }
+        
+        .hero-text p { 
+            font-size: 1.2rem; 
+            color: #6b7280; 
+            margin-bottom: 40px; 
+            line-height: 1.7; 
+        }
+        
+        .hero-cta { 
+            display: flex; 
+            gap: 15px; 
+        }
+        
+        .btn-cta {
+            padding: 15px 35px; 
+            border-radius: 10px; 
+            text-decoration: none;
+            font-weight: 600; 
+            font-size: 1rem; 
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .btn-primary-cta { 
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue)); 
+            color: white; 
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4); 
+            border: none;
+        }
+        .btn-primary-cta:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.5);
+        }
+        
+        .btn-secondary-cta { 
+            border: 2px solid #e5e7eb; 
+            color: #374151; 
+            background: white;
+        }
+        .btn-secondary-cta:hover { 
+            border-color: var(--primary-blue); 
+            color: var(--primary-blue); 
+        }
+
+        .hero-image { 
+            flex: 1; 
+            text-align: center; 
+            position: relative;
+        }
+        
+        .hero-illustration {
+            max-width: 100%; 
+            height: auto; 
+            filter: drop-shadow(0 20px 40px rgba(67, 97, 238, 0.15));
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- FEATURES SECTION --- */
+        .features { 
+            padding: 80px 50px; 
+            background: #f9fafb; 
+            text-align: center; 
+        }
+        
+        .features h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 60px; 
+            color: #1f2937; 
+            font-weight: 700;
+        }
+        
+        .feature-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: white; 
+            padding: 40px 30px; 
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); 
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
+            text-align: left;
+        }
+        
+        .feature-card:hover { 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+            border-color: var(--primary-blue);
+        }
+        
+        .icon-box {
+            width: 70px; 
+            height: 70px; 
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe); 
+            color: var(--primary-blue); 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 1.8rem; 
+            margin-bottom: 25px;
+        }
+
+        .feature-card h3 { margin-bottom: 15px; color: #333; font-size: 1.3rem; }
+        .feature-card p { color: #666; line-height: 1.6; font-size: 0.95rem; }
+
+        /* --- FOOTER STYLE --- */
+        .site-footer {
+            background-color: var(--dark-footer);
+            color: white;
+            padding: 60px 50px 20px 50px;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-col h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .footer-col p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--light-blue);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-blue);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            /* Sembunyikan menu navigasi tengah di tablet/mobile agar rapi */
+            .nav-links { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column-reverse; padding: 40px 20px; text-align: center; }
+            .hero-text { padding-right: 0; margin-top: 40px; }
+            .hero-cta { justify-content: center; flex-direction: column; width: 100%; }
+            .btn-cta { width: 100%; text-align: center; }
+            .landing-nav { padding: 15px 20px; }
+            .hero-text h1 { font-size: 2.2rem; }
+            .features { padding: 40px 20px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .site-footer { padding: 40px 20px; }
+            .footer-container { grid-template-columns: 1fr; text-align: center; }
+            .social-links { justify-content: center; }
+            
+            /* Tampilkan menu navigasi secara vertikal di bawah logo jika di mobile */
+            .landing-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .nav-buttons {
+                width: 100%;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+            }
+            .nav-buttons a {
+                margin-left: 0;
+                width: 45%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR ATAS -->
+    <nav class="landing-nav">
+        <a href="/" class="logo">
+            <i class="fas fa-wallet"></i> CekUangku
+        </a>
+
+        <!-- Menu Navigasi: Harga Dihapus, Tentang Kami Ditambahkan -->
+        <div class="nav-links">
+            <a href="/">Beranda</a>
+            <a href="/#features">Fitur</a>
+            <!-- Harga dihapus sesuai request -->
+            <a href="/about">Tentang Kami</a>
+        </div>
+
+        <!-- Tombol Login/Register -->
+        <div class="nav-buttons">
+            <% if (user) { %>
+                <!-- Jika sudah login -->
+                <a href="/dashboard" class="btn-fill-nav">Masuk Dashboard</a>
+            <% } else { %>
+                <!-- Jika belum login -->
+                <a href="/auth/login" class="btn-outline-nav">Login</a>
+                <a href="/auth/register" class="btn-fill-nav">Register</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-text">
+                <h1>Kelola Uang Anda Dengan <br><span>Cerdas & Mudah</span></h1>
+                <p>Catat pemasukan dan pengeluaran, lihat grafik keuangan bulanan, dan capai target tabungan Anda dengan satu aplikasi sederhana.</p>
+                <div class="hero-cta">
+                    <% if (user) { %>
+                        <a href="/dashboard" class="btn-cta btn-primary-cta">Buka Dashboard</a>
+                    <% } else { %>
+                        <a href="/auth/register" class="btn-cta btn-primary-cta">Mulai Sekarang - Gratis</a>
+                        <a href="#features" class="btn-cta btn-secondary-cta">Pelajari Lebih Lanjut</a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="hero-image">
+                <!-- SVG Ilustrasi Biru -->
+                <svg class="hero-illustration" width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M487.5 200C487.5 310.457 398.457 399.5 288 399.5C177.543 399.5 88.5 310.457 88.5 200C88.5 89.5433 177.543 0.5 288 0.5C398.457 0.5 487.5 89.5433 487.5 200Z" fill="#4361ee" fill-opacity="0.1"/>
+                    <rect x="150" y="80" width="200" height="140" rx="10" fill="white" stroke="#4361ee" stroke-width="3"/>
+                    <rect x="160" y="95" width="180" height="110" rx="2" fill="#F8F9FA"/>
+                    <rect x="175" y="160" width="20" height="40" fill="#4cc9f0"/>
+                    <rect x="205" y="140" width="20" height="60" fill="#4361ee"/>
+                    <rect x="235" y="150" width="20" height="50" fill="#3f37c9"/>
+                    <rect x="265" y="130" width="20" height="70" fill="#4cc9f0"/>
+                    <rect x="295" y="170" width="20" height="30" fill="#4361ee"/>
+                    <circle cx="380" cy="100" r="20" fill="#4cc9f0" opacity="0.8"/>
+                    <path d="M375 95L385 105M375 105L385 95" stroke="white" stroke-width="2"/>
+                    <rect x="100" y="250" width="60" height="60" rx="8" fill="white" stroke="#4361ee" stroke-width="3"/>
+                    <text x="130" y="290" text-anchor="middle" fill="#4361ee" font-weight="bold" font-family="sans-serif">IDR</text>
+                    <circle cx="400" cy="300" r="30" fill="white" stroke="#4361ee" stroke-width="3"/>
+                    <path d="M390 300L400 310L420 290" stroke="#4361ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- FEATURES SECTION -->
+        <section id="features" class="features">
+            <h2>Mengapa CekUangku?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+                    <h3>Laporan Real-time</h3>
+                    <p>Pantau perkembangan keuangan Anda dengan grafik yang mudah dipahami dan update secara otomatis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Data Aman</h3>
+                    <p>Data keuangan Anda dienkripsi tingkat tinggi dan disimpan dengan aman di server cloud kami.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-mobile-alt"></i></div>
+                    <h3>Akses Mudah</h3>
+                    <p>Tampilan responsif yang memungkinkan Anda mengelola keuangan dari laptop maupun smartphone.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER SECTION -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Kolom 1: Brand -->
+            <div class="footer-col">
+                <div class="logo" style="color: white; margin-bottom: 15px;">
+                    <i class="fas fa-wallet"></i> CekUangku
+                </div>
+                <p>Platform manajemen keuangan pribadi terbaik untuk membantu Anda mencapai kebebasan finansial.</p>
+            </div>
+
+            <!-- Kolom 2: Bantuan -->
+            <div class="footer-col">
+                <h3>Bantuan</h3>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Hubungi Kami</a></li>
+                </ul>
+            </div>
+
+            <!-- Kolom 3: Sosial Media -->
+            <div class="footer-col">
+                <h3>Ikuti Kami</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2023 CekUangku Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
