@@ -1,0 +1,324 @@
+<!-- views/partials/calculator.ejs -->
+<% if (typeof user !== 'undefined' && user && user.calculator_active) { %>
+    <style>
+        /* Floating Action Button */
+        #fab-calculator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #fab-calculator:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 6px 20px rgba(67, 97, 238, 0.6); }
+
+        /* Calculator Panel */
+        #calculator-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 320px;
+            background: var(--card-bg, #fff);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border, #e2e8f0);
+            z-index: 1000;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        #calculator-panel.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+        /* Calculator Display */
+        .calc-header { background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid var(--border, #e2e8f0); display: flex; justify-content: space-between; align-items: center; }
+        .calc-title { font-weight: 700; font-size: 0.9rem; color: var(--text-primary, #1e293b); display: flex; align-items: center; gap: 8px; }
+        .calc-close { cursor: pointer; color: var(--text-muted, #94a3b8); font-size: 1.1rem; }
+        .calc-close:hover { color: #ef4444; }
+
+        .calc-display { padding: 20px; background: #fff; text-align: right; }
+        .calc-expression { min-height: 20px; font-size: 0.85rem; color: var(--text-secondary, #64748b); margin-bottom: 5px; word-wrap: break-word; }
+        .calc-result { font-size: 2rem; font-weight: 800; color: var(--text-primary, #1e293b); letter-spacing: -1px; word-wrap: break-word; overflow-x: auto; white-space: nowrap; }
+        .calc-result::-webkit-scrollbar { display: none; }
+
+        /* Smart Buttons */
+        .calc-smart-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px 20px; background: #f1f5f9; border-bottom: 1px solid var(--border, #e2e8f0); position: relative; }
+        .btn-smart { background: white; border: 1px solid var(--border, #e2e8f0); border-radius: 8px; padding: 8px 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; color: var(--primary, #4361ee); transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .btn-smart:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-smart i { margin-right: 3px; }
+
+        /* Budget Menu Overlay */
+        #calc-budget-menu { position: absolute; top: 100%; left: 0; right: 0; background: white; border-bottom: 1px solid var(--border, #e2e8f0); box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 10; display: none; max-height: 150px; overflow-y: auto; }
+        #calc-budget-menu.show { display: block; }
+        .budget-item { padding: 10px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        .budget-item:hover { background: #f8fafc; }
+        .budget-item-name { font-weight: 600; font-size: 0.8rem; color: var(--text-primary); }
+        .budget-item-amount { font-weight: 700; font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Numpad */
+        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border, #e2e8f0); }
+        .calc-btn { background: #fff; border: none; padding: 18px 0; font-size: 1.25rem; font-weight: 600; color: var(--text-primary, #1e293b); cursor: pointer; transition: background 0.1s; display: flex; align-items: center; justify-content: center; }
+        .calc-btn:hover { background: #f8fafc; }
+        .calc-btn:active { background: #e2e8f0; }
+        
+        .calc-btn.operator { background: #f8fafc; color: var(--primary, #4361ee); font-size: 1.4rem; }
+        .calc-btn.operator:hover { background: #f1f5f9; }
+        
+        .calc-btn.clear { color: #ef4444; }
+        .calc-btn.equal { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; grid-column: span 2; }
+        .calc-btn.equal:hover { background: linear-gradient(135deg, var(--primary-dark, #3730a3), var(--primary, #4361ee)); filter: brightness(1.1); }
+    </style>
+
+    <div id="fab-calculator" onclick="toggleCalculatorPanel()">
+        <i class="fas fa-calculator"></i>
+    </div>
+
+    <div id="calculator-panel">
+        <div class="calc-header">
+            <div class="calc-title"><i class="fas fa-bolt" style="color: #f59e0b;"></i> Smart Calculator</div>
+            <i class="fas fa-times calc-close" onclick="toggleCalculatorPanel()"></i>
+        </div>
+        
+        <div class="calc-display">
+            <div class="calc-expression" id="calc-exp"></div>
+            <div class="calc-result" id="calc-res">0</div>
+        </div>
+
+        <div class="calc-smart-row">
+            <button class="btn-smart" onclick="insertSmartData('wallet')" title="Masukkan Total Saldo"><i class="fas fa-wallet"></i> Saldo</button>
+            <button class="btn-smart" onclick="insertSmartData('income')" title="Tambah (+) Total Pemasukan"><i class="fas fa-plus-circle" style="color:#10b981;"></i> Masuk</button>
+            <button class="btn-smart" onclick="insertSmartData('expense')" title="Kurang (-) Total Pengeluaran"><i class="fas fa-minus-circle" style="color:#ef4444;"></i> Keluar</button>
+            <button class="btn-smart" onclick="toggleBudgetMenu()" title="Sisipkan Anggaran"><i class="fas fa-bullseye" style="color:#8b5cf6;"></i> Anggaran <i class="fas fa-caret-down"></i></button>
+            
+            <div id="calc-budget-menu">
+                <!-- Diisi via Javascript -->
+                <div style="padding: 10px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Memuat...</div>
+            </div>
+        </div>
+
+        <div class="calc-keys">
+            <button class="calc-btn clear" onclick="calcAppend('C')">C</button>
+            <button class="calc-btn operator" onclick="calcAppend('%')">%</button>
+            <button class="calc-btn operator" onclick="calcBackspace()"><i class="fas fa-backspace"></i></button>
+            <button class="calc-btn operator" onclick="calcAppend('/')">÷</button>
+            
+            <button class="calc-btn" onclick="calcAppend('7')">7</button>
+            <button class="calc-btn" onclick="calcAppend('8')">8</button>
+            <button class="calc-btn" onclick="calcAppend('9')">9</button>
+            <button class="calc-btn operator" onclick="calcAppend('*')">×</button>
+            
+            <button class="calc-btn" onclick="calcAppend('4')">4</button>
+            <button class="calc-btn" onclick="calcAppend('5')">5</button>
+            <button class="calc-btn" onclick="calcAppend('6')">6</button>
+            <button class="calc-btn operator" onclick="calcAppend('-')">−</button>
+            
+            <button class="calc-btn" onclick="calcAppend('1')">1</button>
+            <button class="calc-btn" onclick="calcAppend('2')">2</button>
+            <button class="calc-btn" onclick="calcAppend('3')">3</button>
+            <button class="calc-btn operator" onclick="calcAppend('+')">+</button>
+            
+            <button class="calc-btn" onclick="calcAppend('0')">0</button>
+            <button class="calc-btn" onclick="calcAppend('.')">.</button>
+            <button class="calc-btn equal" onclick="calcEvaluate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let calcExpression = "";
+        let calcJustEvaluated = false;
+        let cachedStats = null;
+
+        function toggleCalculatorPanel() {
+            document.getElementById('calculator-panel').classList.toggle('show');
+        }
+
+        function calcUpdateDisplay() {
+            if (calcExpression === "") {
+                document.getElementById('calc-res').innerText = "0";
+                document.getElementById('calc-exp').innerText = "";
+                return;
+            }
+
+            // Pisahkan expression berdasarkan operator matematis, tapi simpan urutannya
+            // match akan mengambil angka (termasuk desimal) dan non-angka (operator)
+            let parts = calcExpression.split(/([\+\-\*\/\%])/);
+            
+            let visualExp = parts.map(part => {
+                if (['+', '-', '*', '/', '%'].includes(part)) {
+                    // Operator visual
+                    if (part === '*') return ' × ';
+                    if (part === '/') return ' ÷ ';
+                    if (part === '%') return ' % ';
+                    return ` ${part} `;
+                } else if (part.trim() !== '') {
+                    // Format number dengan id-ID jika bukan bagian dari desimal (. ditempel akhir)
+                    // Pisahkan jika ada titik desimal
+                    let numberParts = part.split('.');
+                    let intPart = numberParts[0];
+                    if (intPart !== "") intPart = parseInt(intPart, 10).toLocaleString('id-ID');
+                    
+                    return numberParts.length > 1 ? `${intPart},${numberParts[1]}` : intPart;
+                }
+                return '';
+            }).join('');
+
+            document.getElementById('calc-res').innerText = visualExp;
+        }
+
+        function calcBackspace() {
+            if(calcExpression.length > 0) {
+                calcExpression = calcExpression.slice(0, -1);
+                calcUpdateDisplay();
+            }
+        }
+
+        function calcAppend(val) {
+            if (val === 'C') {
+                calcExpression = "";
+                calcJustEvaluated = false;
+                document.getElementById('calc-exp').innerText = "";
+                calcUpdateDisplay();
+                return;
+            }
+
+            if (calcJustEvaluated && !['+', '-', '*', '/'].includes(val)) {
+                // If just evaluated and typing a number, start fresh
+                calcExpression = "";
+                document.getElementById('calc-exp').innerText = "";
+            }
+            calcJustEvaluated = false;
+
+            calcExpression += val;
+            calcUpdateDisplay();
+        }
+
+        function calcEvaluate() {
+            if (!calcExpression) return;
+            try {
+                // Safely evaluate math expression
+                // Convert % to /100 mathematically
+                let evalString = calcExpression.replace(/%/g, '/100');
+                // Replace invalid characters first just in case
+                let sanitized = evalString.replace(/[^-()\d/*+.]/g, '');
+                let result = new Function('return ' + sanitized)();
+                
+                // Avoid infinite decimals and format properly
+                let formattedResult = Number.isInteger(result) ? result : parseFloat(result.toFixed(4));
+                
+                document.getElementById('calc-exp').innerText = document.getElementById('calc-res').innerText + ' =';
+                calcExpression = formattedResult.toString();
+                calcJustEvaluated = true;
+                
+                // Tampilkan hasil format titik/koma indonesia
+                let finalParts = calcExpression.split('.');
+                let displayInt = parseInt(finalParts[0], 10).toLocaleString('id-ID');
+                document.getElementById('calc-res').innerText = finalParts.length > 1 ? `${displayInt},${finalParts[1]}` : displayInt;
+                
+            } catch (e) {
+                document.getElementById('calc-res').innerText = "Error";
+                calcExpression = "";
+            }
+        }
+
+        async function fetchStats() {
+            if (cachedStats) return cachedStats;
+            try {
+                let res = await fetch('/settings/get-stats');
+                let data = await res.json();
+                if (data.success) {
+                    cachedStats = data;
+                    return data;
+                }
+            } catch(e) { console.error("Kalkulator gagal mengambil data.", e); }
+            return null;
+        }
+
+        async function insertSmartData(type) {
+            let btnElements = document.querySelectorAll('.btn-smart i');
+            // Give loading feedback
+            btnElements.forEach(el => el.classList.add('fa-spin'));
+            
+            let stats = await fetchStats();
+            btnElements.forEach(el => { el.classList.remove('fa-spin'); el.classList.add('fa-check'); setTimeout(() => el.classList.remove('fa-check'), 1000); });
+            
+            if (!stats) return alert('Gagal mengambil data keuangan Anda.');
+
+            if (calcJustEvaluated) {
+                calcExpression = "";
+                calcJustEvaluated = false;
+                document.getElementById('calc-exp').innerText = "";
+            }
+
+            if (type === 'wallet') {
+                // If expression is not empty and doesn't end with operator, add '+'
+                if (calcExpression && !['+', '-', '*', '/'].includes(calcExpression.slice(-1))) {
+                    calcExpression += '+';
+                }
+                calcExpression += stats.totalWallet;
+            } else if (type === 'income') {
+                calcExpression += '+' + stats.totalIncome;
+            } else if (type === 'expense') {
+                calcExpression += '-' + stats.totalExpense;
+            }
+
+            calcUpdateDisplay();
+        }
+
+        async function toggleBudgetMenu() {
+            let menu = document.getElementById('calc-budget-menu');
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                return;
+            }
+            menu.classList.add('show');
+            
+            try {
+                let res = await fetch('/settings/get-budgets');
+                let data = await res.json();
+                if (data.success) {
+                    if (data.budgets.length === 0) {
+                        menu.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Tidak ada anggaran bulan ini.</div>';
+                    } else {
+                        menu.innerHTML = data.budgets.map(b => `
+                            <div class="budget-item" onclick="insertBudgetData(${b.amount})">
+                                <span class="budget-item-name">${b.category}</span>
+                                <span class="budget-item-amount">Rp ${parseFloat(b.amount).toLocaleString('id-ID')}</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch(e) {
+                menu.innerHTML = '<div style="padding: 10px; text-align: center; color: #ef4444; font-size: 0.8rem;">Gagal memuat anggaran.</div>';
+            }
+        }
+
+        function insertBudgetData(amount) {
+            document.getElementById('calc-budget-menu').classList.remove('show');
+            if (calcJustEvaluated) {
+                calcExpression = "";
+                calcJustEvaluated = false;
+                document.getElementById('calc-exp').innerText = "";
+            }
+
+            if (calcExpression && !['+', '-', '*', '/'].includes(calcExpression.slice(-1))) {
+                calcExpression += '+';
+            }
+            calcExpression += amount;
+
+            calcUpdateDisplay();
+        }
+    </script>
+<% } %>

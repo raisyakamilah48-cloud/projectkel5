@@ -102,4 +102,68 @@ router.post('/update', upload.single('profile_picture'), async function(req, res
   }
 });
 
+// POST Toggle Calculator
+router.post('/toggle-calculator', function(req, res) {
+  if (!req.session.user) return res.status(401).json({ success: false });
+
+  const userId = req.session.user.id;
+  // Invert the current status stored in session
+  const newStatus = req.session.user.calculator_active ? false : true;
+
+  db.query("UPDATE users SET calculator_active = ? WHERE id = ?", [newStatus, userId], function(err) {
+    if (err) return res.status(500).json({ success: false });
+    
+    req.session.user.calculator_active = newStatus;
+    res.json({ success: true, calculator_active: newStatus });
+  });
+});
+
+// GET User Statistics for Calculator
+router.get('/get-stats', function(req, res) {
+  if (!req.session.user) return res.status(401).json({ success: false });
+
+  const userId = req.session.user.id;
+  
+  const qWallets = "SELECT COALESCE(SUM(balance), 0) as total FROM wallets WHERE user_id = ?";
+  const qIncome = "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = ? AND type = 'income'";
+  const qExpense = "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = ? AND type = 'expense'";
+
+  db.query(qWallets, [userId], function(err1, wRes) {
+    db.query(qIncome, [userId], function(err2, iRes) {
+      db.query(qExpense, [userId], function(err3, eRes) {
+        if (err1 || err2 || err3) return res.status(500).json({ success: false });
+
+        const totalWallet = parseFloat(wRes[0].total);
+        const totalIncome = parseFloat(iRes[0].total);
+        const totalExpense = parseFloat(eRes[0].total);
+
+        // Calculate fallback wallet balance in case user has no wallets
+        const fallbackWallet = totalIncome - totalExpense;
+
+        res.json({
+          success: true,
+          totalWallet: wRes[0].total > 0 ? totalWallet : fallbackWallet,
+          totalIncome: totalIncome,
+          totalExpense: totalExpense
+        });
+      });
+    });
+  });
+});
+
+// GET User Budgets for Calculator
+router.get('/get-budgets', function(req, res) {
+  if (!req.session.user) return res.status(401).json({ success: false });
+
+  const userId = req.session.user.id;
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+
+  // Get budgets for current month
+  db.query("SELECT id, category, amount FROM budgets WHERE user_id = ? AND month = ? AND year = ?", [userId, currentMonth, currentYear], function(err, results) {
+    if (err) return res.status(500).json({ success: false });
+    res.json({ success: true, budgets: results || [] });
+  });
+});
+
 module.exports = router;

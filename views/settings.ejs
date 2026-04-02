@@ -186,9 +186,37 @@
                 </div>
             </form>
 
+            <!-- FITUR TAMBAHAN COLLAPSE -->
+            <div class="collapse-container" id="featuresCollapse" style="margin-bottom: 24px;">
+                <div class="collapse-header" onclick="toggleCollapse('featuresCollapse')">
+                    <span><i class="fas fa-layer-group" style="margin-right:8px; color:var(--primary);"></i> Fitur Tambahan</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse-content">
+                    <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <h4 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 6px;"><i class="fas fa-calculator" style="color: var(--accent); margin-right: 6px;"></i>Kalkulator Pintar</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5;">Aktifkan tombol kalkulator melayang di pojok layar. Kalkulator khusus ini bisa menarik data Saldo Dompet, Pemasukan, dan Pengeluaran Anda secara instan untuk kebutuhan hitung-hitungan cerdas Anda!</p>
+                        </div>
+                        <div style="margin-left: 20px;">
+                            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                              <input type="checkbox" id="calculatorToggle" <%= (user && user.calculator_active) ? 'checked' : '' %> onchange="toggleCalculator()" style="opacity: 0; width: 0; height: 0;">
+                              <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px;">
+                                <span class="slider-circle" style="position: absolute; content: ''; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+                              </span>
+                            </label>
+                            <style>
+                                input:checked + .slider { background-color: var(--success); }
+                                input:checked + .slider .slider-circle { transform: translateX(24px); }
+                            </style>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- SYARAT & KETENTUAN COLLAPSE -->
             <div class="collapse-container" id="tncCollapse">
-                <div class="collapse-header" onclick="toggleCollapse()">
+                <div class="collapse-header" onclick="toggleCollapse('tncCollapse')">
                     <span><i class="fas fa-file-contract" style="margin-right:8px; color:var(--primary);"></i> Syarat & Ketentuan Penggunaan</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
@@ -226,8 +254,30 @@
         }
 
         // Collapse functionality
-        function toggleCollapse() {
-            document.getElementById('tncCollapse').classList.toggle('active');
+        function toggleCollapse(id) {
+            document.getElementById(id).classList.toggle('active');
+        }
+
+        // Toggle Calculator Features
+        function toggleCalculator() {
+            var isChecked = document.getElementById('calculatorToggle').checked;
+            fetch('/settings/toggle-calculator', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ active: isChecked })
+            }).then(r => r.json()).then(data => {
+                if(data.success) {
+                    // Coba reload halaman supaya partial kalkulator ke-render
+                    window.location.reload();
+                } else {
+                    alert('Gagal memperbarui pengaturan Kalkulator.');
+                    document.getElementById('calculatorToggle').checked = !isChecked; // revert
+                }
+            }).catch(e => {
+                console.error(e);
+                alert('Terjadi kesalahan jaringan.');
+                document.getElementById('calculatorToggle').checked = !isChecked; // revert
+            });
         }
     </script>
 </body>

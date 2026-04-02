@@ -27,7 +27,8 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         password VARCHAR(255) NOT NULL,
         role VARCHAR(20) DEFAULT 'user',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        profile_picture VARCHAR(255) DEFAULT NULL
+        profile_picture VARCHAR(255) DEFAULT NULL,
+        calculator_active BOOLEAN DEFAULT FALSE
       )
     `;
     
@@ -56,6 +57,9 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         });
         connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(255) DEFAULT NULL", function(e) {
           if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (profile_picture):", e.message);
+        });
+        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS calculator_active BOOLEAN DEFAULT FALSE", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (calculator_active):", e.message);
         });
       }
     });
