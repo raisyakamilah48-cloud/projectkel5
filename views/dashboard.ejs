@@ -493,11 +493,14 @@
             <div class="charts-row">
                 <!-- Line Chart: Monthly Trend -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header" style="justify-content: space-between;">
                         <div>
                             <div class="card-title">Tren Keuangan Bulanan</div>
                             <div class="card-subtitle">Pemasukan vs Pengeluaran</div>
                         </div>
+                        <button id="btnToggleChart" onclick="toggleChartType()" style="background: var(--bg); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; font-weight: 600;">
+                            <i class="fas fa-chart-bar"></i> Bar Chart
+                        </button>
                     </div>
                     <div class="chart-wrap">
                         <% if (monthlyData.length > 0) { %>
@@ -620,68 +623,141 @@
             const incomeData = sorted.map(function(k) { return monthMap[k].income; });
             const expenseData = sorted.map(function(k) { return monthMap[k].expense; });
 
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Pemasukan',
-                            data: incomeData,
-                            backgroundColor: 'rgba(16, 185, 129, 0.85)',
-                            borderColor: '#10b981',
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            barPercentage: 0.5,
-                            categoryPercentage: 0.7
-                        },
-                        {
-                            label: 'Pengeluaran',
-                            data: expenseData,
-                            backgroundColor: 'rgba(239, 68, 68, 0.85)',
-                            borderColor: '#ef4444',
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            barPercentage: 0.5,
-                            categoryPercentage: 0.7
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rectRounded', padding: 20, font: { size: 12, family: 'Inter' } } },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            titleFont: { family: 'Inter', size: 13 },
-                            bodyFont: { family: 'Inter', size: 12 },
-                            padding: 12,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: function(ctx) { return ctx.dataset.label + ': Rp ' + ctx.parsed.y.toLocaleString('id-ID'); }
+            window.currentChartType = 'bar'; // Default to bar if 1 month
+            if (labels.length > 1) {
+                window.currentChartType = 'line'; // Auto switch to line if multiple months
+            }
+
+            // Function to render chart cleanly
+            window.renderTrendChart = function(type) {
+                if (window.trendChartInstance) {
+                    window.trendChartInstance.destroy();
+                }
+
+                const ctx = document.getElementById('trendChart').getContext('2d');
+                
+                // Colors logic based on type
+                let bgIncome, bgExpense, borderW;
+                if (type === 'line') {
+                    bgIncome = ctx.createLinearGradient(0, 0, 0, 300);
+                    bgIncome.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
+                    bgIncome.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+                    
+                    bgExpense = ctx.createLinearGradient(0, 0, 0, 300);
+                    bgExpense.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
+                    bgExpense.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
+                    
+                    borderW = 3;
+                } else {
+                    bgIncome = 'rgba(16, 185, 129, 0.9)';
+                    bgExpense = 'rgba(239, 68, 68, 0.9)';
+                    borderW = 0; // Solid modern bars without thick borders
+                }
+
+                // Calculate max to give breathing room on top
+                const maxVal = Math.max(...incomeData, ...expenseData);
+
+                window.trendChartInstance = new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Pemasukan',
+                                data: incomeData,
+                                backgroundColor: bgIncome,
+                                borderColor: '#10b981',
+                                borderWidth: borderW,
+                                borderRadius: type === 'bar' ? 6 : 0,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.8,
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#10b981',
+                                pointBorderWidth: 2,
+                                pointRadius: type === 'line' ? 5 : 0,
+                                pointHoverRadius: 7,
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Pengeluaran',
+                                data: expenseData,
+                                backgroundColor: bgExpense,
+                                borderColor: '#ef4444',
+                                borderWidth: borderW,
+                                borderRadius: type === 'bar' ? 6 : 0,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.8,
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#ef4444',
+                                pointBorderWidth: 2,
+                                pointRadius: type === 'line' ? 5 : 0,
+                                pointHoverRadius: 7,
+                                fill: true,
+                                tension: 0.4
                             }
-                        }
+                        ]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
-                            ticks: {
-                                font: { family: 'Inter', size: 11 },
-                                color: '#94a3b8',
-                                callback: function(v) { return 'Rp ' + (v/1000000).toFixed(1) + 'jt'; }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'rectRounded', padding: 20, font: { size: 12, family: 'Inter' } } },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { family: 'Inter', size: 13 },
+                                bodyFont: { family: 'Inter', size: 12 },
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(ctx) { return ctx.dataset.label + ': Rp ' + ctx.parsed.y.toLocaleString('id-ID'); }
+                                }
                             }
                         },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Inter', size: 11 }, color: '#94a3b8' }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: maxVal > 0 ? maxVal * 1.15 : undefined,
+                                grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
+                                ticks: {
+                                    font: { family: 'Inter', size: 11 },
+                                    color: '#94a3b8',
+                                    callback: function(v) { return 'Rp ' + (v/1000000).toFixed(1) + 'jt'; }
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Inter', size: 11 }, color: '#94a3b8' }
+                            }
                         }
                     }
+                });
+            };
+
+            // First render
+            renderTrendChart(window.currentChartType);
+            
+            // Set initial button HTML
+            const btn = document.getElementById('btnToggleChart');
+            if (window.currentChartType === 'bar') {
+                btn.innerHTML = '<i class="fas fa-chart-line"></i> Line Chart';
+            } else {
+                btn.innerHTML = '<i class="fas fa-chart-bar"></i> Bar Chart';
+            }
+
+            // Toggle function hook attached to window
+            window.toggleChartType = function() {
+                window.currentChartType = window.currentChartType === 'line' ? 'bar' : 'line';
+                
+                if (window.currentChartType === 'bar') {
+                    btn.innerHTML = '<i class="fas fa-chart-line"></i> Line Chart';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-chart-bar"></i> Bar Chart';
                 }
-            });
+                
+                renderTrendChart(window.currentChartType);
+            };
         })();
         <% } %>
 

@@ -29,6 +29,11 @@
     </nav>
 
     <div class="sidebar-footer">
+        <div style="margin-bottom: 12px; display: flex; justify-content: center;">
+            <button id="theme-btn" onclick="toggleGlobalTheme()" style="background: transparent; border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; font-size: 0.75rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 100%;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)';" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-secondary)';">
+                <i class="fas fa-moon" id="theme-icon" style="margin-right: 8px; font-size: 0.9rem;"></i> <span id="theme-text">Mode Gelap</span>
+            </button>
+        </div>
         <div class="user-card">
             <div class="user-avatar" style="overflow:hidden;">
                 <% if (typeof user !== 'undefined' && user && user.profile_picture) { %>
@@ -49,3 +54,5 @@
 <% if (typeof user !== 'undefined' && user && user.role !== 'admin') { %>
 <%- include('calculator') %>
 <% } %>
+
+<%- include('theme_manager') %>
