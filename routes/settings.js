@@ -166,4 +166,26 @@ router.get('/get-budgets', function(req, res) {
   });
 });
 
+// POST Submit Feedback
+router.post('/submit-feedback', function(req, res) {
+  if (!req.session.user) return res.redirect('/auth/login');
+
+  const userId = req.session.user.id;
+  const message = req.body.message;
+
+  if (!message || message.trim() === '') {
+    req.session.error = "Pesan saran tidak boleh kosong.";
+    return res.redirect('/settings');
+  }
+
+  db.query("INSERT INTO feedbacks (user_id, message) VALUES (?, ?)", [userId, message], function(err) {
+    if (err) {
+      req.session.error = "Gagal mengirimkan saran. Silakan coba lagi.";
+    } else {
+      req.session.success = "Terima kasih! Saran Anda telah terkirim kepada kami.";
+    }
+    res.redirect('/settings');
+  });
+});
+
 module.exports = router;

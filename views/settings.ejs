@@ -214,6 +214,29 @@
                 </div>
             </div>
 
+            <% if (user && user.role !== 'admin') { %>
+            <!-- KOTAK SARAN & FEEDBACK COLLAPSE -->
+            <div class="collapse-container" id="feedbackCollapse" style="margin-bottom: 24px;">
+                <div class="collapse-header" onclick="toggleCollapse('feedbackCollapse')">
+                    <span><i class="fas fa-comment-dots" style="margin-right:8px; color:var(--secondary);"></i> Saran & Pengembangan Aplikasi</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse-content">
+                    <div style="padding-top: 16px;">
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom: 16px;">Punya ide perbaikan? Sampaikan saran atau keluhan Anda langsung kepada tim Admin kami.</p>
+                        <form action="/settings/submit-feedback" method="POST">
+                            <div class="form-group">
+                                <textarea name="message" class="form-input" rows="3" placeholder="Tuliskan ide/keluhan/fitur yang Anda harapkan..." required style="resize: vertical;"></textarea>
+                            </div>
+                            <div style="text-align: right; padding-bottom: 8px;">
+                                <button type="submit" style="background-color: var(--primary); color: white; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"><i class="fas fa-paper-plane" style="margin-right:6px;"></i> Kirim Saran</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
             <!-- SYARAT & KETENTUAN COLLAPSE -->
             <div class="collapse-container" id="tncCollapse">
                 <div class="collapse-header" onclick="toggleCollapse('tncCollapse')">

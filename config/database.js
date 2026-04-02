@@ -61,6 +61,20 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS calculator_active BOOLEAN DEFAULT FALSE", function(e) {
           if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (calculator_active):", e.message);
         });
+
+        // INJECT DEFAULT ADMIN ACCOUNT
+        const bcrypt = require('bcrypt');
+        connection.query("SELECT id FROM users WHERE email = 'admin@cekuangku.com'", function(err, result) {
+            if (!err && result.length === 0) {
+                bcrypt.hash('admin123', 10, function(errHash, hash) {
+                    if (!errHash) {
+                        connection.query("INSERT INTO users (nama, email, password, role) VALUES ('Administrator', 'admin@cekuangku.com', ?, 'admin')", [hash], function(insertErr) {
+                            if (!insertErr) console.log("🌟 Default Admin account created! (admin@cekuangku.com)");
+                        });
+                    }
+                });
+            }
+        });
       }
     });
 
@@ -144,6 +158,22 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
           }
         });
       }
+    });
+
+    // Auto-create tabel feedbacks
+    const createFeedbacksTable = `
+      CREATE TABLE IF NOT EXISTS feedbacks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        message TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    `;
+
+    connection.query(createFeedbacksTable, function(err) {
+      if (err) console.log("Error buat tabel feedbacks:", err.message);
+      else console.log("✅ Tabel 'feedbacks' siap.");
     });
 
   }
