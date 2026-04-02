@@ -434,36 +434,8 @@
 <body>
 
     <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-icon"><img src="/images/asset-avatar/Main.png" alt="CekUangku" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
-            <span class="brand-name">CekUangku</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-label">Menu Utama</div>
-            <a href="/dashboard" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="/transactions" class="nav-link active"><i class="fas fa-exchange-alt"></i> Transaksi</a>
-            <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a>
-            <a href="/budget" class="nav-link"><i class="fas fa-bullseye"></i> Anggaran</a>
-            <a href="/categories" class="nav-link"><i class="fas fa-tags"></i> Kategori</a>
-
-            <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
-            <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
-            <a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> Tentang</a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar"><%= (user && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
-                <div class="user-info">
-                    <div class="name"><%= (user && user.nama) ? user.nama : 'User' %></div>
-                    <div class="status">Online</div>
-                </div>
-                <a href="/auth/logout" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </div>
-    </aside>
+    <!-- ===== SIDEBAR ===== -->
+    <%- include('partials/sidebar', { activeMenu: 'transactions' }) %>
 
     <!-- ===== MAIN AREA ===== -->
     <main class="main-area">
@@ -553,6 +525,25 @@
                             <% } %>
                         </div>
 
+                        <!-- Wallet Source -->
+                        <div class="form-group">
+                            <label class="form-label">Sumber Dompet</label>
+                            <% if (typeof wallets !== 'undefined' && wallets.length > 0) { %>
+                                <select name="wallet_id" class="form-input" required>
+                                    <% wallets.forEach(function(w) { %>
+                                        <option value="<%= w.id %>" <%= w.is_default ? 'selected' : '' %>>
+                                            <%= w.name %> (Rp <%= parseFloat(w.balance).toLocaleString('id-ID') %>)
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            <% } else { %>
+                                <div style="padding: 10px; background: var(--danger-light); color: var(--danger); border-radius: 8px; font-size: 0.85rem;">
+                                    <i class="fas fa-exclamation-circle"></i> Anda belum memiliki dompet. 
+                                    <a href="/wallets" style="color:var(--danger); font-weight:bold; text-decoration:underline;">Buat dompet</a> terlebih dahulu.
+                                </div>
+                            <% } %>
+                        </div>
+
                         <!-- Description -->
                         <div class="form-group">
                             <label class="form-label">Deskripsi</label>
@@ -599,6 +590,11 @@
                                         <div class="trans-desc">
                                             <div class="desc-text"><%= t.description %></div>
                                             <div class="desc-meta">
+                                                <% if (t.wallet_name) { %>
+                                                <span style="display:inline-block; padding:2px 8px; border-radius:12px; background:<%= t.wallet_color ? t.wallet_color+'20' : '#f1f5f9' %>; color:<%= t.wallet_color || '#64748b' %>; font-weight:600; margin-right:4px;">
+                                                    <i class="fas fa-wallet" style="margin-right:2px;"></i> <%= t.wallet_name %>
+                                                </span>
+                                                <% } %>
                                                 <i class="fas fa-tag" style="font-size:0.65rem;"></i> <%= t.category || 'Lainnya' %> 
                                                 &nbsp;•&nbsp; 
                                                 <i class="fas fa-calendar" style="font-size:0.65rem;"></i> <%= new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>

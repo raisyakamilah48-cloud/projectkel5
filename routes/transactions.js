@@ -21,7 +21,7 @@ router.get('/', cekLogin, function(req, res, next) {
 
         // Query 2: Ambil transaksi user
         db.query(
-            "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
+            "SELECT transactions.*, wallets.name AS wallet_name, wallets.color AS wallet_color FROM transactions LEFT JOIN wallets ON transactions.wallet_id = wallets.id WHERE transactions.user_id = ? ORDER BY date DESC",
             [userId],
             function(err, results) {
                 if (err) {
@@ -40,12 +40,16 @@ router.get('/', cekLogin, function(req, res, next) {
                 db.query(qStats, [userId], function(err, stats) {
                     if (err) { console.log("Stats Error:", err); stats = [{ totalIncome: 0, totalExpense: 0, totalCount: 0 }]; }
 
-                    res.render('transactions', {
-                        title: 'Transaksi',
-                        user: req.session.user,
-                        transactions: results,
-                        categories: categories || [],
-                        stats: stats ? stats[0] : { totalIncome: 0, totalExpense: 0, totalCount: 0 }
+                    // Query 4: Ambil wallets milik user untuk dropdown pilih dompet
+                    db.query("SELECT * FROM wallets WHERE user_id = ? ORDER BY is_default DESC", [userId], function(err, wallets) {
+                        res.render('transactions', {
+                            title: 'Transaksi',
+                            user: req.session.user,
+                            transactions: results,
+                            categories: categories || [],
+                            wallets: wallets || [],
+                            stats: stats ? stats[0] : { totalIncome: 0, totalExpense: 0, totalCount: 0 }
+                        });
                     });
                 });
             }
@@ -56,19 +60,31 @@ router.get('/', cekLogin, function(req, res, next) {
 // PROSES TAMBAH TRANSAKSI (POST)
 router.post('/add', cekLogin, function(req, res, next) {
     const userId = req.session.user.id;
-    const { type, category, description, amount } = req.body;
+    const { type, category, description, amount, wallet_id } = req.body;
 
     if (!description || !amount) {
         return res.send("Data tidak lengkap");
     }
 
-    const sql = "INSERT INTO transactions (user_id, type, category, description, amount) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [userId, type, category, description, amount], function(err, result) {
+    const walletIdVal = wallet_id ? wallet_id : null;
+
+    const sql = "INSERT INTO transactions (user_id, type, category, description, amount, wallet_id) VALUES (?, ?, ?, ?, ?, ?)";
+    db.query(sql, [userId, type, category, description, amount, walletIdVal], function(err, result) {
         if (err) {
             console.error("Gagal Insert:", err);
             return res.send("Gagal menyimpan transaksi.");
         }
-        res.redirect('/transactions');
+
+        // Jika terhubung dengan dompet, update saldo dompet
+        if (walletIdVal) {
+            let modifier = (type === 'income') ? parseFloat(amount) : -parseFloat(amount);
+            db.query("UPDATE wallets SET balance = balance + ? WHERE id = ? AND user_id = ?", [modifier, walletIdVal, userId], function(err2) {
+                if (err2) console.error("Gagal update saldo dompet:", err2);
+                res.redirect('/transactions');
+            });
+        } else {
+            res.redirect('/transactions');
+        }
     });
 });
 
@@ -77,12 +93,29 @@ router.post('/delete/:id', cekLogin, function(req, res, next) {
     const userId = req.session.user.id;
     const transId = req.params.id;
 
-    db.query("DELETE FROM transactions WHERE id = ? AND user_id = ?", [transId, userId], function(err) {
-        if (err) {
-            console.error("Gagal Hapus:", err);
-            return res.send("Gagal menghapus transaksi.");
-        }
-        res.redirect('/transactions');
+    // Ambil info transaksi sebelum dihapus untuk restore saldo dompet
+    db.query("SELECT * FROM transactions WHERE id = ? AND user_id = ?", [transId, userId], function(err, results) {
+        if (err || results.length === 0) return res.redirect('/transactions');
+        
+        const trans = results[0];
+        
+        db.query("DELETE FROM transactions WHERE id = ? AND user_id = ?", [transId, userId], function(err2) {
+            if (err2) {
+                console.error("Gagal Hapus:", err2);
+                return res.send("Gagal menghapus transaksi.");
+            }
+            
+            // Restore saldo jika ada wallet_id yang terasosiasi
+            if (trans.wallet_id) {
+                // Kebalikan dari operasi awal: pemasukan dulu + sekarang dikurangi. pengeluaran dulu - sekarang ditambah.
+                let modifier = (trans.type === 'income') ? -parseFloat(trans.amount) : parseFloat(trans.amount);
+                db.query("UPDATE wallets SET balance = balance + ? WHERE id = ? AND user_id = ?", [modifier, trans.wallet_id, userId], function(err3) {
+                    res.redirect('/transactions');
+                });
+            } else {
+                res.redirect('/transactions');
+            }
+        });
     });
 });
 

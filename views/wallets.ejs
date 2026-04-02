@@ -1,0 +1,321 @@
+<!-- views/wallets.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Dompet - CekUangku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3730a3;
+            --accent: #06b6d4;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        .main-area { margin-left: var(--sidebar-w); flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .top-header { background: var(--card-bg); padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .page-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+        .page-title p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+
+        .content-area { padding: 28px 32px; }
+
+        /* WALLET GRID */
+        .wallet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 32px; }
+
+        /* CREDIT CARD STYLE */
+        .wallet-card {
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .wallet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Shine effect */
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: shine 6s infinite;
+        }
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .wallet-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
+        .wallet-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+        .wallet-chip { width: 45px; height: 32px; background: linear-gradient(135deg, #fcd34d, #f59e0b); border-radius: 6px; position: relative; overflow: hidden; box-shadow: inset 0 0 5px rgba(0,0,0,0.2); }
+        .wallet-chip::after { content: ''; position: absolute; top: 10px; bottom: 10px; left: 0; right: 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .wallet-chip::before { content: ''; position: absolute; left: 15px; right: 15px; top: 0; bottom: 0; border-left: 1px solid rgba(0,0,0,0.1); border-right: 1px solid rgba(0,0,0,0.1); }
+
+        .wallet-card-bg-shape {
+            position: absolute; right: -20px; top: -20px;
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+        .wallet-card-bg-shape2 {
+            position: absolute; right: 40px; bottom: -40px;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+        }
+
+        .wallet-balance { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; margin-top: 20px; position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        
+        .wallet-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 2; margin-top: 20px; }
+        .wallet-status { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; font-weight: 600; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
+        .wallet-actions { display: flex; gap: 8px; }
+        
+        .btn-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.2); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+        .btn-icon:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+
+        /* ADD WALLET CARD */
+        .add-wallet-card {
+            border-radius: 20px;
+            border: 2px dashed var(--border);
+            background: rgba(255,255,255,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+        .add-wallet-card:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        .add-wallet-card i { font-size: 2rem; margin-bottom: 12px; }
+        .add-wallet-card span { font-weight: 600; font-size: 1rem; }
+
+        /* FORM ADD DOMPET */
+        .form-card { background: var(--card-bg); border-radius: 16px; padding: 24px; border: 1px solid var(--border); max-width: 500px; margin-top: 20px; display: none; animation: slideUp .3s ease forwards; }
+        .form-card.active { display: block; }
+        .form-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.95rem; font-family: 'Inter', sans-serif; outline: none; transition: all 0.2s; }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
+        
+        /* Color Picker */
+        .color-options { display: flex; gap: 12px; margin-top: 8px; }
+        .color-option { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
+        .color-option.active { border-color: var(--text-primary); transform: scale(1.1); }
+        
+        .btn-submit { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: white; background: linear-gradient(135deg, var(--primary), var(--accent)); cursor: pointer; transition: all 0.3s; margin-top: 10px; font-size: 1rem; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3); }
+        .btn-cancel { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; color: var(--text-secondary); background: #f1f5f9; cursor: pointer; transition: all 0.3s; margin-top: 10px; font-size: 1rem; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--card-bg);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform .3s ease;
+        }
+        .sidebar-brand { padding: 24px 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-brand .brand-icon { width: 52px; height: 52px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); overflow: hidden; }
+        .sidebar-brand .brand-name { font-size: 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); padding: 12px 16px 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all .2s ease; margin-bottom: 2px; }
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active { background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(6, 182, 212, 0.05)); color: var(--primary); font-weight: 600; }
+        .nav-link.active i { color: var(--primary); }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+        
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; }
+        .user-info { flex: 1; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .user-info .status { font-size: 0.75rem; color: #10b981; display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
+        .btn-logout { color: var(--text-muted); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: #ef4444; }
+
+        @media(max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+        }
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR PARTIAL -->
+    <%- include('partials/sidebar', { activeMenu: 'wallets' }) %>
+
+    <main class="main-area">
+        <header class="top-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars" style="font-size:1.2rem;"></i>
+                </button>
+                <div class="page-title">
+                    <h2><i class="fas fa-wallet" style="color:var(--primary);margin-right:8px;"></i>Kelola Dompet</h2>
+                    <p>Atur sumber dana untuk transaksi kamu (<%= wallets.length %>/5)</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="wallet-grid">
+                <% wallets.forEach(function(w) { %>
+                    <div class="wallet-card" style="background: <%= w.color %>; box-shadow: 0 10px 20px <%= w.color %>40;">
+                        <div class="wallet-card-bg-shape"></div>
+                        <div class="wallet-card-bg-shape2"></div>
+                        <div class="wallet-top">
+                            <div>
+                                <div class="wallet-chip"></div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="wallet-name"><%= w.name %></div>
+                                <i class="fab fa-cc-visa" style="font-size: 1.5rem; opacity: 0.8; margin-top: 4px;"></i>
+                            </div>
+                        </div>
+                        <div class="wallet-balance">
+                            Rp <%= parseFloat(w.balance).toLocaleString('id-ID') %>
+                        </div>
+                        <div class="wallet-bottom">
+                            <div class="wallet-status">
+                                <% if (w.is_default) { %>
+                                    <i class="fas fa-check-circle"></i> Utama
+                                <% } else { %>
+                                    Dompet
+                                <% } %>
+                            </div>
+                            <div class="wallet-actions">
+                                <% if (!w.is_default) { %>
+                                    <form action="/wallets/set_default/<%= w.id %>" method="POST" style="margin:0;">
+                                        <button type="submit" class="btn-icon" title="Jadikan utama"><i class="fas fa-star"></i></button>
+                                    </form>
+                                <% } %>
+                                <form action="/wallets/delete/<%= w.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus dompet ini? Transaksi yang sudah tercatat tidak akan ikut terhapus.')">
+                                    <button type="submit" class="btn-icon" style="background: rgba(239, 68, 68, 0.4);" title="Hapus"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+
+                <% if (wallets.length < 5) { %>
+                    <div class="add-wallet-card" onclick="toggleAddForm()">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Dompet</span>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- FORM TAMBAH -->
+            <div class="form-card" id="addFormCard">
+                <div class="form-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> Tambah Dompet Baru</div>
+                <form action="/wallets/add" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Nama Dompet</label>
+                        <input type="text" name="name" class="form-input" placeholder="Misal: Pribadi, BNI, OVO" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Saldo Awal</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:14px; top:12px; color:var(--text-secondary); font-weight:600;">Rp</span>
+                            <input type="text" id="balanceDisplay" class="form-input" placeholder="0" style="padding-left: 45px;" oninput="formatRupiah(this)" autocomplete="off">
+                            <input type="hidden" name="balance" id="balanceRaw" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pilih Warna</label>
+                        <input type="hidden" name="color" id="walletColor" value="#4361ee">
+                        <div class="color-options">
+                            <div class="color-option active" style="background:#4361ee;" onclick="selectColor(this, '#4361ee')"></div>
+                            <div class="color-option" style="background:#10b981;" onclick="selectColor(this, '#10b981')"></div>
+                            <div class="color-option" style="background:#f59e0b;" onclick="selectColor(this, '#f59e0b')"></div>
+                            <div class="color-option" style="background:#ef4444;" onclick="selectColor(this, '#ef4444')"></div>
+                            <div class="color-option" style="background:#8b5cf6;" onclick="selectColor(this, '#8b5cf6')"></div>
+                            <div class="color-option" style="background:#1e293b;" onclick="selectColor(this, '#1e293b')"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn-cancel" onclick="toggleAddForm()">Batal</button>
+                        <button type="submit" class="btn-submit">Simpan</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function toggleAddForm() {
+            document.getElementById('addFormCard').classList.toggle('active');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function selectColor(el, color) {
+            document.getElementById('walletColor').value = color;
+            document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Format Rupiah function
+        function formatRupiah(el) {
+            // Pick only numbers
+            let value = el.value.replace(/\D/g, '');
+            // Save underlying integer to hidden input
+            document.getElementById('balanceRaw').value = value || 0;
+            // Format for display
+            if (value) {
+                el.value = parseInt(value).toLocaleString('id-ID');
+            } else {
+                el.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

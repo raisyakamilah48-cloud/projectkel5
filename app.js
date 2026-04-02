@@ -14,6 +14,7 @@ var reportsRouter = require('./routes/reports');
 var adminRouter = require('./routes/admin');
 var budgetRouter = require('./routes/budget');
 var categoriesRouter = require('./routes/categories');
+var walletsRouter = require('./routes/wallets');
 
 var app = express();
 
@@ -76,6 +77,7 @@ app.use('/dashboard', function(req, res, next) {
 app.use('/transactions', transactionsRouter);
 app.use('/reports', reportsRouter);
 app.use('/categories', categoriesRouter);
+app.use('/wallets', walletsRouter);
 
 // catch 404
 app.use(function(req, res, next) {

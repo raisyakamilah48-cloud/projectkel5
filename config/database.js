@@ -87,6 +87,50 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
       if (err) console.log("Error buat tabel budgets:", err.message);
       else console.log("✅ Tabel 'budgets' siap.");
     });
+    // Auto-create tabel wallets
+    const createWalletsTable = `
+      CREATE TABLE IF NOT EXISTS wallets (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        balance DECIMAL(15,2) DEFAULT 0,
+        color VARCHAR(20) DEFAULT '#4F46E5',
+        is_default BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    `;
+
+    connection.query(createWalletsTable, function(err) {
+      if (err) console.log("Error buat tabel wallets:", err.message);
+      else {
+        console.log("✅ Tabel 'wallets' siap.");
+        
+        // Auto-create kolom wallet_id di tabel transactions jika belum ada
+        const alterTransactionsWalletId = `
+          ALTER TABLE transactions 
+          ADD COLUMN IF NOT EXISTS wallet_id INT DEFAULT NULL AFTER type;
+        `;
+        connection.query(alterTransactionsWalletId, function(err2) {
+          if (err2 && err2.code !== 'ER_DUP_FIELDNAME') console.log("Error alter tabel transactions (wallet_id):", err2.message);
+          else {
+            console.log("✅ Kolom 'wallet_id' di tabel transactions siap.");
+            
+            // Tambahkan foreign key constraint
+            const alterTransactionsFk = `
+              ALTER TABLE transactions 
+              ADD CONSTRAINT fk_transaction_wallet
+              FOREIGN KEY (wallet_id) REFERENCES wallets(id) ON DELETE SET NULL;
+            `;
+            connection.query(alterTransactionsFk, function(err3) {
+              if (err3 && err3.code !== 'ER_DUP_KEY' && err3.code !== 'ER_CANT_CREATE_TABLE') console.log("Error tambah FK wallet_id:", err3.message);
+              else console.log("✅ Foreign Key 'wallet_id' siap.");
+            });
+          }
+        });
+      }
+    });
+
   }
   
   // Tutup koneksi init (yang tanpa database)

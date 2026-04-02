@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS categories (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- =============================================
+-- TABEL: wallets
+-- Menyimpan dompet / sumber dana per user
+-- =============================================
+CREATE TABLE IF NOT EXISTS wallets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  balance DECIMAL(15,2) DEFAULT 0,
+  color VARCHAR(20) DEFAULT '#4F46E5',
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- =============================================
 -- TABEL: transactions
 -- Menyimpan semua transaksi pemasukan & pengeluaran
 -- =============================================
@@ -52,11 +67,13 @@ CREATE TABLE IF NOT EXISTS transactions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   type VARCHAR(50) NOT NULL COMMENT 'income atau expense',
+  wallet_id INT DEFAULT NULL COMMENT 'Sumber dana',
   category VARCHAR(100) COMMENT 'Nama kategori transaksi',
   description TEXT COMMENT 'Deskripsi transaksi',
   amount DECIMAL(15,2) NOT NULL COMMENT 'Jumlah uang',
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (wallet_id) REFERENCES wallets(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- =============================================

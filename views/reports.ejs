@@ -346,36 +346,8 @@
 <body>
 
     <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-icon"><img src="/images/asset-avatar/Main.png" alt="CekUangku" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
-            <span class="brand-name">CekUangku</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-label">Menu Utama</div>
-            <a href="/dashboard" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="/transactions" class="nav-link"><i class="fas fa-exchange-alt"></i> Transaksi</a>
-            <a href="/reports" class="nav-link active"><i class="fas fa-chart-bar"></i> Laporan</a>
-            <a href="/budget" class="nav-link"><i class="fas fa-bullseye"></i> Anggaran</a>
-            <a href="/categories" class="nav-link"><i class="fas fa-tags"></i> Kategori</a>
-
-            <div class="nav-label" style="margin-top: 16px;">Lainnya</div>
-            <a href="/" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
-            <a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> Tentang</a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar"><%= (user && user.nama) ? user.nama.charAt(0).toUpperCase() : 'U' %></div>
-                <div class="user-info">
-                    <div class="name"><%= (user && user.nama) ? user.nama : 'User' %></div>
-                    <div class="status">Online</div>
-                </div>
-                <a href="/auth/logout" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </div>
-    </aside>
+    <!-- ===== SIDEBAR ===== -->
+    <%- include('partials/sidebar', { activeMenu: 'reports' }) %>
 
     <!-- ===== MAIN AREA ===== -->
     <main class="main-area">
