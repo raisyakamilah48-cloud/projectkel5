@@ -56,23 +56,29 @@ router.get('/', function(req, res, next) {
             db.query(qMonthly, [userId], function(err, monthlyData) {
               if (err) { console.log("Dashboard Monthly Error:", err); monthlyData = []; }
 
-              // Hitung totals
-              const totalIncome = incomeResult ? parseFloat(incomeResult[0].total) : 0;
-              const totalExpense = expenseResult ? parseFloat(expenseResult[0].total) : 0;
-              const totalBalance = totalIncome - totalExpense;
-              const transactionCount = countResult ? countResult[0].total : 0;
+              // Query 7: Wallets Total Balance
+              const qWalletLimit = "SELECT COALESCE(SUM(balance), 0) as total FROM wallets WHERE user_id = ?";
+              db.query(qWalletLimit, [userId], function(err, walletResult) {
+                if (err) { console.log("Dashboard Wallet Error:", err); }
 
-              // Render dashboard dengan semua data
-              res.render('dashboard', {
-                title: 'Dashboard',
-                user: userData,
-                totalBalance: totalBalance,
-                totalIncome: totalIncome,
-                totalExpense: totalExpense,
-                transactionCount: transactionCount,
-                recentTransactions: recentTransactions || [],
-                categoryData: categoryData || [],
-                monthlyData: monthlyData || []
+                // Hitung totals
+                const totalIncome = incomeResult ? parseFloat(incomeResult[0].total) : 0;
+                const totalExpense = expenseResult ? parseFloat(expenseResult[0].total) : 0;
+                const totalBalance = walletResult && walletResult[0].total ? parseFloat(walletResult[0].total) : (totalIncome - totalExpense);
+                const transactionCount = countResult ? countResult[0].total : 0;
+
+                // Render dashboard dengan semua data
+                res.render('dashboard', {
+                  title: 'Dashboard',
+                  user: userData,
+                  totalBalance: totalBalance,
+                  totalIncome: totalIncome,
+                  totalExpense: totalExpense,
+                  transactionCount: transactionCount,
+                  recentTransactions: recentTransactions || [],
+                  categoryData: categoryData || [],
+                  monthlyData: monthlyData || []
+                });
               });
             });
           });

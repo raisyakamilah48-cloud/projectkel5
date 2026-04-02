@@ -15,6 +15,7 @@ var adminRouter = require('./routes/admin');
 var budgetRouter = require('./routes/budget');
 var categoriesRouter = require('./routes/categories');
 var walletsRouter = require('./routes/wallets');
+var settingsRouter = require('./routes/settings');
 
 var app = express();
 
@@ -78,6 +79,7 @@ app.use('/transactions', transactionsRouter);
 app.use('/reports', reportsRouter);
 app.use('/categories', categoriesRouter);
 app.use('/wallets', walletsRouter);
+app.use('/settings', settingsRouter);
 
 // catch 404
 app.use(function(req, res, next) {

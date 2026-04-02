@@ -25,7 +25,9 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         nama VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        role VARCHAR(20) DEFAULT 'user'
+        role VARCHAR(20) DEFAULT 'user',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        profile_picture VARCHAR(255) DEFAULT NULL
       )
     `;
     
@@ -46,7 +48,16 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
     // Jalankan di koneksi utama (yang sudah pilih database)
     connection.query(createUsersTable, function(err) {
       if (err) console.log("Error buat tabel users:", err.message);
-      else console.log("✅ Tabel 'users' siap.");
+      else {
+        console.log("✅ Tabel 'users' siap.");
+        // Auto-create kolom tambahan jika sudah ada tabel sebelumnya
+        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at DATETIME DEFAULT CURRENT_TIMESTAMP", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (created_at):", e.message);
+        });
+        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(255) DEFAULT NULL", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (profile_picture):", e.message);
+        });
+      }
     });
 
     connection.query(createTransactionsTable, function(err) {
