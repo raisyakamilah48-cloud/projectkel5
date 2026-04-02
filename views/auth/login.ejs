@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - CekUangku</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="prefetch" href="/auth/register">
     <style>
         :root {
@@ -17,7 +18,33 @@
             --card: #ffffff;
             --ring: rgba(14, 165, 233, 0.2);
             --shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+            --input-bg: #f8fafc;
+            --border-color: rgba(148, 163, 184, 0.5);
         }
+
+        body.dark-mode {
+            --ink: #f0f6fc;
+            --muted: #8b949e;
+            --bg: #0d1117;
+            --card: #161b22;
+            --ring: rgba(14, 165, 233, 0.4);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --input-bg: #0d1117;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --brand-deep: #38bdf8;
+        }
+
+        .theme-toggle {
+            position: absolute; top: 24px; right: 24px;
+            background: transparent; border: 1px solid var(--muted); color: var(--muted);
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0.5; transition: all 0.3s ease; z-index: 100; cursor: pointer; font-size: 1rem;
+        }
+        .theme-toggle:hover { opacity: 1; color: var(--ink); border-color: var(--ink); }
+        .theme-toggle.rotated { transform: rotate(360deg); }
+        
+        body, .form-area, .form-card, .form-control, .btn-secondary, .alert-box { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
 
         * { box-sizing: border-box; }
         html, body {
@@ -295,7 +322,7 @@
             font-weight: 600;
             font-size: 0.9rem;
             margin-bottom: 8px;
-            color: #1e293b;
+            color: var(--ink);
         }
 
         .input-wrap {
@@ -305,18 +332,19 @@
         .form-control {
             width: 100%;
             padding: 12px 44px 12px 44px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
+            border: 1px solid var(--border-color);
             border-radius: 14px;
             font-size: 0.98rem;
             transition: 0.2s ease;
-            background: #f8fafc;
+            background: var(--input-bg);
+            color: var(--ink);
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--brand);
             box-shadow: 0 0 0 4px var(--ring);
-            background: #ffffff;
+            background: var(--card);
         }
 
         .input-icon {
@@ -396,9 +424,9 @@
             margin-top: 14px;
             padding: 12px 16px;
             border-radius: 14px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            background: #ffffff;
-            color: #0f172a;
+            border: 1px solid var(--border-color);
+            background: var(--card);
+            color: var(--ink);
             font-weight: 600;
             cursor: pointer;
         }
@@ -561,7 +589,10 @@
         }
     </style>
 </head>
-<body style="background: #f7f9fc;">
+<body style="background: var(--bg);">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
     <div class="transition-overlay" aria-hidden="true"></div>
 
     <div class="page">
@@ -754,5 +785,32 @@
         })();
     </script>
 
+    <script>
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = themeToggle.querySelector('i');
+            if(!themeToggle || !icon) return;
+            
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                themeToggle.classList.add('rotated');
+                setTimeout(() => { themeToggle.classList.remove('rotated'); }, 300);
+
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

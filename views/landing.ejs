@@ -1,516 +1,523 @@
-<!-- views/landing.ejs -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CekUangku - Kelola Keuangan Cerdas</title>
-    <!-- Font Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    <!-- Font Poppins & Righteous -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- CSS Utama (Jika ada file style.css global) -->
-    <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* =========================================
-           CUSTOM STYLE LANDING PAGE (TEMA BIRU)
-           ========================================= */
         :root {
+            /* Light Theme Variables */
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
             --primary-blue: #4361ee;
             --secondary-blue: #3f37c9;
-            --light-blue: #4cc9f0;
-            --dark-footer: #1a2c55;
+            --light-blue: #e0e7ff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --text-light: #ffffff;
+            --shape-bg: #4cc9f0;
+            --nav-border: rgba(0,0,0,0.05);
+            --card-border: rgba(0,0,0,0.05);
         }
 
+        body.dark-mode {
+            /* Dark Theme Variables */
+            --bg-light: #0d1117;
+            --bg-white: #161b22;
+            --primary-blue: #58a6ff;
+            --secondary-blue: #79c0ff;
+            --light-blue: #1f2937; /* Darker backing */
+            --text-dark: #f0f6fc;
+            --text-muted: #8b949e;
+            --text-light: #ffffff;
+            --shape-bg: #1f6feb;
+            --nav-border: rgba(255,255,255,0.05);
+            --card-border: rgba(255,255,255,0.05);
+        }
+
+        /* Essential color transition for smooth theme switching */
+        body, .landing-nav, .site-footer, .title-box, .feature-card, .value-card, .bg-shape {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { 
-            margin: 0; 
-            padding: 0; 
             font-family: 'Poppins', sans-serif; 
-            background-color: #f8f9fa; 
-            color: #333;
+            background-color: var(--bg-light); 
+            color: var(--text-dark);
             overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
         }
-
-        main {
-            flex: 1;
-        }
-
         a { text-decoration: none; }
 
-        /* --- NAVBAR (LOGO - NAVIGASI - TOMBOL) --- */
+        /* --- NAVBAR --- */
+        .navbar-wrapper {
+            position: fixed; top: 20px; left: 0; width: 100%;
+            z-index: 1000; display: flex; justify-content: center;
+            padding: 0 20px; transition: all 0.3s ease;
+        }
         .landing-nav {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            padding: 15px 50px; 
-            background: white; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
+            background-color: var(--bg-white);
+            width: 100%; max-width: 1200px; border-radius: 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--nav-border);
         }
-        
-        .logo { 
-            font-size: 1.5rem; 
-            font-weight: 700; 
-            color: var(--primary-blue); 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-        }
-
-        /* Menu Navigasi Tengah */
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-
+        .nav-left { display: flex; align-items: center; gap: 40px; }
+        .menu-icon { color: var(--primary-blue); font-size: 1.2rem; cursor: pointer; display: none; }
+        .nav-links { display: flex; gap: 30px; }
         .nav-links a {
-            color: #555;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            position: relative;
+            color: var(--text-dark); font-weight: 600; font-size: 0.95rem;
+            text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { color: var(--primary-blue); }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .logo { 
+            font-size: 1.3rem; font-weight: 800; color: var(--primary-blue); 
+            display: flex; align-items: center; gap: 10px; letter-spacing: 1px;
         }
 
-        .nav-links a:hover {
-            color: var(--primary-blue);
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: transparent; border: none; outline: none;
+            color: var(--text-dark); font-size: 1.2rem; cursor: pointer;
+            width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), color 0.3s, background-color 0.3s;
         }
-
-        /* Tombol Kanan (Auth) */
-        .nav-buttons a {
-            text-decoration: none; 
-            margin-left: 15px; 
-            padding: 10px 25px;
-            border-radius: 8px; 
-            font-weight: 600; 
-            transition: all 0.3s;
-            display: inline-block;
-            font-size: 0.9rem;
-        }
-        
-        .btn-outline-nav { 
-            border: 2px solid var(--primary-blue); 
-            color: var(--primary-blue); 
-            background: transparent;
-        }
-        .btn-outline-nav:hover { 
-            background: var(--primary-blue); 
-            color: white; 
-        }
-        
-        .btn-fill-nav { 
-            background: var(--primary-blue); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
-        }
-        .btn-fill-nav:hover { 
-            background: var(--secondary-blue); 
-            transform: translateY(-2px);
-        }
+        .theme-toggle:hover { background: var(--light-blue); color: var(--primary-blue); transform: scale(1.1) rotate(15deg); }
+        .theme-toggle.rotated { transform: rotate(360deg); } /* Animation class */
 
         /* --- HERO SECTION --- */
         .hero {
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            padding: 80px 50px; 
-            min-height: 80vh; 
-            background: white;
-        }
-        
-        .hero-text { 
-            flex: 1; 
-            padding-right: 50px; 
-            max-width: 600px;
-        }
-        
-        .hero-text h1 { 
-            font-size: 3.5rem; 
-            line-height: 1.2; 
-            margin-bottom: 25px; 
-            color: #1f2937; 
-            font-weight: 700;
-        }
-        
-        .hero-text span {
-            background: linear-gradient(120deg, var(--primary-blue), var(--secondary-blue));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-  }
-        
-        .hero-text p { 
-            font-size: 1.2rem; 
-            color: #6b7280; 
-            margin-bottom: 40px; 
-            line-height: 1.7; 
-        }
-        
-        .hero-cta { 
-            display: flex; 
-            gap: 15px; 
-        }
-        
-        .btn-cta {
-            padding: 15px 35px; 
-            border-radius: 10px; 
-            text-decoration: none;
-            font-weight: 600; 
-            font-size: 1rem; 
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        
-        .btn-primary-cta { 
-            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue)); 
-            color: white; 
-            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4); 
-            border: none;
-        }
-        .btn-primary-cta:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.5);
-        }
-        
-        .btn-secondary-cta { 
-            border: 2px solid #e5e7eb; 
-            color: #374151; 
-            background: white;
-        }
-        .btn-secondary-cta:hover { 
-            border-color: var(--primary-blue); 
-            color: var(--primary-blue); 
+            position: relative; min-height: 100vh; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+            padding: 120px 20px 40px; background-color: var(--bg-light);
         }
 
-        .hero-image { 
-            flex: 1; 
-            text-align: center; 
-            position: relative;
+        .bg-shape { position: absolute; z-index: 0; will-change: transform; transition: opacity 0.5s; }
+        .shape-center {
+            top: 20%; left: -20%; width: 140%; height: 60%;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.05) 0%, rgba(67, 97, 238, 0.15) 100%);
+            clip-path: polygon(0 40%, 100% 0, 100% 60%, 0 100%);
         }
         
-        .hero-illustration {
-            max-width: 100%; 
-            height: auto; 
-            filter: drop-shadow(0 20px 40px rgba(67, 97, 238, 0.15));
-            animation: float 6s ease-in-out infinite;
+        /* Specific opacity adjustments for bright shapes in dark mode */
+        body.dark-mode .shape-center {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.05) 0%, rgba(88, 166, 255, 0.1) 100%);
         }
+
+        .shape-accent { background-color: var(--primary-blue); opacity: 0.8; will-change: transform; }
+        .s-1 { top: -20%; left: 10%; width: 300px; height: 800px; transform: rotate(30deg); opacity: 0.05; background: var(--secondary-blue); position: absolute;}
+        body.dark-mode .s-1 { opacity: 0.02; }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+        .s-2 { bottom: -10%; right: -5%; width: 15%; height: 120%; clip-path: polygon(50% 0, 100% 0, 100% 100%, 0% 100%); background: var(--light-blue); position: absolute; z-index: 0;}
+        body.dark-mode .s-2 { background: rgba(88, 166, 255, 0.05); }
+
+        .dots-pattern {
+            position: absolute; width: 300px; height: 300px;
+            background-image: radial-gradient(var(--primary-blue) 2px, transparent 2px);
+            background-size: 20px 20px; opacity: 0.1; z-index: 0; will-change: transform;
+            transition: opacity 0.5s;
+        }
+        body.dark-mode .dots-pattern { opacity: 0.05; }
+        .dots-1 { top: 15%; right: 15%; }
+        .dots-2 { bottom: 15%; left: 10%; }
+
+        .floating-elem { position: absolute; z-index: 1; will-change: transform; }
+        .box-solid-blue { background: var(--primary-blue); width: 20px; height: 20px; }
+        .box-hollow-blue { border: 3px solid var(--primary-blue); width: 25px; height: 25px; }
+        .box-light-blue { background: var(--light-blue); width: 20px; height: 20px; }
+
+        .f-1 { top: 25%; left: 25%; }
+        .f-2 { top: 15%; right: 25%; border: 3px solid var(--primary-blue); width: 20px; height: 20px; }
+        .f-3 { bottom: 30%; left: 15%; display: flex; flex-direction: column; gap: 5px; }
+        .f-4 { bottom: 35%; right: 20%; display: flex; }
+
+        .hero-avatar {
+            position: absolute;
+            bottom: 0;
+            right: 0%;
+            height: 50vh;
+            max-height: 450px;
+            z-index: 5;
+            object-fit: contain;
+            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.1));
+            will-change: transform;
+        }
+
+        .hero-content {
+            position: relative; z-index: 10; text-align: center;
+            max-width: 800px; color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            animation: fadeIn 1.5s ease-out; will-change: transform;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .title-box {
+            border: 4px solid var(--primary-blue); padding: 40px 60px;
+            margin-bottom: 25px; position: relative; display: inline-block;
+            will-change: transform;
+            background: transparent;
+        }
+
+        .title-box h1 {
+            font-family: 'Righteous', 'Poppins', sans-serif;
+            font-size: 5rem; line-height: 1.1; text-transform: uppercase;
+            letter-spacing: 2px; margin: 0; color: var(--primary-blue);
+        }
+        .title-box h1 span { color: var(--secondary-blue); }
+
+        .hero-desc {
+            font-size: 1.15rem; font-weight: 500; max-width: 600px;
+            margin: 0 auto 40px; line-height: 1.6; color: var(--text-muted);
+            will-change: transform;
+        }
+
+        .hero-cta { will-change: transform; }
+
+        .read-more-btn {
+            background-color: var(--primary-blue); color: var(--text-light);
+            padding: 15px 40px; border-radius: 30px; font-weight: 700;
+            font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
+            display: inline-block; border: 2px solid var(--primary-blue);
+            box-shadow: 0 10px 25px rgba(67,97,238,0.3);
+            transition: all 0.3s;
+        }
+        body.dark-mode .read-more-btn { color: #0d1117; } /* Dark text on bright blue button in dark mode */
+        body.dark-mode .read-more-btn.outline { color: var(--primary-blue); }
+        
+        .read-more-btn:hover {
+            background-color: transparent; border-color: var(--primary-blue);
+            color: var(--primary-blue); transform: translateY(-3px);
+            box-shadow: none;
+        }
+        .read-more-btn.outline {
+            background-color: transparent; border-color: var(--primary-blue);
+            color: var(--primary-blue); margin-left: 15px; box-shadow: none;
+        }
+        .read-more-btn.outline:hover {
+            background-color: var(--primary-blue); color: var(--text-light);
+        }
+        body.dark-mode .read-more-btn.outline:hover { color: #0d1117;}
+
+        .hero-dots { margin-top: 30px; display: flex; justify-content: center; gap: 10px; will-change: transform; }
+        .hero-dots span { width: 10px; height: 10px; background-color: var(--primary-blue); border-radius: 50%; opacity: 0.3; }
+        .hero-dots span.active { background-color: var(--secondary-blue); opacity: 1; }
+
+        .social-icons { margin-top: 60px; display: flex; gap: 20px; will-change: transform; }
+        .social-icons a {
+            width: 45px; height: 45px; background-color: var(--bg-white);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--primary-blue); font-size: 1.2rem; transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: 1px solid var(--nav-border);
+        }
+        .social-icons a:hover {
+            background-color: var(--primary-blue); color: var(--bg-white); transform: translateY(-5px);
         }
 
         /* --- FEATURES SECTION --- */
         .features { 
-            padding: 80px 50px; 
-            background: #f9fafb; 
-            text-align: center; 
+            padding: 100px 20px; background: var(--bg-white); 
+            text-align: center; position: relative; z-index: 2;
         }
-        
         .features h2 { 
-            font-size: 2.5rem; 
-            margin-bottom: 60px; 
-            color: #1f2937; 
-            font-weight: 700;
+            font-size: 2.8rem; margin-bottom: 60px; color: var(--text-dark); 
+            font-family: 'Righteous', 'Poppins', sans-serif; text-transform: uppercase;
         }
-        
-        .feature-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .feature-card {
-            background: white; 
-            padding: 40px 30px; 
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.03); 
-            transition: all 0.3s;
-            border: 1px solid #f0f0f0;
-            text-align: left;
-        }
-        
-        .feature-card:hover { 
-            transform: translateY(-10px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
-            border-color: var(--primary-blue);
-        }
-        
-        .icon-box {
-            width: 70px; 
-            height: 70px; 
-            background: linear-gradient(135deg, #e0e7ff, #c7d2fe); 
-            color: var(--primary-blue); 
-            border-radius: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-size: 1.8rem; 
-            margin-bottom: 25px;
-        }
+        .features h2 span { color: var(--primary-blue); }
 
-        .feature-card h3 { margin-bottom: 15px; color: #333; font-size: 1.3rem; }
-        .feature-card p { color: #666; line-height: 1.6; font-size: 0.95rem; }
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+        .feature-card {
+            background: var(--bg-light); padding: 40px 30px; border-radius: 15px;
+            border: 1px solid var(--card-border); text-align: center;
+            position: relative; overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.5s ease, box-shadow 0.4s ease;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--primary-blue); transform: scaleX(0);
+            transform-origin: left; transition: transform 0.4s ease;
+        }
+        .feature-card:hover { 
+            transform: translateY(-10px); background: var(--bg-white);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: transparent;
+        }
+        body.dark-mode .feature-card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+
+        .feature-card:hover::before { transform: scaleX(1); }
+        .icon-box {
+            width: 80px; height: 80px; background: var(--light-blue); 
+            color: var(--primary-blue); border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; font-size: 2rem; 
+            margin: 0 auto 25px;
+        }
+        /* In dark mode, lighten the icon backing just a bit */
+        body.dark-mode .icon-box { background: rgba(88, 166, 255, 0.1); }
+
+        .feature-card h3 { margin-bottom: 15px; color: var(--text-dark); font-size: 1.4rem; font-weight: 600;}
+        .feature-card p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
 
         /* --- FOOTER STYLE --- */
         .site-footer {
-            background-color: var(--dark-footer);
-            color: white;
-            padding: 60px 50px 20px 50px;
-            margin-top: auto;
+            background-color: var(--bg-light); color: var(--text-dark);
+            padding: 80px 20px 20px; position: relative; z-index: 2;
+            border-top: 1px solid var(--nav-border);
         }
-
         .footer-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px; max-width: 1200px; margin: 0 auto;
         }
-
         .footer-col h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: white;
-            font-weight: 600;
+            font-size: 1.3rem; margin-bottom: 25px; color: var(--text-dark);
+            font-weight: 600; position: relative; padding-bottom: 10px;
         }
-
-        .footer-col p {
-            color: #cbd5e1;
-            line-height: 1.6;
-            font-size: 0.9rem;
+        .footer-col h3::after {
+            content: ''; position: absolute; left: 0; bottom: 0;
+            width: 40px; height: 3px; background-color: var(--primary-blue);
         }
-
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 12px;
-        }
-
+        .footer-col p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col ul li { margin-bottom: 12px; }
         .footer-col ul li a {
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: color 0.3s;
-            font-size: 0.9rem;
+            color: var(--text-muted); text-decoration: none;
+            transition: all 0.3s; font-size: 0.95rem; display: inline-block;
         }
-
-        .footer-col ul li a:hover {
-            color: var(--light-blue);
-            padding-left: 5px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            color: white;
-            transition: all 0.3s;
-        }
-
-        .social-links a:hover {
-            background: var(--primary-blue);
-            transform: translateY(-3px);
-        }
-
+        .footer-col ul li a:hover { color: var(--primary-blue); transform: translateX(5px); }
         .footer-bottom {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #94a3b8;
-            font-size: 0.85rem;
+            text-align: center; margin-top: 60px; padding-top: 25px;
+            border-top: 1px solid var(--nav-border); color: var(--text-muted); font-size: 0.85rem;
         }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 992px) {
-            /* Sembunyikan menu navigasi tengah di tablet/mobile agar rapi */
-            .nav-links { display: none; }
+        @media (max-width: 1200px) {
+            .hero-avatar { height: 40vh; right: -5%; opacity: 0.5; z-index: 0; }
         }
-
+        @media (max-width: 992px) {
+            .title-box h1 { font-size: 4rem; }
+            .hero-avatar { display: none; }
+        }
         @media (max-width: 768px) {
-            .hero { flex-direction: column-reverse; padding: 40px 20px; text-align: center; }
-            .hero-text { padding-right: 0; margin-top: 40px; }
-            .hero-cta { justify-content: center; flex-direction: column; width: 100%; }
-            .btn-cta { width: 100%; text-align: center; }
-            .landing-nav { padding: 15px 20px; }
-            .hero-text h1 { font-size: 2.2rem; }
-            .features { padding: 40px 20px; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .site-footer { padding: 40px 20px; }
-            .footer-container { grid-template-columns: 1fr; text-align: center; }
-            .social-links { justify-content: center; }
-            
-            /* Tampilkan menu navigasi secara vertikal di bawah logo jika di mobile */
-            .landing-nav {
-                flex-direction: column;
-                gap: 15px;
-            }
+            .landing-nav { border-radius: 10px; padding: 15px 20px; }
+            .menu-icon { display: block; }
             .nav-links {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 15px;
+                display: none; position: absolute; top: 70px; left: 20px; right: 20px;
+                background: var(--bg-white); flex-direction: column; align-items: center;
+                padding: 20px 0; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             }
-            .nav-buttons {
-                width: 100%;
-                text-align: center;
-                display: flex;
-                justify-content: center;
-                gap: 10px;
-            }
-            .nav-buttons a {
-                margin-left: 0;
-                width: 45%;
-            }
+            .nav-links.active { display: flex; }
+            .title-box { padding: 30px 20px; }
+            .title-box h1 { font-size: 3rem; }
+            
+            .hero-content { margin-top: 50px; }
+            .features h2 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR ATAS -->
-    <nav class="landing-nav">
-        <a href="/" class="logo">
-            <i class="fas fa-wallet"></i> CekUangku
-        </a>
-
-        <!-- Menu Navigasi: Harga Dihapus, Tentang Kami Ditambahkan -->
-        <div class="nav-links">
-            <a href="/">Beranda</a>
-            <a href="/#features">Fitur</a>
-            <!-- Harga dihapus sesuai request -->
-            <a href="/about">Tentang Kami</a>
-        </div>
-
-        <!-- Tombol Login/Register -->
-        <div class="nav-buttons">
-            <% if (user) { %>
-                <!-- Jika sudah login -->
-                <a href="/dashboard" class="btn-fill-nav">Masuk Dashboard</a>
-            <% } else { %>
-                <!-- Jika belum login -->
-                <a href="/auth/login" class="btn-outline-nav">Login</a>
-                <a href="/auth/register" class="btn-fill-nav">Register</a>
-            <% } %>
-        </div>
-    </nav>
+    <!-- NAVBAR FIXED -->
+    <div class="navbar-wrapper">
+        <nav class="landing-nav">
+            <div class="nav-left">
+                <i class="fas fa-bars menu-icon" onclick="document.querySelector('.nav-links').classList.toggle('active')"></i>
+                <div class="nav-links">
+                    <a href="#home" class="active">HOME</a>
+                    <a href="#features">FEATURES</a>
+                    <a href="/about">ABOUT</a>
+                    <a href="/auth/login">CONTACT</a>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/" class="logo">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <main>
         <!-- HERO SECTION -->
-        <section class="hero">
-            <div class="hero-text">
-                <h1>Kelola Uang Anda Dengan <br><span>Cerdas & Mudah</span></h1>
-                <p>Catat pemasukan dan pengeluaran, lihat grafik keuangan bulanan, dan capai target tabungan Anda dengan satu aplikasi sederhana.</p>
-                <div class="hero-cta">
+        <section class="hero" id="home">
+            <div class="bg-shape shape-center parallax" data-speed="0.1"></div>
+            <div class="s-1 parallax" data-speed="-0.1"></div>
+            <div class="s-2 parallax" data-speed="0.3"></div>
+            <div class="dots-pattern dots-1 parallax" data-speed="0.4"></div>
+            <div class="dots-pattern dots-2 parallax" data-speed="-0.3"></div>
+
+            <img src="/images/asset-avatar/Thingking.png" alt="Hero Avatar" class="hero-avatar parallax" data-speed="0.15">
+
+            <div class="floating-elem box-hollow-blue f-1 parallax" data-speed="0.8"></div>
+            <div class="floating-elem f-2 parallax" data-speed="-0.5"></div>
+            
+            <div class="floating-elem f-3 parallax" data-speed="0.5">
+                <div class="box-solid-blue"></div>
+                <div class="box-light-blue"></div>
+            </div>
+            <div class="floating-elem f-4 parallax" data-speed="-0.7">
+                <div class="box-hollow-blue"></div>
+                <div class="box-solid-blue" style="margin-top: 15px; margin-left: -10px;"></div>
+            </div>
+
+            <!-- Hero Content -->
+            <div class="hero-content">
+                <div class="title-box parallax" data-speed="0.1">
+                    <h1>KELOLA UANG<br><span>CERDAS</span></h1>
+                </div>
+                
+                <p class="hero-desc parallax" data-speed="0.15">
+                    Catat pemasukan dan pengeluaran, lihat grafik keuangan bulanan, dan capai target tabungan Anda dengan platform sederhana yang dirancang untuk kesuksesan finansial.
+                </p>
+
+                <div class="hero-cta parallax" data-speed="0.2">
                     <% if (user) { %>
-                        <a href="/dashboard" class="btn-cta btn-primary-cta">Buka Dashboard</a>
+                        <a href="/dashboard" class="read-more-btn">Buka Dashboard</a>
                     <% } else { %>
-                        <a href="/auth/register" class="btn-cta btn-primary-cta">Mulai Sekarang - Gratis</a>
-                        <a href="#features" class="btn-cta btn-secondary-cta">Pelajari Lebih Lanjut</a>
+                        <a href="/auth/register" class="read-more-btn">Buka Dashboard</a>
                     <% } %>
                 </div>
-            </div>
-            <div class="hero-image">
-                <!-- SVG Ilustrasi Biru -->
-                <svg class="hero-illustration" width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M487.5 200C487.5 310.457 398.457 399.5 288 399.5C177.543 399.5 88.5 310.457 88.5 200C88.5 89.5433 177.543 0.5 288 0.5C398.457 0.5 487.5 89.5433 487.5 200Z" fill="#4361ee" fill-opacity="0.1"/>
-                    <rect x="150" y="80" width="200" height="140" rx="10" fill="white" stroke="#4361ee" stroke-width="3"/>
-                    <rect x="160" y="95" width="180" height="110" rx="2" fill="#F8F9FA"/>
-                    <rect x="175" y="160" width="20" height="40" fill="#4cc9f0"/>
-                    <rect x="205" y="140" width="20" height="60" fill="#4361ee"/>
-                    <rect x="235" y="150" width="20" height="50" fill="#3f37c9"/>
-                    <rect x="265" y="130" width="20" height="70" fill="#4cc9f0"/>
-                    <rect x="295" y="170" width="20" height="30" fill="#4361ee"/>
-                    <circle cx="380" cy="100" r="20" fill="#4cc9f0" opacity="0.8"/>
-                    <path d="M375 95L385 105M375 105L385 95" stroke="white" stroke-width="2"/>
-                    <rect x="100" y="250" width="60" height="60" rx="8" fill="white" stroke="#4361ee" stroke-width="3"/>
-                    <text x="130" y="290" text-anchor="middle" fill="#4361ee" font-weight="bold" font-family="sans-serif">IDR</text>
-                    <circle cx="400" cy="300" r="30" fill="white" stroke="#4361ee" stroke-width="3"/>
-                    <path d="M390 300L400 310L420 290" stroke="#4361ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+
+                <div class="hero-dots parallax" data-speed="0.25">
+                    <span class="active"></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="social-icons parallax" data-speed="0.3">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
             </div>
         </section>
 
         <!-- FEATURES SECTION -->
         <section id="features" class="features">
-            <h2>Mengapa CekUangku?</h2>
+            <h2>Mengapa <span>CekUangku?</span></h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="icon-box"><i class="fas fa-chart-line"></i></div>
                     <h3>Laporan Real-time</h3>
-                    <p>Pantau perkembangan keuangan Anda dengan grafik yang mudah dipahami dan update secara otomatis.</p>
+                    <p>Pantau perkembangan keuangan Anda dengan grafik cerdas yang mudah dipahami dan diupdate secara instan setiap transaksi.</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Data Aman</h3>
-                    <p>Data keuangan Anda dienkripsi tingkat tinggi dan disimpan dengan aman di server cloud kami.</p>
+                    <h3>Keamanan Terjamin</h3>
+                    <p>Privasi adalah prioritas kami. Data keuangan Anda dienkripsi tingkat tinggi dan tersimpan aman di infrastruktur cloud kami.</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon-box"><i class="fas fa-mobile-alt"></i></div>
-                    <h3>Akses Mudah</h3>
-                    <p>Tampilan responsif yang memungkinkan Anda mengelola keuangan dari laptop maupun smartphone.</p>
+                    <h3>Akses Kapan Saja</h3>
+                    <p>Desain ultra-responsif memungkinkan Anda mengelola anggaran dari laptop, tablet, maupun smartphone tanpa hambatan.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- FOOTER SECTION -->
     <footer class="site-footer">
         <div class="footer-container">
-            <!-- Kolom 1: Brand -->
             <div class="footer-col">
-                <div class="logo" style="color: white; margin-bottom: 15px;">
-                    <i class="fas fa-wallet"></i> CekUangku
+                <div class="logo" style="margin-bottom: 20px;">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
                 </div>
-                <p>Platform manajemen keuangan pribadi terbaik untuk membantu Anda mencapai kebebasan finansial.</p>
+                <p>Platform manajemen keuangan pribadi modern untuk membantu Anda mengelola pengeluaran dan mencapai kebebasan finansial.</p>
             </div>
-
-            <!-- Kolom 2: Bantuan -->
             <div class="footer-col">
-                <h3>Bantuan</h3>
+                <h3>Navigasi</h3>
                 <ul>
-                    <li><a href="#">Pusat Bantuan</a></li>
-                    <li><a href="#">Syarat & Ketentuan</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">Hubungi Kami</a></li>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="#features">Fitur Kami</a></li>
+                    <li><a href="/about">Tentang Kami</a></li>
+                    <li><a href="/auth/login">Masuk / Daftar</a></li>
                 </ul>
             </div>
-
-            <!-- Kolom 3: Sosial Media -->
             <div class="footer-col">
-                <h3>Ikuti Kami</h3>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
+                <h3>Kontak & Dukungan</h3>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat Ketentuan</a></li>
+                    <li><a href="#">Hubungi Developer</a></li>
+                </ul>
             </div>
         </div>
-
         <div class="footer-bottom">
-            <p>&copy; 2023 CekUangku Inc. All rights reserved.</p>
+            <p>&copy; 2024 CekUangku Kelompok 5. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Scripts: Parallax, Scrollspy, and Theme Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = themeToggle.querySelector('i');
+            
+            // Check LocalStorage
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                // Animation rotation
+                themeToggle.classList.add('rotated');
+                setTimeout(() => { themeToggle.classList.remove('rotated'); }, 500);
+
+                // Toggle logic
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // Parallax and Scrollspy Logic
+            const parallaxElements = document.querySelectorAll('.parallax');
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            window.addEventListener('scroll', () => {
+                let scrollY = window.pageYOffset;
+                
+                parallaxElements.forEach(el => {
+                    let speed = el.getAttribute('data-speed');
+                    el.style.transform = `translateY(${scrollY * speed}px)`;
+                });
+
+                sections.forEach(sec => {
+                    let top = window.scrollY;
+                    let offset = sec.offsetTop - 200; 
+                    let height = sec.offsetHeight;
+                    let id = sec.getAttribute('id');
+
+                    if(top >= offset && top < offset + height && id) {
+                        navLinks.forEach(links => { links.classList.remove('active'); });
+                        let activeLink = document.querySelector(`.nav-links a[href="#${id}"]`);
+                        if(activeLink) activeLink.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

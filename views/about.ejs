@@ -1,237 +1,368 @@
-<!-- views/about.ejs -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tentang Kami - CekUangku</title>
-    <!-- Font Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    <!-- Font Poppins & Righteous for bold headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- CSS Utama -->
-    <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* =========================================
-           STYLE TENTANG KAMI (TEMA BIRU)
-           ========================================= */
         :root {
+            /* Light Theme Variables */
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
             --primary-blue: #4361ee;
             --secondary-blue: #3f37c9;
-            --light-blue: #4cc9f0;
-            --dark-footer: #1a2c55;
+            --light-blue: #e0e7ff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --text-light: #ffffff;
+            --shape-bg: #4cc9f0;
+            --nav-border: rgba(0,0,0,0.05);
+            --card-border: rgba(0,0,0,0.05);
         }
 
+        body.dark-mode {
+            /* Dark Theme Variables */
+            --bg-light: #0d1117;
+            --bg-white: #161b22;
+            --primary-blue: #58a6ff;
+            --secondary-blue: #79c0ff;
+            --light-blue: #1f2937; 
+            --text-dark: #f0f6fc;
+            --text-muted: #8b949e;
+            --text-light: #ffffff;
+            --shape-bg: #1f6feb;
+            --nav-border: rgba(255,255,255,0.05);
+            --card-border: rgba(255,255,255,0.05);
+        }
+
+        /* Essential color transition for smooth theme switching */
+        body, .landing-nav, .site-footer, .about-hero, .value-card, .story-bg-box, .values-section {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, background 0.5s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { 
-            margin: 0; 
-            padding: 0; 
             font-family: 'Poppins', sans-serif; 
-            background-color: #f8f9fa; 
-            color: #333;
+            background-color: var(--bg-light); 
+            color: var(--text-dark);
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-
         main { flex: 1; }
         a { text-decoration: none; }
 
         /* --- NAVBAR --- */
+        .navbar-wrapper {
+            position: fixed; top: 20px; left: 0; width: 100%;
+            z-index: 1000; display: flex; justify-content: center;
+            padding: 0 20px; transition: transform 0.3s ease; /* Do not transition background here, handled above */
+        }
         .landing-nav {
+            background-color: var(--bg-white);
+            width: 100%; max-width: 1200px; border-radius: 50px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 50px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 1000;
+            padding: 15px 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--nav-border);
         }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-blue); display: flex; align-items: center; gap: 10px; }
-        
+        .nav-left { display: flex; align-items: center; gap: 40px; }
+        .menu-icon { color: var(--primary-blue); font-size: 1.2rem; cursor: pointer; display: none; }
         .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: #555; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--primary-blue); }
-
-        .nav-buttons a {
-            text-decoration: none; margin-left: 15px; padding: 10px 25px;
-            border-radius: 8px; font-weight: 600; transition: all 0.3s;
-            display: inline-block; font-size: 0.9rem;
+        .nav-links a {
+            color: var(--text-dark); font-weight: 600; font-size: 0.95rem;
+            text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s;
         }
-        .btn-outline-nav { border: 2px solid var(--primary-blue); color: var(--primary-blue); background: transparent; }
-        .btn-outline-nav:hover { background: var(--primary-blue); color: white; }
-        .btn-fill-nav { background: var(--primary-blue); color: white; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2); }
-        .btn-fill-nav:hover { background: var(--secondary-blue); transform: translateY(-2px); }
+        .nav-links a.active, .nav-links a:hover { color: var(--primary-blue); }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .logo { 
+            font-size: 1.3rem; font-weight: 800; color: var(--primary-blue); 
+            display: flex; align-items: center; gap: 10px; letter-spacing: 1px;
+        }
 
-        /* --- HERO ABOUT --- */
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: transparent; border: none; outline: none;
+            color: var(--text-dark); font-size: 1.2rem; cursor: pointer;
+            width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), color 0.3s, background-color 0.3s;
+        }
+        .theme-toggle:hover { background: var(--light-blue); color: var(--primary-blue); transform: scale(1.1) rotate(15deg); }
+        .theme-toggle.rotated { transform: rotate(360deg); }
+
+        /* --- ABOUT HERO --- */
         .about-hero {
-            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
-            padding: 100px 50px;
+            position: relative;
+            padding: 180px 20px 80px;
             text-align: center;
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--bg-white) 100%);
+            overflow: hidden;
+        }
+        body.dark-mode .about-hero {
+            background: linear-gradient(135deg, #0d1117 0%, var(--bg-white) 100%);
+        }
+        
+        .about-hero-shape {
+            position: absolute;
+            background-color: var(--primary-blue);
+            opacity: 0.05;
+            top: -20%; right: -10%;
+            width: 50%; height: 150%;
+            transform: rotate(25deg);
+            z-index: 0;
+            transition: opacity 0.5s;
+        }
+        body.dark-mode .about-hero-shape { opacity: 0.02; }
+        
+        .about-hero-content {
+            position: relative; z-index: 1;
         }
         .about-hero h1 {
-            font-size: 3rem;
+            font-family: 'Righteous', 'Poppins', sans-serif;
+            font-size: 3.5rem;
             color: var(--primary-blue);
             margin-bottom: 20px;
-            font-weight: 800;
+            text-transform: uppercase;
         }
         .about-hero p {
             max-width: 700px;
             margin: 0 auto;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1.7;
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            font-weight: 500;
         }
 
-        /* --- CONTENT SECTION --- */
+        /* --- MISSION & STORY --- */
         .story-section {
             padding: 80px 50px;
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 50px;
+            gap: 60px;
         }
         .story-text { flex: 1; }
-        .story-text h2 { font-size: 2rem; color: #333; margin-bottom: 20px; }
-        .story-text p { color: #666; line-height: 1.8; margin-bottom: 20px; }
-        .story-image { flex: 1; }
+        .story-text h2 { 
+            font-size: 2.5rem; 
+            color: var(--text-dark); 
+            margin-bottom: 25px; 
+            font-family: 'Righteous', sans-serif;
+            text-transform: uppercase;
+        }
+        .story-text h2 span { color: var(--primary-blue); }
+        .story-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; font-size: 1.05rem;}
+        
+        .story-image { flex: 1; position: relative; }
         .story-image img {
             width: 100%;
             border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(67, 97, 238, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+        body.dark-mode .story-image img { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+
+        .story-bg-box {
+            position: absolute;
+            top: 20px; left: -20px; right: 20px; bottom: -20px;
+            background-color: var(--light-blue);
+            border-radius: 20px;
+            z-index: 1;
         }
 
         /* --- VALUES GRID --- */
         .values-section {
-            background: white;
-            padding: 80px 50px;
+            background: var(--bg-white);
+            padding: 100px 50px;
             text-align: center;
+            border-top: 1px solid var(--nav-border);
         }
+        .values-section h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 15px; 
+            color: var(--text-dark); 
+            font-family: 'Righteous', sans-serif;
+            text-transform: uppercase;
+        }
+        .values-section h2 span { color: var(--primary-blue); }
+        
         .values-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 60px auto 0;
         }
+        
         .value-card {
-            padding: 30px;
-            background: #f8f9fa;
+            padding: 40px 30px;
+            background: var(--bg-light);
             border-radius: 15px;
-            border: 1px solid #eee;
-            transition: 0.3s;
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease, background-color 0.5s ease, box-shadow 0.4s ease;
+        }
+        .value-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--primary-blue); transform: scaleX(0);
+            transform-origin: left; transition: transform 0.4s ease;
         }
         .value-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.1);
+            border-color: transparent;
+            transform: translateY(-10px);
+            background: var(--bg-white);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
+        body.dark-mode .value-card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+
+        .value-card:hover::before { transform: scaleX(1); }
+        
         .value-icon {
-            width: 60px; height: 60px;
-            background: var(--primary-blue);
-            color: white;
+            width: 80px; height: 80px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-            margin: 0 auto 20px auto;
+            font-size: 2rem;
+            margin: 0 auto 25px;
+            transition: background-color 0.5s ease;
         }
-        .value-card h3 { margin-bottom: 10px; color: #333; }
-        .value-card p { font-size: 0.9rem; color: #666; }
+        body.dark-mode .value-icon { background: rgba(88, 166, 255, 0.1); }
+
+        .value-card h3 { margin-bottom: 15px; color: var(--text-dark); font-size: 1.4rem; font-weight: 600;}
+        .value-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;}
 
         /* --- FOOTER --- */
         .site-footer {
-            background-color: var(--dark-footer);
-            color: white;
-            padding: 60px 50px 20px 50px;
-            margin-top: auto;
+            background-color: var(--bg-light); color: var(--text-dark);
+            padding: 80px 20px 20px; position: relative; z-index: 2;
+            border-top: 1px solid var(--nav-border);
         }
         .footer-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px; max-width: 1200px; margin: 0 auto;
         }
-        .footer-col h3 { font-size: 1.2rem; margin-bottom: 20px; color: white; }
+        .footer-col h3 {
+            font-size: 1.3rem; margin-bottom: 25px; color: var(--text-dark);
+            font-weight: 600; position: relative; padding-bottom: 10px;
+        }
+        .footer-col h3::after {
+            content: ''; position: absolute; left: 0; bottom: 0;
+            width: 40px; height: 3px; background-color: var(--primary-blue);
+        }
+        .footer-col p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
         .footer-col ul { list-style: none; padding: 0; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { color: #cbd5e1; text-decoration: none; transition: 0.3s; }
-        .footer-col ul li a:hover { color: var(--light-blue); }
-        .footer-bottom { text-align: center; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 0.85rem; color: #94a3b8; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a {
+            color: var(--text-muted); text-decoration: none;
+            transition: all 0.3s; font-size: 0.95rem; display: inline-block;
+        }
+        .footer-col ul li a:hover { color: var(--primary-blue); transform: translateX(5px); }
+        .footer-bottom {
+            text-align: center; margin-top: 60px; padding-top: 25px;
+            border-top: 1px solid var(--nav-border); color: var(--text-muted); font-size: 0.85rem;
+        }
 
         /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .story-section { flex-direction: column; text-align: center; }
+            .story-text { order: 2; }
+            .story-image { order: 1; margin-bottom: 30px; }
+        }
         @media (max-width: 768px) {
-            .about-hero h1 { font-size: 2.2rem; padding: 0 20px; }
-            .story-section { flex-direction: column; padding: 40px 20px; }
-            .nav-links { display: none; } /* Simplifikasi mobile */
-            .landing-nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .nav-links { display: flex; justify-content: center; flex-wrap: wrap; }
+            .landing-nav { border-radius: 10px; padding: 15px 20px; }
+            .menu-icon { display: block; }
+            .nav-links {
+                display: none; position: absolute; top: 70px; left: 20px; right: 20px;
+                background: var(--bg-white); flex-direction: column; align-items: center;
+                padding: 20px 0; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            .nav-links.active { display: flex; }
+            .about-hero h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR (SAMA DENGAN LANDING TAPI TANPA HARGA) -->
-    <nav class="landing-nav">
-        <a href="/" class="logo">
-            <i class="fas fa-wallet"></i> CekUangku
-        </a>
-
-        <div class="nav-links">
-            <a href="/">Beranda</a>
-            <a href="/#features">Fitur</a>
-            <!-- Harga sudah dihapus -->
-            <a href="/about" class="active">Tentang Kami</a>
-        </div>
-
-        <div class="nav-buttons">
-            <% if (user) { %>
-                <a href="/dashboard" class="btn-fill-nav">Dashboard</a>
-            <% } else { %>
-                <a href="/auth/login" class="btn-outline-nav">Login</a>
-                <a href="/auth/register" class="btn-fill-nav">Register</a>
-            <% } %>
-        </div>
-    </nav>
+    <!-- NAVBAR FIXED -->
+    <div class="navbar-wrapper">
+        <nav class="landing-nav">
+            <div class="nav-left">
+                <i class="fas fa-bars menu-icon" onclick="document.querySelector('.nav-links').classList.toggle('active')"></i>
+                <div class="nav-links">
+                    <a href="/#home">HOME</a>
+                    <a href="/#features">FEATURES</a>
+                    <a href="/about" class="active">ABOUT</a>
+                    <a href="/auth/login">CONTACT</a>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/" class="logo">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <main>
         <!-- HERO ABOUT -->
         <section class="about-hero">
-            <h1>Tentang CekUangku</h1>
-            <p>Kami berdedikasi untuk memberdayakan setiap individu mencapai kebebasan finansial melalui teknologi yang sederhana, aman, dan cerdas.</p>
+            <div class="about-hero-shape"></div>
+            <div class="about-hero-content">
+                <h1>TENTANG KAMI</h1>
+                <p>Kami berdedikasi untuk memberdayakan setiap individu mencapai kebebasan finansial melalui platform manajemen uang yang sederhana, aman, dan elegan.</p>
+            </div>
         </section>
 
         <!-- CERITA KAMI -->
         <section class="story-section">
             <div class="story-text">
-                <h2>Misi Kami</h2>
-                <p>CekUangku didirikan dengan satu tujuan sederhana: membuat manajemen keuangan pribadi menjadi mudah diakses oleh semua orang, tanpa harus menjadi ahli ekonomi.</p>
-                <p>Kami percaya bahwa dengan pencatatan yang tepat dan analisis yang jelas, siapa pun dapat merencanakan masa depan keuangan mereka lebih baik. Kami menggabungkan desain yang intuitif dengan keamanan data tingkat tinggi untuk memastikan pengalaman pengguna yang terbaik.</p>
+                <h2>Misi <span>CekUangku</span></h2>
+                <p>Didirikan dengan satu visi modern: membuat tata kelola keuangan pribadi bisa dinikmati siapa saja. Tanpa rumus rumit, tanpa spreadsheet yang membingungkan.</p>
+                <p>Kami dengan bangga mempersembahkan desain interaktif, fitur terautomasi, dan teknologi cloud yang aman untuk merencanakan masa depan finansial Anda di era digital.</p>
             </div>
             <div class="story-image">
-                <!-- Gambar Placeholder Team/Illustrasi -->
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tim CekUangku">
+                <div class="story-bg-box"></div>
+                <!-- Menggunakan gambar abstrak/teknologi yang estetik -->
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Misi CekUangku">
             </div>
         </section>
 
         <!-- NILAI KAMI -->
         <section class="values-section">
-            <h2>Nilai Kami</h2>
-            <p style="color: #666; max-width: 600px; margin: 0 auto;">Tiga pilar utama yang mendasari setiap fitur yang kami kembangkan.</p>
+            <h2>Nilai Utama <span>Kami</span></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Pondasi yang kami pertahankan di setiap inovasi aplikasi CekUangku.</p>
             
             <div class="values-grid">
                 <div class="value-card">
                     <div class="value-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Keamanan</h3>
-                    <p>Data Anda adalah prioritas kami. Kami menggunakan enkripsi end-to-end untuk melindungi privasi finansial Anda.</p>
+                    <h3>Keamanan Data</h3>
+                    <p>Enkripsi canggih pada setiap transaksi yang Anda catat, memastikan kerahasiaan penuh untuk ketenangan pikiran.</p>
                 </div>
                 <div class="value-card">
-                    <div class="value-icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="value-icon"><i class="fas fa-layer-group"></i></div>
                     <h3>Transparansi</h3>
-                    <p>Tidak ada biaya tersembunyi. Kami menampilkan laporan keuangan Anda dengan jujur dan terperinci.</p>
+                    <p>Semua laporan, grafis keuangan, dan tren disajikan tanpa embel-embel rumit demi kejujuran finansial.</p>
                 </div>
                 <div class="value-card">
-                    <div class="value-icon"><i class="fas fa-heart"></i></div>
-                    <h3>Kemudahan</h3>
-                    <p>Antarmuka yang dirancang agar semua orang, dari pelajar hingga profesional, dapat menggunakannya dengan santai.</p>
+                    <div class="value-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Kecepatan & Kemudahan</h3>
+                    <p>Akses di manapun dari smartphone atau desktop, dikelola dalam hitungan detik tanpa hambatan teknis.</p>
                 </div>
             </div>
         </section>
@@ -241,32 +372,67 @@
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
-                <div class="logo" style="color: white; margin-bottom: 15px;">
-                    <i class="fas fa-wallet"></i> CekUangku
+                <div class="logo" style="margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; color: var(--primary-blue); display: flex; align-items: center; letter-spacing: 1px;">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
                 </div>
-                <p>Sahabat terbaik dalam mengelola keuangan pribadi Anda.</p>
+                <p>Platform manajemen keuangan pribadi modern untuk membantu Anda mengelola pengeluaran dan mencapai kebebasan finansial.</p>
             </div>
+
             <div class="footer-col">
-                <h3>Bantuan</h3>
+                <h3>Navigasi</h3>
                 <ul>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Hubungi Kami</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/#features">Fitur Kami</a></li>
+                    <li><a href="/about">Tentang Kami</a></li>
+                    <li><a href="/auth/login">Masuk / Daftar</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
-                <h3>Sosial</h3>
-                <div style="display: flex; gap: 10px;">
-                    <a href="#" style="color: white;"><i class="fab fa-facebook fa-lg"></i></a>
-                    <a href="#" style="color: white;"><i class="fab fa-twitter fa-lg"></i></a>
-                    <a href="#" style="color: white;"><i class="fab fa-instagram fa-lg"></i></a>
-                </div>
+                <h3>Kontak & Dukungan</h3>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat Ketentuan</a></li>
+                    <li><a href="#">Hubungi Developer</a></li>
+                </ul>
             </div>
         </div>
+
         <div class="footer-bottom">
-            <p>&copy; 2023 CekUangku Inc. All rights reserved.</p>
+            <p>&copy; 2024 CekUangku Kelompok 5. All rights reserved.</p>
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = themeToggle.querySelector('i');
+            
+            // Check LocalStorage for persisting theme across pages
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                // Animation rotation
+                themeToggle.classList.add('rotated');
+                setTimeout(() => { themeToggle.classList.remove('rotated'); }, 500);
+
+                // Toggle logic
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
