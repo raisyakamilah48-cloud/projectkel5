@@ -1,439 +1,328 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Tentang Kami - CekUangku</title>
+    <title>Tentang Kami - CekUangku</title>
     <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
-    <!-- Font Poppins & Righteous for bold headings -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap" rel="stylesheet">
+
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            /* Light Theme Variables */
-            --bg-light: #f8f9fa;
-            --bg-white: #ffffff;
-            --primary-blue: #4361ee;
-            --secondary-blue: #3f37c9;
-            --light-blue: #e0e7ff;
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
-            --text-light: #ffffff;
-            --shape-bg: #4cc9f0;
-            --nav-border: rgba(0,0,0,0.05);
-            --card-border: rgba(0,0,0,0.05);
-        }
 
-        body.dark-mode {
-            /* Dark Theme Variables */
-            --bg-light: #0d1117;
-            --bg-white: #161b22;
-            --primary-blue: #58a6ff;
-            --secondary-blue: #79c0ff;
-            --light-blue: #1f2937; 
-            --text-dark: #f0f6fc;
-            --text-muted: #8b949e;
-            --text-light: #ffffff;
-            --shape-bg: #1f6feb;
-            --nav-border: rgba(255,255,255,0.05);
-            --card-border: rgba(255,255,255,0.05);
-        }
+    <!-- Shared Landing Styles -->
+    <link rel="stylesheet" href="/stylesheets/landing-modern.css">
+    <link rel="stylesheet" href="/stylesheets/about-modern.css">
 
-        /* Essential color transition for smooth theme switching */
-        body, .landing-nav, .site-footer, .about-hero, .value-card, .story-bg-box, .values-section {
-            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, background 0.5s ease;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--bg-light); 
-            color: var(--text-dark);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        main { flex: 1; }
-        a { text-decoration: none; }
-
-        /* --- NAVBAR --- */
-        .navbar-wrapper {
-            position: fixed; top: 20px; left: 0; width: 100%;
-            z-index: 1000; display: flex; justify-content: center;
-            padding: 0 20px; transition: transform 0.3s ease; /* Do not transition background here, handled above */
-        }
-        .landing-nav {
-            background-color: var(--bg-white);
-            width: 100%; max-width: 1200px; border-radius: 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid var(--nav-border);
-        }
-        .nav-left { display: flex; align-items: center; gap: 40px; }
-        .menu-icon { color: var(--primary-blue); font-size: 1.2rem; cursor: pointer; display: none; }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a {
-            color: var(--text-dark); font-weight: 600; font-size: 0.95rem;
-            text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s;
-        }
-        .nav-links a.active, .nav-links a:hover { color: var(--primary-blue); }
-        
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .logo { 
-            font-size: 1.3rem; font-weight: 800; color: var(--primary-blue); 
-            display: flex; align-items: center; gap: 10px; letter-spacing: 1px;
-        }
-
-        /* Theme Toggle Button */
-        .theme-toggle {
-            background: transparent; border: none; outline: none;
-            color: var(--text-dark); font-size: 1.2rem; cursor: pointer;
-            width: 35px; height: 35px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), color 0.3s, background-color 0.3s;
-        }
-        .theme-toggle:hover { background: var(--light-blue); color: var(--primary-blue); transform: scale(1.1) rotate(15deg); }
-        .theme-toggle.rotated { transform: rotate(360deg); }
-
-        /* --- ABOUT HERO --- */
-        .about-hero {
-            position: relative;
-            padding: 180px 20px 80px;
-            text-align: center;
-            background: linear-gradient(135deg, var(--light-blue) 0%, var(--bg-white) 100%);
-            overflow: hidden;
-        }
-        body.dark-mode .about-hero {
-            background: linear-gradient(135deg, #0d1117 0%, var(--bg-white) 100%);
-        }
-        
-        .about-hero-shape {
-            position: absolute;
-            background-color: var(--primary-blue);
-            opacity: 0.05;
-            top: -20%; right: -10%;
-            width: 50%; height: 150%;
-            transform: rotate(25deg);
-            z-index: 0;
-            transition: opacity 0.5s;
-        }
-        body.dark-mode .about-hero-shape { opacity: 0.02; }
-        
-        .about-hero-content {
-            position: relative; z-index: 1;
-        }
-        .about-hero h1 {
-            font-family: 'Righteous', 'Poppins', sans-serif;
-            font-size: 3.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        .about-hero p {
-            max-width: 700px;
-            margin: 0 auto;
-            color: var(--text-muted);
-            font-size: 1.15rem;
-            line-height: 1.8;
-            font-weight: 500;
-        }
-
-        /* --- MISSION & STORY --- */
-        .story-section {
-            padding: 80px 50px;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 60px;
-        }
-        .story-text { flex: 1; }
-        .story-text h2 { 
-            font-size: 2.5rem; 
-            color: var(--text-dark); 
-            margin-bottom: 25px; 
-            font-family: 'Righteous', sans-serif;
-            text-transform: uppercase;
-        }
-        .story-text h2 span { color: var(--primary-blue); }
-        .story-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; font-size: 1.05rem;}
-        
-        .story-image { flex: 1; position: relative; }
-        .story-image img {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 2;
-        }
-        body.dark-mode .story-image img { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-
-        .story-bg-box {
-            position: absolute;
-            top: 20px; left: -20px; right: 20px; bottom: -20px;
-            background-color: var(--light-blue);
-            border-radius: 20px;
-            z-index: 1;
-        }
-
-        /* --- VALUES GRID --- */
-        .values-section {
-            background: var(--bg-white);
-            padding: 100px 50px;
-            text-align: center;
-            border-top: 1px solid var(--nav-border);
-        }
-        .values-section h2 { 
-            font-size: 2.5rem; 
-            margin-bottom: 15px; 
-            color: var(--text-dark); 
-            font-family: 'Righteous', sans-serif;
-            text-transform: uppercase;
-        }
-        .values-section h2 span { color: var(--primary-blue); }
-        
-        .values-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 60px auto 0;
-        }
-        
-        .value-card {
-            padding: 40px 30px;
-            background: var(--bg-light);
-            border-radius: 15px;
-            border: 1px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.4s ease, background-color 0.5s ease, box-shadow 0.4s ease;
-        }
-        .value-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: var(--primary-blue); transform: scaleX(0);
-            transform-origin: left; transition: transform 0.4s ease;
-        }
-        .value-card:hover {
-            border-color: transparent;
-            transform: translateY(-10px);
-            background: var(--bg-white);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        body.dark-mode .value-card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-
-        .value-card:hover::before { transform: scaleX(1); }
-        
-        .value-icon {
-            width: 80px; height: 80px;
-            background: var(--light-blue);
-            color: var(--primary-blue);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 25px;
-            transition: background-color 0.5s ease;
-        }
-        body.dark-mode .value-icon { background: rgba(88, 166, 255, 0.1); }
-
-        .value-card h3 { margin-bottom: 15px; color: var(--text-dark); font-size: 1.4rem; font-weight: 600;}
-        .value-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;}
-
-        /* --- FOOTER --- */
-        .site-footer {
-            background-color: var(--bg-light); color: var(--text-dark);
-            padding: 80px 20px 20px; position: relative; z-index: 2;
-            border-top: 1px solid var(--nav-border);
-        }
-        .footer-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 50px; max-width: 1200px; margin: 0 auto;
-        }
-        .footer-col h3 {
-            font-size: 1.3rem; margin-bottom: 25px; color: var(--text-dark);
-            font-weight: 600; position: relative; padding-bottom: 10px;
-        }
-        .footer-col h3::after {
-            content: ''; position: absolute; left: 0; bottom: 0;
-            width: 40px; height: 3px; background-color: var(--primary-blue);
-        }
-        .footer-col p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
-        .footer-col ul { list-style: none; padding: 0; }
-        .footer-col ul li { margin-bottom: 12px; }
-        .footer-col ul li a {
-            color: var(--text-muted); text-decoration: none;
-            transition: all 0.3s; font-size: 0.95rem; display: inline-block;
-        }
-        .footer-col ul li a:hover { color: var(--primary-blue); transform: translateX(5px); }
-        .footer-bottom {
-            text-align: center; margin-top: 60px; padding-top: 25px;
-            border-top: 1px solid var(--nav-border); color: var(--text-muted); font-size: 0.85rem;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 992px) {
-            .story-section { flex-direction: column; text-align: center; }
-            .story-text { order: 2; }
-            .story-image { order: 1; margin-bottom: 30px; }
-        }
-        @media (max-width: 768px) {
-            .landing-nav { border-radius: 10px; padding: 15px 20px; }
-            .menu-icon { display: block; }
-            .nav-links {
-                display: none; position: absolute; top: 70px; left: 20px; right: 20px;
-                background: var(--bg-white); flex-direction: column; align-items: center;
-                padding: 20px 0; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    <script>
+        // Init theme immediately to prevent FOUC
+        (function () {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark-mode');
             }
-            .nav-links.active { display: flex; }
-            .about-hero h1 { font-size: 2.5rem; }
-        }
-    </style>
+        })();
+    </script>
 </head>
+
 <body>
 
-    <!-- NAVBAR FIXED -->
-    <div class="navbar-wrapper">
-        <nav class="landing-nav">
-            <div class="nav-left">
-                <i class="fas fa-bars menu-icon" onclick="document.querySelector('.nav-links').classList.toggle('active')"></i>
-                <div class="nav-links">
-                    <a href="/#home">HOME</a>
-                    <a href="/#features">FEATURES</a>
-                    <a href="/about" class="active">ABOUT</a>
-                    <a href="/auth/login">CONTACT</a>
-                </div>
-            </div>
-            
-            <div class="nav-right">
-                <!-- Theme Toggle Button -->
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <a href="/" class="logo">
-                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
-                </a>
-            </div>
-        </nav>
+    <!-- CUSTOM CURSOR ELEMENTS -->
+    <div class="cursor-follower" id="cursorFollower"></div>
+    <div class="cursor-spotlight" id="cursorSpotlight"></div>
+
+    <!-- BACKGROUND TEXTURE -->
+    <div class="bg-texture">
+        <div class="bg-dot-pattern"></div>
     </div>
 
+    <!-- AURORA BACKGROUND (MESH GRADIENT) -->
+    <div class="aurora-bg">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="glass-nav">
+        <a href="/" class="logo">
+            <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;">
+            <span class="logo-text"><span class="logo-ce">CEK</span>UANGKU</span>
+        </a>
+        <div class="nav-links">
+            <a href="/#home">HOME</a>
+            <a href="/#features">FEATURES</a>
+            <a href="/about">ABOUT</a>
+            <a href="/auth/login">LOGIN</a>
+        </div>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <% if (user) { %>
+                <a href="/dashboard" class="btn-primary" style="padding: 10px 25px;">DASHBOARD</a>
+                <% } else { %>
+                    <a href="/auth/register" class="btn-primary" style="padding: 10px 25px;">GET STARTED</a>
+                    <% } %>
+        </div>
+    </nav>
+
     <main>
-        <!-- HERO ABOUT -->
-        <section class="about-hero">
-            <div class="about-hero-shape"></div>
-            <div class="about-hero-content">
-                <h1>TENTANG KAMI</h1>
-                <p>Kami berdedikasi untuk memberdayakan setiap individu mencapai kebebasan finansial melalui platform manajemen uang yang sederhana, aman, dan elegan.</p>
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <div class="about-pill"><i class="fas fa-star"></i> Tentang CekUangku</div>
+                    <h1>
+                        CERITA <br>
+                        KAMI
+                    </h1>
+                    <p class="about-hero-subtitle">
+                        Kami membangun CekUangku agar pengelolaan finansial terasa premium, sederhana, dan nyaman.
+                        Dari pencatatan harian hingga insight strategis, semua dirancang untuk membantu keputusan yang lebih baik.
+                    </p>
+                    <div class="about-stats">
+                        <div class="about-stat">
+                            <h4>24/7</h4>
+                            <p>Dukungan pengguna</p>
+                        </div>
+                        <div class="about-stat">
+                            <h4>100%</h4>
+                            <p>Fokus keamanan data</p>
+                        </div>
+                        <div class="about-stat">
+                            <h4>+10K</h4>
+                            <p>Transaksi tercatat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div
+                        style="position: relative; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center;">
+                        <div class="visual-orbit"></div>
+                        <img src="/images/asset-avatar/Happy.png" alt="Happy" class="floating-avatar"
+                            id="heroAvatar" style="width: 100%; height: auto;">
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- CERITA KAMI -->
-        <section class="story-section">
-            <div class="story-text">
-                <h2>Misi <span>CekUangku</span></h2>
-                <p>Didirikan dengan satu visi modern: membuat tata kelola keuangan pribadi bisa dinikmati siapa saja. Tanpa rumus rumit, tanpa spreadsheet yang membingungkan.</p>
-                <p>Kami dengan bangga mempersembahkan desain interaktif, fitur terautomasi, dan teknologi cloud yang aman untuk merencanakan masa depan finansial Anda di era digital.</p>
-            </div>
-            <div class="story-image">
-                <div class="story-bg-box"></div>
-                <!-- Menggunakan gambar abstrak/teknologi yang estetik -->
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Misi CekUangku">
+        <!-- STORY SECTION -->
+        <section class="about-story">
+            <div class="about-story-grid">
+                <div>
+                    <h2>Misi <span>Kami</span></h2>
+                    <p>
+                        CekUangku hadir untuk mengubah cara orang Indonesia mengelola uangnya. Kami fokus pada transparansi,
+                        kontrol penuh, dan pengalaman yang terasa modern namun tetap mudah dipahami.
+                    </p>
+                    <p>
+                        Dengan desain interaktif, otomatisasi pencatatan, dan insight visual yang kuat, kami ingin membuat
+                        setiap keputusan finansial menjadi lebih cepat dan percaya diri.
+                    </p>
+                    <div class="about-card">
+                        <h3>Kenapa Kami Berbeda?</h3>
+                        <p>UI premium, data aman, dan alur yang dirancang untuk kenyamanan pengguna harian.</p>
+                    </div>
+                </div>
+                <div class="about-figure">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80"
+                        alt="Misi CekUangku">
+                </div>
             </div>
         </section>
 
-        <!-- NILAI KAMI -->
-        <section class="values-section">
-            <h2>Nilai Utama <span>Kami</span></h2>
-            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Pondasi yang kami pertahankan di setiap inovasi aplikasi CekUangku.</p>
-            
-            <div class="values-grid">
-                <div class="value-card">
-                    <div class="value-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Keamanan Data</h3>
-                    <p>Enkripsi canggih pada setiap transaksi yang Anda catat, memastikan kerahasiaan penuh untuk ketenangan pikiran.</p>
+        <!-- VALUES SECTION -->
+        <section id="features" class="features about-values">
+            <div class="section-title">
+                <h2>Nilai <span>Utama</span> Kami</h2>
+                <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; text-align: center;">Pondasi yang kami
+                    jaga di setiap iterasi produk.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div class="bento-content">
+                        <h3>Keamanan Data</h3>
+                        <p>Enkripsi dan privasi menjadi fondasi di setiap transaksi yang Anda catat.</p>
+                    </div>
                 </div>
-                <div class="value-card">
-                    <div class="value-icon"><i class="fas fa-layer-group"></i></div>
-                    <h3>Transparansi</h3>
-                    <p>Semua laporan, grafis keuangan, dan tren disajikan tanpa embel-embel rumit demi kejujuran finansial.</p>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-eye"></i></div>
+                    <div class="bento-content">
+                        <h3>Transparansi</h3>
+                        <p>Insight jelas, laporan mudah dipahami, tanpa istilah rumit.</p>
+                    </div>
                 </div>
-                <div class="value-card">
-                    <div class="value-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>Kecepatan & Kemudahan</h3>
-                    <p>Akses di manapun dari smartphone atau desktop, dikelola dalam hitungan detik tanpa hambatan teknis.</p>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="bento-content">
+                        <h3>Cepat & Praktis</h3>
+                        <p>Catat dan pantau keuangan Anda hanya dalam hitungan detik.</p>
+                    </div>
                 </div>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-users"></i></div>
+                    <div class="bento-content">
+                        <h3>Untuk Semua</h3>
+                        <p>Didesain agar bisa dipakai siapa pun, kapan pun, di mana pun.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA BOX -->
+        <section style="padding: 80px 20px; position: relative; z-index: 10; display: flex; justify-content: center;">
+            <div class="cta-box magnetic">
+                <img src="/images/asset-avatar/Main.png" alt="Main" style="width: 90px; margin-bottom: 25px;">
+                <h2>Bangun Finansialmu Sekarang</h2>
+                <p>Mulai catat pemasukan dan pengeluaranmu dengan cepat, aman, dan terasa premium.</p>
+                <a href="/auth/register" class="btn-primary">Mulai Gratis</a>
             </div>
         </section>
     </main>
 
-    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
-                <div class="logo" style="margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; color: var(--primary-blue); display: flex; align-items: center; letter-spacing: 1px;">
-                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px;"> CEKUANGKU
-                </div>
-                <p>Platform manajemen keuangan pribadi modern untuk membantu Anda mengelola pengeluaran dan mencapai kebebasan finansial.</p>
+                <a href="/" class="logo" style="margin-bottom: 25px;">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;"> CEKUANGKU
+                </a>
+                <p style="color: var(--text-muted); line-height: 1.8;">Visi kami adalah menciptakan ekosistem finansial
+                    yang inklusif dan mudah diakses bagi semua orang di Indonesia.</p>
             </div>
-
             <div class="footer-col">
-                <h3>Navigasi</h3>
-                <ul>
-                    <li><a href="/">Beranda</a></li>
-                    <li><a href="/#features">Fitur Kami</a></li>
+                <h4>Navigasi</h4>
+                <ul class="footer-links">
+                    <li><a href="/#home">Home</a></li>
+                    <li><a href="/#features">Fitur</a></li>
                     <li><a href="/about">Tentang Kami</a></li>
-                    <li><a href="/auth/login">Masuk / Daftar</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
-                <h3>Kontak & Dukungan</h3>
-                <ul>
-                    <li><a href="#">Pusat Bantuan</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">Syarat Ketentuan</a></li>
-                    <li><a href="#">Hubungi Developer</a></li>
+                <h4>Hubungi Kami</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Bantuan</a></li>
+                    <li><a href="#">Privasi</a></li>
+                    <li><a href="#">Instagram</a></li>
                 </ul>
             </div>
         </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2024 CekUangku Kelompok 5. All rights reserved.</p>
+        <div
+            style="text-align: center; margin-top: 80px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--glass-border); padding-top: 40px;">
+            &copy; 2024 CekUangku Kelompok 5. Powered by UI-UX Pro Max.
         </div>
     </footer>
 
+    <!-- INTERACTIVE SCRIPTS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme Toggle Logic
+            const cursor = document.getElementById('cursorFollower');
+            const spotlight = document.getElementById('cursorSpotlight');
+            const heroAvatar = document.getElementById('heroAvatar');
             const themeToggle = document.getElementById('themeToggle');
-            const icon = themeToggle.querySelector('i');
-            
-            // Check LocalStorage for persisting theme across pages
+            const themeIcon = document.getElementById('themeIcon');
+            const magneticElements = document.querySelectorAll('.magnetic');
+
+            // --- Theme Toggle Logic ---
             const storedTheme = localStorage.getItem('theme');
             if (storedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                icon.classList.replace('fa-moon', 'fa-sun');
+                document.documentElement.classList.add('dark-mode');
             }
-            
-            themeToggle.addEventListener('click', () => {
-                // Animation rotation
-                themeToggle.classList.add('rotated');
-                setTimeout(() => { themeToggle.classList.remove('rotated'); }, 500);
 
-                // Toggle logic
+            const updateIcon = (isDark) => {
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            };
+            updateIcon(document.body.classList.contains('dark-mode'));
+
+            themeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    icon.classList.replace('fa-moon', 'fa-sun');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    icon.classList.replace('fa-sun', 'fa-moon');
-                    localStorage.setItem('theme', 'light');
+                document.documentElement.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateIcon(isDark);
+            });
+
+            // --- Mouse Track ---
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            let spotlightX = 0, spotlightY = 0;
+            let avatarX = 0, avatarY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            const animate = () => {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+
+                spotlightX += (mouseX - spotlightX) * 0.1;
+                spotlightY += (mouseY - spotlightY) * 0.1;
+
+                cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+                spotlight.style.transform = `translate3d(${spotlightX}px, ${spotlightY}px, 0) translate(-50%, -50%)`;
+
+                if (heroAvatar) {
+                    const rect = heroAvatar.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    const targetAvatarX = (mouseX - centerX) / 30;
+                    const targetAvatarY = (mouseY - centerY) / 30;
+
+                    avatarX += (targetAvatarX - avatarX) * 0.05;
+                    avatarY += (targetAvatarY - avatarY) * 0.05;
+
+                    heroAvatar.style.transform = `translate3d(${avatarX}px, ${avatarY}px, 0) rotate(${avatarX * 0.1}deg)`;
                 }
+
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+
+            // --- Magnetic Effect ---
+            magneticElements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = '';
+                });
+            });
+
+            // --- Hover interactions ---
+            document.querySelectorAll('a, button, .bento-item, .about-card').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width = '60px';
+                    cursor.style.height = '60px';
+                    cursor.style.opacity = '0.3';
+                    cursor.style.background = 'var(--secondary)';
+                    cursor.style.mixBlendMode = 'normal';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width = '20px';
+                    cursor.style.height = '20px';
+                    cursor.style.opacity = '1';
+                    cursor.style.background = 'var(--primary)';
+                    cursor.style.mixBlendMode = 'difference';
+                });
             });
         });
     </script>
 </body>
+
 </html>
