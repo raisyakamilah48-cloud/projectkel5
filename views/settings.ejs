@@ -283,25 +283,27 @@
         }
 
         // Toggle Calculator Features
-        function toggleCalculator() {
+        async function toggleCalculator() {
             var isChecked = document.getElementById('calculatorToggle').checked;
-            fetch('/settings/toggle-calculator', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ active: isChecked })
-            }).then(r => r.json()).then(data => {
+            try {
+                const response = await fetch('/settings/toggle-calculator', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ active: isChecked })
+                });
+                const data = await response.json();
+                
                 if(data.success) {
-                    // Coba reload halaman supaya partial kalkulator ke-render
                     window.location.reload();
                 } else {
-                    alert('Gagal memperbarui pengaturan Kalkulator.');
+                    await CekUangkuDialog.alert('Gagal memperbarui pengaturan Kalkulator.', 'Kesalahan', 'error');
                     document.getElementById('calculatorToggle').checked = !isChecked; // revert
                 }
-            }).catch(e => {
+            } catch (e) {
                 console.error(e);
-                alert('Terjadi kesalahan jaringan.');
+                await CekUangkuDialog.alert('Terjadi kesalahan jaringan.', 'Kesalahan', 'error');
                 document.getElementById('calculatorToggle').checked = !isChecked; // revert
-            });
+            }
         }
     </script>
 </body>

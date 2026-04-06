@@ -256,7 +256,7 @@
                                         <button class="btn-icon edit" title="Edit" onclick="openEditModal(<%= cat.id %>, '<%= cat.name.replace(/'/g, "\\'") %>', '<%= cat.type %>')">
                                             <i class="fas fa-pen"></i>
                                         </button>
-                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus kategori <%= cat.name %>?')">
+                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus kategori <%= cat.name %>?', this)">
                                             <button type="submit" class="btn-icon delete" title="Hapus"><i class="fas fa-trash-alt"></i></button>
                                         </form>
                                     </div>
@@ -281,7 +281,7 @@
                                         <button class="btn-icon edit" title="Edit" onclick="openEditModal(<%= cat.id %>, '<%= cat.name.replace(/'/g, "\\'") %>', '<%= cat.type %>')">
                                             <i class="fas fa-pen"></i>
                                         </button>
-                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus kategori <%= cat.name %>?')">
+                                        <form action="/categories/delete/<%= cat.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus kategori <%= cat.name %>?', this)">
                                             <button type="submit" class="btn-icon delete" title="Hapus"><i class="fas fa-trash-alt"></i></button>
                                         </form>
                                     </div>

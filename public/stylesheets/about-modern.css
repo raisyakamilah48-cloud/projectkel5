@@ -145,3 +145,30 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   CUSTOM SCROLLBAR STYLES (Modern Blue)
+   ========================================= */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3730A3;
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}

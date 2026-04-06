@@ -606,7 +606,7 @@
                                         <div class="trans-amount <%= t.type === 'income' ? 'positive' : 'negative' %>">
                                             <%= t.type === 'income' ? '+' : '-' %> Rp <%= parseInt(t.amount).toLocaleString('id-ID') %>
                                         </div>
-                                        <form action="/transactions/delete/<%= t.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus transaksi ini?')">
+                                        <form action="/transactions/delete/<%= t.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus transaksi ini?', this)">
                                             <button type="submit" class="btn-delete" title="Hapus">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
@@ -680,11 +680,11 @@
         }
 
         // Validasi sebelum submit — pastikan amount terisi
-        document.getElementById('transForm').addEventListener('submit', function(e) {
+        document.getElementById('transForm').addEventListener('submit', async function(e) {
             const raw = document.getElementById('amountRaw').value;
             if (!raw || parseInt(raw) <= 0) {
                 e.preventDefault();
-                alert('Masukkan jumlah yang valid!');
+                await CekUangkuDialog.alert('Masukkan jumlah yang valid!', 'Gagal', 'error');
             }
         });
 

@@ -254,7 +254,7 @@
             let stats = await fetchStats();
             btnElements.forEach(el => { el.classList.remove('fa-spin'); el.classList.add('fa-check'); setTimeout(() => el.classList.remove('fa-check'), 1000); });
             
-            if (!stats) return alert('Gagal mengambil data keuangan Anda.');
+            if (!stats) return await CekUangkuDialog.alert('Gagal mengambil data keuangan Anda.', 'Gagal', 'error');
 
             if (calcJustEvaluated) {
                 calcExpression = "";

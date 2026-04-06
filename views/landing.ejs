@@ -26,7 +26,10 @@
     </script>
 </head>
 
-<body>
+    <!-- SCROLL PROGRESS BAR -->
+    <div class="scroll-progress-container">
+        <div class="scroll-progress-bar" id="progressBar"></div>
+    </div>
 
     <!-- CUSTOM CURSOR ELEMENTS -->
     <div class="cursor-follower" id="cursorFollower"></div>
@@ -407,6 +410,15 @@
                     cursor.style.background = 'var(--primary)';
                     cursor.style.mixBlendMode = 'difference';
                 });
+            });
+
+            // --- Scroll Progress Bar Logic ---
+            const progressBar = document.getElementById('progressBar');
+            window.addEventListener('scroll', () => {
+                const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPosition = window.pageYOffset;
+                const scrollPercent = (scrollPosition / totalScroll) * 100;
+                progressBar.style.width = `${scrollPercent}%`;
             });
         });
     </script>

@@ -442,7 +442,7 @@
                                                 <div style="font-weight: 700; font-size: 0.95rem; color:<%= pctColor %>;">Rp <%= item.spent.toLocaleString('id-ID') %></div>
                                                 <div style="font-size: 0.7rem; color: var(--text-muted);">Terpakai</div>
                                             </div>
-                                            <form action="/budget/delete/<%= item.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus anggaran <%= item.category %>?')">
+                                            <form action="/budget/delete/<%= item.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus anggaran <%= item.category %>?', this)">
                                                 <button type="submit" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -505,11 +505,11 @@
             }
         }
 
-        document.getElementById('budgetForm').addEventListener('submit', function(e) {
+        document.getElementById('budgetForm').addEventListener('submit', async function(e) {
             const raw = document.getElementById('budgetRaw').value;
             if (!raw || parseInt(raw) <= 0) {
                 e.preventDefault();
-                alert('Masukkan jumlah anggaran yang valid!');
+                await CekUangkuDialog.alert('Masukkan jumlah anggaran yang valid!', 'Gagal', 'error');
             }
         });
 

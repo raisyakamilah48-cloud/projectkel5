@@ -238,7 +238,7 @@
                                         <button type="submit" class="btn-icon" title="Jadikan utama"><i class="fas fa-star"></i></button>
                                     </form>
                                 <% } %>
-                                <form action="/wallets/delete/<%= w.id %>" method="POST" style="margin:0;" onsubmit="return confirm('Hapus dompet ini? Transaksi yang sudah tercatat tidak akan ikut terhapus.')">
+                                <form action="/wallets/delete/<%= w.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus dompet ini? Transaksi yang sudah tercatat tidak akan ikut terhapus.', this)">
                                     <button type="submit" class="btn-icon" style="background: rgba(239, 68, 68, 0.4);" title="Hapus"><i class="fas fa-trash"></i></button>
                                 </form>
                             </div>
