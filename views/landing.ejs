@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CekUangku - Kelola Keuangan Cerdas & Modern</title>
+    <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
+
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="/stylesheets/landing-modern.css">
+
+    <script>
+        // Init theme immediately to prevent FOUC
+        (function () {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+</head>
+
+    <!-- SCROLL PROGRESS BAR -->
+    <div class="scroll-progress-container">
+        <div class="scroll-progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- CUSTOM CURSOR ELEMENTS -->
+    <div class="cursor-follower" id="cursorFollower"></div>
+    <div class="cursor-spotlight" id="cursorSpotlight"></div>
+
+    <!-- BACKGROUND TEXTURE -->
+    <div class="bg-texture">
+        <div class="bg-dot-pattern"></div>
+    </div>
+
+    <!-- AURORA BACKGROUND (MESH GRADIENT) -->
+    <div class="aurora-bg">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="glass-nav">
+        <a href="/" class="logo">
+            <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;">
+            <span class="logo-text"><span class="logo-ce">CEK</span>UANGKU</span>
+        </a>
+        <div class="nav-links">
+            <a href="#home">HOME</a>
+            <a href="#features">FEATURES</a>
+            <a href="/about">ABOUT</a>
+            <a href="/auth/login">LOGIN</a>
+        </div>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <% if (user) { %>
+                <a href="/dashboard" class="btn-primary" style="padding: 10px 25px;">DASHBOARD</a>
+                <% } else { %>
+                    <a href="/auth/register" class="btn-primary" style="padding: 10px 25px;">GET STARTED</a>
+                    <% } %>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <h1>
+                        <span id="typeLine1"></span><span class="typing-cursor cursor-line1"></span><br>
+                        <span id="typeLine2"></span><span class="typing-cursor cursor-line2"></span>
+                    </h1>
+                    <p class="hero-desc">
+                        Platform manajemen keuangan cerdas yang membantu Anda melacak setiap rupiah dengan antarmuka
+                        premium dan pengalaman pengguna terbaik.
+                    </p>
+                    <div class="cta-group">
+                        <% if (user) { %>
+                            <a href="/dashboard" class="btn-primary magnetic">PENGELOLA DASHBOARD</a>
+                            <% } else { %>
+                                <a href="/auth/register" class="btn-primary magnetic">COBA SEKARANG</a>
+                                <% } %>
+                                    <a href="#features" class="btn-secondary magnetic">FITUR KAMI</a>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <!-- Constrained container for local positioning -->
+                    <div
+                        style="position: relative; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center;">
+                        <div class="visual-orbit"></div>
+                        <img src="/images/asset-avatar/Thingking.png" alt="Thinking" class="floating-avatar"
+                            id="heroAvatar" style="width: 100%; height: auto;">
+
+                        <!-- Decorative Floating Badges - Clustered Locally -->
+                        <div class="floating-badge" id="badgeWallet" style="top: -20px; right: -50px;">
+                            <div class="badge-icon"><i class="fas fa-wallet"></i></div>
+                            <div class="badge-text"
+                                style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">Wallet</div>
+                        </div>
+
+                        <div class="floating-badge" id="badgeBalance" style="bottom: 20px; left: -70px;">
+                            <div class="badge-text" style="font-weight: 700; font-size: 1.1rem; color: #10B981;">
+                                +$2.450,00</div>
+                        </div>
+
+                        <div class="floating-badge" id="badgeChart" style="top: 140px; right: -90px; padding: 10px;">
+                            <div class="badge-icon" style="font-size: 1.2rem; color: #F59E0B;"><i
+                                    class="fas fa-chart-line"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BENTO FEATURES -->
+        <section id="features" class="features">
+            <div class="section-title">
+                <h2>Fitur <span>Cerdas</span> Kami</h2>
+                <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; text-align: center;">Kelola
+                    keuangan dengan cara yang belum pernah Anda rasakan sebelumnya.</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Analytics -->
+                <div class="bento-item bento-2x2">
+                    <div class="bento-icon"><i class="fas fa-chart-pie"></i></div>
+                    <div class="bento-content">
+                        <h3>Analisis Mendalam</h3>
+                        <p>Dapatkan insight visual tentang kebiasaan belanja Anda dengan grafik yang indah dan mudah
+                            dipahami.</p>
+                    </div>
+                    <img src="/images/asset-avatar/Happy.png" alt="Happy" class="bento-img">
+                </div>
+
+                <!-- Secure -->
+                <div class="bento-item bento-1x2">
+                    <div class="bento-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div class="bento-content">
+                        <h3>Data Terlindungi</h3>
+                        <p>Kami menggunakan enkripsi tingkat lanjut untuk memastikan privasi data keuangan Anda tetap
+                            terjaga.</p>
+                    </div>
+                    <img src="/images/asset-avatar/Main.png" alt="Main" class="bento-img" style="width: 140px;">
+                </div>
+
+                <!-- Fast -->
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="bento-content">
+                        <h3>Sangat Cepat</h3>
+                        <p>Catat transaksi harian Anda hanya dalam hitungan detik.</p>
+                    </div>
+                </div>
+
+                <!-- Team -->
+                <div class="bento-item bento-2x1">
+                    <div class="bento-icon"><i class="fas fa-users-viewfinder"></i></div>
+                    <div class="bento-content">
+                        <h3>Dibuat Untuk Anda</h3>
+                        <p>Bergabunglah dengan komunitas pengguna yang peduli akan masa depan finansial yang lebih baik.
+                        </p>
+                    </div>
+                    <img src="/images/asset-avatar/confusion.png" alt="Confusion" class="bento-img"
+                        style="opacity: 0.2; width: 100px;">
+                </div>
+
+                <!-- Support -->
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-circle-question"></i></div>
+                    <div class="bento-content">
+                        <h3>Support 24/7</h3>
+                        <p>Butuh bantuan? Tim kami selalu siap melayani Anda.</p>
+                    </div>
+                    <img src="/images/asset-avatar/Erro.png" alt="Error" class="bento-img"
+                        style="opacity: 0.1; width: 80px; bottom: 10px;">
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA BOX -->
+        <section style="padding: 100px 20px; position: relative; z-index: 10; display: flex; justify-content: center;">
+            <div class="cta-box magnetic">
+                <img src="/images/asset-avatar/Happy.png" alt="Happy" style="width: 100px; margin-bottom: 25px;">
+                <h2>Siap Untuk Perubahan?</h2>
+                <p>Bergabunglah bersama ribuan orang lainnya yang telah memulai perjalanan finansial mereka bersama
+                    CekUangku. Catat pendapatan dan pengeluaran Anda dengan mudah dan tepat.</p>
+                <a href="/auth/register" class="btn-primary">Daftar Sekarang Secara Gratis</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="/" class="logo" style="margin-bottom: 25px;">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;"> CEKUANGKU
+                </a>
+                <p style="color: var(--text-muted); line-height: 1.8;">Visi kami adalah menciptakan ekosistem finansial
+                    yang inklusif dan mudah diakses bagi semua orang di Indonesia.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi</h4>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Fitur</a></li>
+                    <li><a href="/about">Tentang Kami</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hubungi Kami</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Bantuan</a></li>
+                    <li><a href="#">Privasi</a></li>
+                    <li><a href="#">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            style="text-align: center; margin-top: 80px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--glass-border); padding-top: 40px;">
+            &copy; 2024 CekUangku Kelompok 5. Powered by UI-UX Pro Max.
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.getElementById('cursorFollower');
+            const spotlight = document.getElementById('cursorSpotlight');
+            const heroAvatar = document.getElementById('heroAvatar');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const magneticElements = document.querySelectorAll('.magnetic');
+
+            // --- Badges for Parallax ---
+            const badgeWallet = document.getElementById('badgeWallet');
+            const badgeBalance = document.getElementById('badgeBalance');
+            const badgeChart = document.getElementById('badgeChart');
+
+            // --- State variables for smoothing ---
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            let spotlightX = 0, spotlightY = 0;
+            let avatarX = 0, avatarY = 0;
+
+            // lerp variables for badges
+            let b1X = 0, b1Y = 0, b2X = 0, b2Y = 0, b3X = 0, b3Y = 0;
+
+            // --- Theme Toggle Logic ---
+            const updateIcon = (isDark) => {
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            };
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark-mode');
+            }
+
+            updateIcon(document.body.classList.contains('dark-mode'));
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                document.documentElement.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateIcon(isDark);
+            });
+
+            // --- Typing Effect Logic ---
+            const text1 = "KELOLA\u00A0UANG";
+            const text2 = "CERDAS";
+            const speed = 100;
+            const line1El = document.getElementById('typeLine1');
+            const line2El = document.getElementById('typeLine2');
+            const cursorLine1 = document.querySelector('.cursor-line1');
+            const cursorLine2 = document.querySelector('.cursor-line2');
+
+            let i = 0;
+            let j = 0;
+
+            function setCursor(line) {
+                if (!cursorLine1 || !cursorLine2) return;
+                cursorLine1.style.display = line === 1 ? 'inline-block' : 'none';
+                cursorLine2.style.display = line === 2 ? 'inline-block' : 'none';
+            }
+
+            function typeWriter() {
+                if (i < text1.length) {
+                    setCursor(1);
+                    line1El.textContent += text1.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed + Math.random() * 50);
+                } else if (j < text2.length) {
+                    setCursor(2);
+                    line2El.textContent += text2.charAt(j);
+                    j++;
+                    setTimeout(typeWriter, speed + Math.random() * 50);
+                } else {
+                    setCursor(2);
+                    // Typing finished - Wait 20 seconds before restarting
+                    setTimeout(() => {
+                        // Clear text for restart
+                        line1El.textContent = "";
+                        line2El.textContent = "";
+                        i = 0;
+                        j = 0;
+                        setCursor(1);
+                        // Short delay before actual restart
+                        setTimeout(typeWriter, 1000);
+                    }, 20000);
+                }
+            }
+
+            // Start typing
+            setCursor(1);
+            setTimeout(typeWriter, 500);
+
+            // --- Mouse Track ---
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // --- Animation Loop (High Performance) ---
+            const animate = () => {
+                // Smooth interpolation (lerp)
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+
+                spotlightX += (mouseX - spotlightX) * 0.1;
+                spotlightY += (mouseY - spotlightY) * 0.1;
+
+                // Apply transforms
+                cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+                spotlight.style.transform = `translate3d(${spotlightX}px, ${spotlightY}px, 0) translate(-50%, -50%)`;
+
+                if (heroAvatar) {
+                    const rect = heroAvatar.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    const targetAvatarX = (mouseX - centerX) / 30;
+                    const targetAvatarY = (mouseY - centerY) / 30;
+
+                    avatarX += (targetAvatarX - avatarX) * 0.05;
+                    avatarY += (targetAvatarY - avatarY) * 0.05;
+
+                    heroAvatar.style.transform = `translate3d(${avatarX}px, ${avatarY}px, 0) rotate(${avatarX * 0.1}deg)`;
+
+                    // Update Parallax Badges
+                    if (badgeWallet) {
+                        b1X += ((mouseX - centerX) / 20 - b1X) * 0.08;
+                        b1Y += ((mouseY - centerY) / 20 - b1Y) * 0.08;
+                        badgeWallet.style.transform = `translate3d(${b1X}px, ${b1Y}px, 0)`;
+                    }
+                    if (badgeBalance) {
+                        b2X += ((mouseX - centerX) / 15 - b2X) * 0.06;
+                        b2Y += ((mouseY - centerY) / 15 - b2Y) * 0.06;
+                        badgeBalance.style.transform = `translate3d(${b2X}px, ${b2Y}px, 0)`;
+                    }
+                    if (badgeChart) {
+                        b3X += ((mouseX - centerX) / 25 - b3X) * 0.1;
+                        b3Y += ((mouseY - centerY) / 25 - b3Y) * 0.1;
+                        badgeChart.style.transform = `translate3d(${b3X}px, ${b3Y}px, 0)`;
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            };
+
+            // Start loop
+            animate();
+
+            // --- Magnetic Effect (Simple transforms) ---
+            magneticElements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = '';
+                });
+            });
+
+            // --- Hover interactions ---
+            document.querySelectorAll('a, button, .bento-item, .floating-badge').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width = '60px';
+                    cursor.style.height = '60px';
+                    cursor.style.opacity = '0.3';
+                    cursor.style.background = 'var(--secondary)';
+                    cursor.style.mixBlendMode = 'normal';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width = '20px';
+                    cursor.style.height = '20px';
+                    cursor.style.opacity = '1';
+                    cursor.style.background = 'var(--primary)';
+                    cursor.style.mixBlendMode = 'difference';
+                });
+            });
+
+            // --- Scroll Progress Bar Logic ---
+            const progressBar = document.getElementById('progressBar');
+            window.addEventListener('scroll', () => {
+                const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPosition = window.pageYOffset;
+                const scrollPercent = (scrollPosition / totalScroll) * 100;
+                progressBar.style.width = `${scrollPercent}%`;
+            });
+        });
+    </script>
+</body>
+
+</html>

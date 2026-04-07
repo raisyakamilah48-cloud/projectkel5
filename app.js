@@ -4,15 +4,18 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
+var db = require('./config/database');
 
-// Import Routes yang BENAR
-var authRouter = require('./routes/auth');   // Untuk Login/Register
-var indexRouter = require('./routes/index'); // Ini biasanya untuk Dashboard
-var transactionsRouter = require('./routes/transactions'); // TAMBAHKAN INI
-var reportsRouter = require('./routes/reports'); // Tambahkan ini
-var adminRouter = require('./routes/admin'); // Tambahkan ini
-// Jika Anda punya file dashboard.js terpisah, uncomment baris bawah:
-// var dashboardRouter = require('./routes/dashboard');
+// Import Routes
+var authRouter = require('./routes/auth');
+var indexRouter = require('./routes/index'); // Ini untuk Dashboard
+var transactionsRouter = require('./routes/transactions');
+var reportsRouter = require('./routes/reports');
+var adminRouter = require('./routes/admin');
+var budgetRouter = require('./routes/budget');
+var categoriesRouter = require('./routes/categories');
+var walletsRouter = require('./routes/wallets');
+var settingsRouter = require('./routes/settings');
 
 var app = express();
 
@@ -25,10 +28,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// PENTING: Agar CSS, JS, dan Gambar bisa terbaca
+// Setup Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// session
+// Session Setup
 app.use(session({
   secret: 'cekuangku_secret',
   resave: false,
@@ -36,36 +39,59 @@ app.use(session({
   cookie: { maxAge: 3600000 } // 1 jam
 }));
 
-// --- PERBAIKAN ROUTING DI SINI ---
+// --- ROUTING ---
 
-app.use('/admin', adminRouter); 
+// 1. HALAMAN LANDING PAGE (/)
+app.get('/', function(req, res) {
+    res.render('landing', { 
+        user: req.session.user 
+    });
+});
 
-// 1. Route untuk Halaman Utama (/) -> Arahkan ke Login jika belum login
-app.use('/', indexRouter); 
+// 2. HALAMAN TENTANG KAMI (/about)
+app.get('/about', function(req, res) {
+    res.render('about', { 
+        user: req.session.user 
+    });
+});
 
-app.use('/', authRouter); 
+// 3. ROUTE BUDGET (/budget)
+app.use('/budget', budgetRouter);
 
-// 2. Route untuk Auth (/auth/login, /auth/register) -> Kita pakai authRouter
+// 3. ROUTE ADMIN (/admin)
+app.use('/admin', adminRouter);
+
+// 4. ROUTE AUTH (/auth/login, /auth/register)
 app.use('/auth', authRouter);
 
-// 3. Route untuk Dashboard (/dashboard)
-// Kita gunakan indexRouter (atau dashboardRouter jika Anda buat file baru)
-// Tambahkan middleware cekLogin di sini agar hanya yang login yang bisa akses
+// 5. ROUTE DASHBOARD (/dashboard)
+// Middleware proteksi: Hanya bisa diakses jika ada session user
 app.use('/dashboard', function(req, res, next) {
     if(req.session.user){
-        next(); // Lanjut ke router
+        next();
     } else {
-        res.redirect('/auth/login'); // Belum login? tendang ke login
+        res.redirect('/auth/login');
     }
-}, indexRouter); 
+}, indexRouter);
 
-app.use('/transactions', transactionsRouter); // TAMBAHKAN INI (Route Transaksi)
-
+// 6. ROUTE LAINNYA
+app.use('/transactions', transactionsRouter);
 app.use('/reports', reportsRouter);
+app.use('/categories', categoriesRouter);
+app.use('/wallets', walletsRouter);
+app.use('/settings', settingsRouter);
 
 // catch 404
 app.use(function(req, res, next) {
   next(createError(404));
+});
+
+// Error handler
+app.use(function(err, req, res, next) {
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;

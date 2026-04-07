@@ -1,0 +1,556 @@
+<!-- views/budget.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anggaran - CekUangku</title>
+    <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3730a3;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --info: #6366f1;
+            --info-light: #e0e7ff;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar {
+            width: var(--sidebar-w); background: var(--card-bg); height: 100vh;
+            display: flex; flex-direction: column;
+            border-right: 1px solid var(--border);
+            position: fixed; left: 0; top: 0; z-index: 100;
+            transition: transform .3s ease;
+        }
+        .sidebar-brand { padding: 24px 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-brand .brand-icon {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        .sidebar-brand .brand-name {
+            font-size: 1.25rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); padding: 12px 16px 8px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 16px; border-radius: 10px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: all .2s ease; margin-bottom: 2px;
+        }
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(6, 182, 212, 0.05));
+            color: var(--primary); font-weight: 600;
+        }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; }
+        .user-avatar {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 1rem;
+        }
+        .user-info { flex: 1; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
+        .user-info .status { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .btn-logout { color: var(--text-muted); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: var(--danger); }
+
+        /* ---- MAIN ---- */
+        .main-area { margin-left: var(--sidebar-w); flex: 1; overflow-y: auto; overflow-x: hidden; }
+
+        .top-header {
+            background: var(--card-bg); padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .page-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+        .page-title p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+
+        .content-area { padding: 28px 32px; }
+
+        /* ---- SUMMARY CARDS ---- */
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
+
+        .summary-card {
+            background: var(--card-bg); border-radius: 16px; padding: 24px;
+            border: 1px solid var(--border); position: relative; overflow: hidden;
+            transition: all .3s ease;
+        }
+        .summary-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; }
+        .summary-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); }
+        .summary-card.total::before { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+        .summary-card.spent::before { background: linear-gradient(90deg, var(--danger), #fb923c); }
+        .summary-card.remaining::before { background: linear-gradient(90deg, var(--success), #34d399); }
+
+        .summary-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .summary-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+        .summary-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .summary-icon.blue { background: var(--info-light); color: var(--primary); }
+        .summary-icon.red { background: var(--danger-light); color: var(--danger); }
+        .summary-icon.green { background: var(--success-light); color: var(--success); }
+        .summary-value { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+        .summary-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* Progress Ring in Summary */
+        .progress-ring-mini {
+            width: 44px; height: 44px; position: relative;
+        }
+        .progress-ring-mini svg { transform: rotate(-90deg); }
+        .progress-ring-mini .pct-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 0.65rem; font-weight: 700;
+        }
+
+        /* ---- MAIN GRID ---- */
+        .budget-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg); border-radius: 16px; padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1rem; font-weight: 700; color: var(--text-primary);
+            margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+        }
+        .card-title i { color: var(--primary); }
+
+        /* ---- FORM ---- */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-size: 0.9rem; font-family: 'Inter', sans-serif;
+            color: var(--text-primary); background: #fafbfc;
+            outline: none; transition: all .2s;
+        }
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
+
+        .amount-wrapper { position: relative; }
+        .amount-wrapper .currency-label {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            font-weight: 700; color: var(--text-muted); font-size: 0.85rem;
+        }
+        .amount-wrapper .form-input { padding-left: 40px; font-weight: 700; font-size: 1.1rem; }
+
+        .btn-submit {
+            width: 100%; padding: 13px; border: none; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all .3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); }
+
+        /* ---- BUDGET LIST ---- */
+        .budget-item {
+            padding: 16px; border-radius: 12px;
+            margin-bottom: 8px; border: 1px solid transparent;
+            transition: all .2s;
+        }
+        .budget-item:hover { background: #f8fafc; border-color: var(--border); }
+
+        .budget-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .budget-cat { display: flex; align-items: center; gap: 10px; }
+        .budget-cat-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+        }
+        .budget-cat-name { font-weight: 600; font-size: 0.9rem; }
+        .budget-cat-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+        .budget-amounts { text-align: right; }
+        .budget-spent { font-size: 0.85rem; font-weight: 700; }
+        .budget-limit { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Progress Bar */
+        .progress-track {
+            width: 100%; height: 8px; background: #f1f5f9;
+            border-radius: 10px; overflow: hidden; margin-bottom: 6px;
+        }
+        .progress-fill {
+            height: 100%; border-radius: 10px;
+            transition: width .6s ease;
+        }
+
+        .budget-footer { display: flex; justify-content: space-between; align-items: center; }
+        .budget-pct { font-size: 0.75rem; font-weight: 600; }
+        .budget-remaining { font-size: 0.75rem; color: var(--text-muted); }
+
+        .btn-delete-budget {
+            width: 28px; height: 28px; border: none; background: transparent;
+            color: var(--text-muted); border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s; font-size: 0.75rem;
+        }
+        .btn-delete-budget:hover { background: var(--danger-light); color: var(--danger); }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); opacity: 0.4; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .empty-state p { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Chart Section */
+        .chart-wrap { position: relative; height: 250px; margin-top: 16px; }
+
+        /* ---- CATEGORY COLORS ---- */
+        .cat-food { background: #dcfce7; color: #16a34a; }
+        .cat-transport { background: #ffedd5; color: #ea580c; }
+        .cat-shopping { background: #f3e8ff; color: #9333ea; }
+        .cat-bills { background: #fee2e2; color: #dc2626; }
+        .cat-health { background: #dbeafe; color: #2563eb; }
+        .cat-edu { background: #fef3c7; color: #d97706; }
+        .cat-entertainment { background: #fce7f3; color: #db2777; }
+        .cat-default { background: var(--info-light); color: var(--primary); }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .summary-card { animation: slideUp .4s ease forwards; }
+        .summary-card:nth-child(1) { animation-delay: .05s; }
+        .summary-card:nth-child(2) { animation-delay: .1s; }
+        .summary-card:nth-child(3) { animation-delay: .15s; }
+        .budget-grid { animation: slideUp .4s ease .2s forwards; opacity: 0; }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 1100px) { .budget-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+            .summary-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) { .content-area { padding: 20px 16px; } }
+
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
+        .menu-toggle:hover { background: #f1f5f9; }
+
+        /* ---- MONTH BADGE ---- */
+        .month-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; border-radius: 20px; font-size: 0.82rem; font-weight: 600;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <!-- ===== SIDEBAR ===== -->
+    <%- include('partials/sidebar', { activeMenu: 'budget' }) %>
+
+    <!-- ===== MAIN AREA ===== -->
+    <main class="main-area">
+        <header class="top-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars" style="font-size:1.2rem;"></i>
+                </button>
+                <div class="page-title">
+                    <h2><i class="fas fa-bullseye" style="color:var(--primary);margin-right:8px;"></i>Kelola Anggaran</h2>
+                    <p>Atur batas pengeluaran per kategori setiap bulan</p>
+                </div>
+            </div>
+            <%
+                const monthNames = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            %>
+            <span class="month-badge">
+                <i class="fas fa-calendar-alt"></i> <%= monthNames[currentMonth] %> <%= currentYear %>
+            </span>
+        </header>
+
+        <div class="content-area">
+
+            <!-- SUMMARY CARDS -->
+            <div class="summary-grid">
+                <div class="summary-card total">
+                    <div class="summary-top">
+                        <span class="summary-label">Total Anggaran</span>
+                        <div class="summary-icon blue"><i class="fas fa-bullseye"></i></div>
+                    </div>
+                    <div class="summary-value">Rp <%= totalBudget.toLocaleString('id-ID') %></div>
+                    <div class="summary-sub"><%= budgetItems.length %> kategori dianggarkan</div>
+                </div>
+                <div class="summary-card spent">
+                    <div class="summary-top">
+                        <span class="summary-label">Sudah Terpakai</span>
+                        <div class="summary-icon red"><i class="fas fa-shopping-cart"></i></div>
+                    </div>
+                    <div class="summary-value">Rp <%= totalSpent.toLocaleString('id-ID') %></div>
+                    <div class="summary-sub">
+                        <% if (totalBudget > 0) { %>
+                            <%= totalPercent %>% dari anggaran
+                        <% } else { %>
+                            Belum ada anggaran
+                        <% } %>
+                    </div>
+                </div>
+                <div class="summary-card remaining">
+                    <div class="summary-top">
+                        <span class="summary-label">Sisa Anggaran</span>
+                        <div class="summary-icon green"><i class="fas fa-piggy-bank"></i></div>
+                    </div>
+                    <div class="summary-value" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
+                        <%= totalRemaining >= 0 ? '' : '-' %>Rp <%= Math.abs(totalRemaining).toLocaleString('id-ID') %>
+                    </div>
+                    <div class="summary-sub" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
+                        <i class="fas fa-<%= totalRemaining >= 0 ? 'check-circle' : 'exclamation-triangle' %>"></i>
+                        <%= totalRemaining >= 0 ? 'Keuangan terkontrol' : 'Anggaran terlampaui!' %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="budget-grid">
+
+                <!-- FORM CARD -->
+                <div class="card" style="height:fit-content;position:sticky;top:96px;">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Anggaran</div>
+
+                    <form action="/budget/add" method="POST" id="budgetForm">
+                        <div class="form-group">
+                            <label class="form-label">Kategori</label>
+                            <% if (categories && categories.length > 0) { %>
+                                <select name="category" class="form-input">
+                                    <% categories.forEach(function(cat) { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }) %>
+                                </select>
+                            <% } else { %>
+                                <select name="category" class="form-input">
+                                    <option value="">-- Belum ada kategori --</option>
+                                </select>
+                                <p style="margin-top:6px;font-size:0.75rem;color:var(--text-muted);">
+                                    <i class="fas fa-info-circle"></i> <a href="/categories" style="color:var(--primary);">Tambah kategori pengeluaran</a> terlebih dahulu
+                                </p>
+                            <% } %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Batas Anggaran</label>
+                            <div class="amount-wrapper">
+                                <span class="currency-label">Rp</span>
+                                <input type="text" id="budgetDisplay" class="form-input" placeholder="0" required oninput="formatBudgetRupiah(this)" autocomplete="off">
+                                <input type="hidden" name="amount" id="budgetRaw">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Simpan Anggaran
+                        </button>
+                    </form>
+
+                    <p style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+                        <i class="fas fa-info-circle"></i> Jika kategori sudah ada, nilai anggaran akan diperbarui
+                    </p>
+                </div>
+
+                <!-- BUDGET LIST + CHART -->
+                <div>
+                    <!-- Budget Items -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                            <span><i class="fas fa-list-check"></i> Rincian Anggaran</span>
+                            <span style="font-size:0.8rem;color:var(--text-muted);background:#f1f5f9;padding:4px 12px;border-radius:20px;font-weight:600;">
+                                <%= budgetItems.length %> kategori
+                            </span>
+                        </div>
+
+                        <% if (budgetItems.length > 0) { %>
+                            <% 
+                            const catIcons = {
+                                'Makanan & Minuman': { icon: 'fa-utensils', cls: 'cat-food' },
+                                'Transportasi': { icon: 'fa-car', cls: 'cat-transport' },
+                                'Belanja': { icon: 'fa-shopping-bag', cls: 'cat-shopping' },
+                                'Tagihan': { icon: 'fa-file-invoice-dollar', cls: 'cat-bills' },
+                                'Kesehatan': { icon: 'fa-heartbeat', cls: 'cat-health' },
+                                'Pendidikan': { icon: 'fa-graduation-cap', cls: 'cat-edu' },
+                                'Hiburan': { icon: 'fa-film', cls: 'cat-entertainment' }
+                            };
+                            %>
+                            <% budgetItems.forEach(function(item) { %>
+                                <%
+                                    const catInfo = catIcons[item.category] || { icon: 'fa-tag', cls: 'cat-default' };
+                                    let barColor = 'linear-gradient(90deg, var(--primary), var(--accent))';
+                                    let pctColor = 'var(--primary)';
+                                    if (item.percent >= 80) { barColor = 'linear-gradient(90deg, #ef4444, #f97316)'; pctColor = 'var(--danger)'; }
+                                    else if (item.percent >= 50) { barColor = 'linear-gradient(90deg, #f59e0b, #eab308)'; pctColor = 'var(--warning)'; }
+                                %>
+                                <div class="budget-item" style="width: 100%; padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; box-sizing: border-box;">
+                                    <!-- Bagian Atas: Info Kategori & Angka -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                        <!-- Kiri: Ikon & Nama -->
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <div class="budget-cat-icon <%= catInfo.cls %>" style="width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; display:flex; align-items:center; justify-content:center;">
+                                                <i class="fas <%= catInfo.icon %>"></i>
+                                            </div>
+                                            <div style="text-align: left;">
+                                                <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 2px;"><%= item.category %></div>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                                    Batas: <span style="font-weight: 600; color: var(--text-secondary);">Rp <%= item.budgetAmount.toLocaleString('id-ID') %></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Kanan: Terpakai & Hapus -->
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div style="text-align: right;">
+                                                <div style="font-weight: 700; font-size: 0.95rem; color:<%= pctColor %>;">Rp <%= item.spent.toLocaleString('id-ID') %></div>
+                                                <div style="font-size: 0.7rem; color: var(--text-muted);">Terpakai</div>
+                                            </div>
+                                            <form action="/budget/delete/<%= item.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus anggaran <%= item.category %>?', this)">
+                                                <button type="submit" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bagian Bawah: Progress Bar Menyatu dengan Teks -->
+                                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                        <div class="progress-track" style="flex: 1; height: 8px; border-radius: 10px; background: rgba(148, 163, 184, 0.2); overflow: hidden; margin: 0;">
+                                            <div class="progress-fill" style="height: 100%; border-radius: 10px; background: <%= barColor %>; width: <%= item.percent %>%; box-shadow: 0 0 6px <%= pctColor %>60;"></div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: 8px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">
+                                            <span style="color:<%= pctColor %>;"><%= item.percent %>%</span>
+                                            <span style="color:var(--text-muted);">|</span>
+                                            <span>
+                                                <% if (item.remaining >= 0) { %>
+                                                    <span style="color: var(--success);">Sisa Rp <%= item.remaining.toLocaleString('id-ID') %></span>
+                                                <% } else { %>
+                                                    <span style="color: var(--danger);">Over Rp <%= Math.abs(item.remaining).toLocaleString('id-ID') %></span>
+                                                <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-bullseye"></i>
+                                <h3>Belum ada anggaran</h3>
+                                <p>Mulai dengan menambahkan batas anggaran per kategori di form sebelah kiri</p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Chart Card -->
+                    <% if (budgetItems.length > 0) { %>
+                    <div class="card">
+                        <div class="card-title"><i class="fas fa-chart-pie"></i> Distribusi Anggaran</div>
+                        <div class="chart-wrap">
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Format Rupiah
+        function formatBudgetRupiah(el) {
+            let value = el.value.replace(/\D/g, '');
+            document.getElementById('budgetRaw').value = value;
+            if (value) {
+                el.value = parseInt(value).toLocaleString('id-ID');
+            } else {
+                el.value = '';
+            }
+        }
+
+        document.getElementById('budgetForm').addEventListener('submit', async function(e) {
+            const raw = document.getElementById('budgetRaw').value;
+            if (!raw || parseInt(raw) <= 0) {
+                e.preventDefault();
+                await CekUangkuDialog.alert('Masukkan jumlah anggaran yang valid!', 'Gagal', 'error');
+            }
+        });
+
+        <% if (budgetItems.length > 0) { %>
+        // Budget Doughnut Chart
+        (function() {
+            const items = <%- JSON.stringify(budgetItems) %>;
+            const colors = ['#4361ee', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
+
+            new Chart(document.getElementById('budgetChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: items.map(function(i) { return i.category; }),
+                    datasets: [{
+                        data: items.map(function(i) { return i.budgetAmount; }),
+                        backgroundColor: colors.slice(0, items.length),
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { family: 'Inter', size: 11 } } },
+                        tooltip: {
+                            backgroundColor: '#1e293b', padding: 12, cornerRadius: 8,
+                            callbacks: {
+                                label: function(ctx) {
+                                    const total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                    const pct = Math.round((ctx.parsed / total) * 100);
+                                    return ctx.label + ': Rp ' + ctx.parsed.toLocaleString('id-ID') + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+        <% } %>
+    </script>
+</body>
+</html>

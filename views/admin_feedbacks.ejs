@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Saran Pengguna - Admin CekUangku</title>
+    <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
+
+        .main-area { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+        .top-header { background: var(--card-bg); padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .page-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+        
+        .content-area { padding: 32px; max-width: 1000px; margin: 0 auto; width: 100%; }
+
+        .header-section { margin-bottom: 30px; }
+        .header-section h3 { font-size: 1.5rem; color: var(--text-primary); margin-bottom: 8px; }
+        .header-section p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* Feedbacks Grid */
+        .feedbacks-grid { display: grid; gap: 24px; }
+        .feedback-card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); position: relative; transition: transform .2s; }
+        .feedback-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        .feedback-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.1rem; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-weight: 700; color: var(--text-primary); font-size: 1.05rem; }
+        .user-email { font-size: 0.85rem; color: var(--text-secondary); }
+        .feedback-date { font-size: 0.8rem; color: var(--text-secondary); background: #f1f5f9; padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+        
+        .feedback-body { color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 1px dashed var(--border); }
+        .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 16px; }
+        .empty-state h3 { color: var(--text-secondary); }
+
+        /* ---- SIDEBAR CSS STYLES ---- */
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); height: 100vh; display: flex; flex-direction: column; border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; z-index: 100; transition: transform .3s ease; }
+        .sidebar-brand { padding: 24px 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-brand .brand-icon { width: 52px; height: 52px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); overflow: hidden; }
+        .sidebar-brand .brand-name { font-size: 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); padding: 12px 16px 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all .2s ease; margin-bottom: 2px; }
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active { background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.05)); color: var(--primary); font-weight: 600; }
+        .nav-link.active i { color: var(--primary); }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { flex: 1; overflow: hidden; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .user-info .status { font-size: 0.75rem; color: #10b981; display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
+        .btn-logout { color: var(--text-muted); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: #ef4444; }
+
+        @media(max-width: 900px) {
+            .sidebar { transform: translateX(-100%); z-index: 50; }
+            .sidebar.open { transform: translateX(0); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+        }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.25rem; color: var(--text-primary); cursor: pointer; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <%- include('partials/sidebar', { activeMenu: 'admin_feedbacks' }) %>
+
+    <div class="main-area">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+                <div class="page-title">
+                    <h2>📥 Kotak Saran</h2>
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600;"><i class="fas fa-shield-alt" style="color:var(--primary); margin-right:6px;"></i> Mode Super Administrator</span>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="header-section">
+                <h3>Suara Pengguna</h3>
+                <p>Kritik, saran, dan umpan balik dari pengguna aplikasi untuk pengembangan CekUangku selanjutnya.</p>
+            </div>
+
+            <% if (feedbacks && feedbacks.length > 0) { %>
+                <div class="feedbacks-grid">
+                    <% feedbacks.forEach(function(f) { %>
+                        <div class="feedback-card">
+                            <div class="feedback-header">
+                                <div class="user-profile">
+                                    <div class="avatar">
+                                        <% if (f.profile_picture) { %>
+                                            <img src="<%= f.profile_picture %>" alt="Avatar">
+                                        <% } else { %>
+                                            <%= f.nama.charAt(0).toUpperCase() %>
+                                        <% } %>
+                                    </div>
+                                    <div>
+                                        <div class="user-name"><%= f.nama %></div>
+                                        <div class="user-email"><%= f.email %></div>
+                                    </div>
+                                </div>
+                                <div class="feedback-date">
+                                    <i class="far fa-clock" style="margin-right: 4px;"></i> 
+                                    <%= new Date(f.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                                </div>
+                            </div>
+                            <div class="feedback-body"><%= f.message %></div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <h3>Belum ada saran yang masuk</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">Pengguna dapat mengirimkan saran melalui menu Setelan di akun mereka.</p>
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* public/stylesheets/custom-dialog.css */
+@keyframes dialogFadeIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes dialogOverlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.custom-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: dialogOverlayFadeIn 0.3s ease forwards;
+}
+
+.custom-dialog-box {
+    background: var(--card-bg, #ffffff);
+    width: 100%;
+    max-width: 420px;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    border: 1px solid var(--border, rgba(226, 232, 240, 0.8));
+    animation: dialogFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.custom-dialog-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 1.5rem;
+}
+
+.custom-dialog-icon.confirm {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.custom-dialog-icon.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.custom-dialog-icon.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.custom-dialog-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary, #1e293b);
+    margin-bottom: 12px;
+}
+
+.custom-dialog-message {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #64748b);
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.custom-dialog-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.custom-dialog-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-confirm {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-cancel {
+    background: var(--bg, #f1f5f9);
+    color: var(--text-secondary, #64748b);
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0;
+    color: var(--text-primary, #1e293b);
+}
+
+.btn-ok {
+    background: var(--primary, #4361ee);
+    color: white;
+}
+
+.btn-ok:hover {
+    background: #3730a3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .custom-dialog-box {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .custom-dialog-title {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .custom-dialog-message {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .btn-cancel {
+    background: #334155;
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .btn-cancel:hover {
+    background: #475569;
+    color: #f8fafc;
+}
+
+/* =========================================
+   CUSTOM SCROLLBAR STYLES (Modern Blue)
+   ========================================= */
+/* Target all elements including the global scrollbar */
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4361ee !important;
+    border-radius: 20px !important;
+    border: 3px solid transparent !important;
+    background-clip: content-box !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3f37c9 !important;
+    border-radius: 20px !important;
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #4361ee transparent;
+}
+
+/* Ensure the sidebar and other containers specifically use it */
+.sidebar-nav::-webkit-scrollbar,
+.main-area::-webkit-scrollbar,
+.content-area::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}

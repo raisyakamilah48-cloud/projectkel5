@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - CekUangku</title>
+    <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
+
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Shared Landing Styles -->
+    <link rel="stylesheet" href="/stylesheets/landing-modern.css">
+    <link rel="stylesheet" href="/stylesheets/about-modern.css">
+
+    <script>
+        // Init theme immediately to prevent FOUC
+        (function () {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- CUSTOM CURSOR ELEMENTS -->
+    <div class="cursor-follower" id="cursorFollower"></div>
+    <div class="cursor-spotlight" id="cursorSpotlight"></div>
+
+    <!-- BACKGROUND TEXTURE -->
+    <div class="bg-texture">
+        <div class="bg-dot-pattern"></div>
+    </div>
+
+    <!-- AURORA BACKGROUND (MESH GRADIENT) -->
+    <div class="aurora-bg">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="glass-nav">
+        <a href="/" class="logo">
+            <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;">
+            <span class="logo-text"><span class="logo-ce">CEK</span>UANGKU</span>
+        </a>
+        <div class="nav-links">
+            <a href="/#home">HOME</a>
+            <a href="/#features">FEATURES</a>
+            <a href="/about">ABOUT</a>
+            <a href="/auth/login">LOGIN</a>
+        </div>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <% if (user) { %>
+                <a href="/dashboard" class="btn-primary" style="padding: 10px 25px;">DASHBOARD</a>
+                <% } else { %>
+                    <a href="/auth/register" class="btn-primary" style="padding: 10px 25px;">GET STARTED</a>
+                    <% } %>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <div class="about-pill"><i class="fas fa-star"></i> Tentang CekUangku</div>
+                    <h1>
+                        CERITA <br>
+                        KAMI
+                    </h1>
+                    <p class="about-hero-subtitle">
+                        Kami membangun CekUangku agar pengelolaan finansial terasa premium, sederhana, dan nyaman.
+                        Dari pencatatan harian hingga insight strategis, semua dirancang untuk membantu keputusan yang lebih baik.
+                    </p>
+                    <div class="about-stats">
+                        <div class="about-stat">
+                            <h4>24/7</h4>
+                            <p>Dukungan pengguna</p>
+                        </div>
+                        <div class="about-stat">
+                            <h4>100%</h4>
+                            <p>Fokus keamanan data</p>
+                        </div>
+                        <div class="about-stat">
+                            <h4>+10K</h4>
+                            <p>Transaksi tercatat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div
+                        style="position: relative; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center;">
+                        <div class="visual-orbit"></div>
+                        <img src="/images/asset-avatar/Happy.png" alt="Happy" class="floating-avatar"
+                            id="heroAvatar" style="width: 100%; height: auto;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STORY SECTION -->
+        <section class="about-story">
+            <div class="about-story-grid">
+                <div>
+                    <h2>Misi <span>Kami</span></h2>
+                    <p>
+                        CekUangku hadir untuk mengubah cara orang Indonesia mengelola uangnya. Kami fokus pada transparansi,
+                        kontrol penuh, dan pengalaman yang terasa modern namun tetap mudah dipahami.
+                    </p>
+                    <p>
+                        Dengan desain interaktif, otomatisasi pencatatan, dan insight visual yang kuat, kami ingin membuat
+                        setiap keputusan finansial menjadi lebih cepat dan percaya diri.
+                    </p>
+                    <div class="about-card">
+                        <h3>Kenapa Kami Berbeda?</h3>
+                        <p>UI premium, data aman, dan alur yang dirancang untuk kenyamanan pengguna harian.</p>
+                    </div>
+                </div>
+                <div class="about-figure">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80"
+                        alt="Misi CekUangku">
+                </div>
+            </div>
+        </section>
+
+        <!-- VALUES SECTION -->
+        <section id="features" class="features about-values">
+            <div class="section-title">
+                <h2>Nilai <span>Utama</span> Kami</h2>
+                <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; text-align: center;">Pondasi yang kami
+                    jaga di setiap iterasi produk.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div class="bento-content">
+                        <h3>Keamanan Data</h3>
+                        <p>Enkripsi dan privasi menjadi fondasi di setiap transaksi yang Anda catat.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-eye"></i></div>
+                    <div class="bento-content">
+                        <h3>Transparansi</h3>
+                        <p>Insight jelas, laporan mudah dipahami, tanpa istilah rumit.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="bento-content">
+                        <h3>Cepat & Praktis</h3>
+                        <p>Catat dan pantau keuangan Anda hanya dalam hitungan detik.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item">
+                    <div class="bento-icon"><i class="fas fa-users"></i></div>
+                    <div class="bento-content">
+                        <h3>Untuk Semua</h3>
+                        <p>Didesain agar bisa dipakai siapa pun, kapan pun, di mana pun.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA BOX -->
+        <section style="padding: 80px 20px; position: relative; z-index: 10; display: flex; justify-content: center;">
+            <div class="cta-box magnetic">
+                <img src="/images/asset-avatar/Main.png" alt="Main" style="width: 90px; margin-bottom: 25px;">
+                <h2>Bangun Finansialmu Sekarang</h2>
+                <p>Mulai catat pemasukan dan pengeluaranmu dengan cepat, aman, dan terasa premium.</p>
+                <a href="/auth/register" class="btn-primary">Mulai Gratis</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="/" class="logo" style="margin-bottom: 25px;">
+                    <img src="/images/asset-avatar/Main.png" alt="Logo" style="height: 35px; width: auto;"> CEKUANGKU
+                </a>
+                <p style="color: var(--text-muted); line-height: 1.8;">Visi kami adalah menciptakan ekosistem finansial
+                    yang inklusif dan mudah diakses bagi semua orang di Indonesia.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi</h4>
+                <ul class="footer-links">
+                    <li><a href="/#home">Home</a></li>
+                    <li><a href="/#features">Fitur</a></li>
+                    <li><a href="/about">Tentang Kami</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hubungi Kami</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Bantuan</a></li>
+                    <li><a href="#">Privasi</a></li>
+                    <li><a href="#">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            style="text-align: center; margin-top: 80px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--glass-border); padding-top: 40px;">
+            &copy; 2024 CekUangku Kelompok 5. Powered by UI-UX Pro Max.
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.getElementById('cursorFollower');
+            const spotlight = document.getElementById('cursorSpotlight');
+            const heroAvatar = document.getElementById('heroAvatar');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const magneticElements = document.querySelectorAll('.magnetic');
+
+            // --- Theme Toggle Logic ---
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark-mode');
+            }
+
+            const updateIcon = (isDark) => {
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            };
+            updateIcon(document.body.classList.contains('dark-mode'));
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                document.documentElement.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateIcon(isDark);
+            });
+
+            // --- Mouse Track ---
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            let spotlightX = 0, spotlightY = 0;
+            let avatarX = 0, avatarY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            const animate = () => {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+
+                spotlightX += (mouseX - spotlightX) * 0.1;
+                spotlightY += (mouseY - spotlightY) * 0.1;
+
+                cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+                spotlight.style.transform = `translate3d(${spotlightX}px, ${spotlightY}px, 0) translate(-50%, -50%)`;
+
+                if (heroAvatar) {
+                    const rect = heroAvatar.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    const targetAvatarX = (mouseX - centerX) / 30;
+                    const targetAvatarY = (mouseY - centerY) / 30;
+
+                    avatarX += (targetAvatarX - avatarX) * 0.05;
+                    avatarY += (targetAvatarY - avatarY) * 0.05;
+
+                    heroAvatar.style.transform = `translate3d(${avatarX}px, ${avatarY}px, 0) rotate(${avatarX * 0.1}deg)`;
+                }
+
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+
+            // --- Magnetic Effect ---
+            magneticElements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = '';
+                });
+            });
+
+            // --- Hover interactions ---
+            document.querySelectorAll('a, button, .bento-item, .about-card').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width = '60px';
+                    cursor.style.height = '60px';
+                    cursor.style.opacity = '0.3';
+                    cursor.style.background = 'var(--secondary)';
+                    cursor.style.mixBlendMode = 'normal';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width = '20px';
+                    cursor.style.height = '20px';
+                    cursor.style.opacity = '1';
+                    cursor.style.background = 'var(--primary)';
+                    cursor.style.mixBlendMode = 'difference';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
