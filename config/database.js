@@ -4,7 +4,13 @@ const mysql = require('mysql2');
 const initConnection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: ''
+  password: '',
+  port: 3307
+});
+
+// Tambahkan handler error global untuk initConnection agar tidak crash jika MySQL mati
+initConnection.on('error', function(err) {
+  // Hanya log jika perlu, jangan lempar error agar tidak crash
 });
 
 // Auto-create database jika belum ada
@@ -42,33 +48,41 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         description TEXT,
         amount DECIMAL(15,2) NOT NULL,
         date DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `;
     
     // Jalankan di koneksi utama (yang sudah pilih database)
-    connection.query(createUsersTable, function(err) {
+    pool.query(createUsersTable, function(err) {
       if (err) console.log("Error buat tabel users:", err.message);
       else {
         console.log("✅ Tabel 'users' siap.");
         // Auto-create kolom tambahan jika sudah ada tabel sebelumnya
-        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at DATETIME DEFAULT CURRENT_TIMESTAMP", function(e) {
+        pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at DATETIME DEFAULT CURRENT_TIMESTAMP", function(e) {
           if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (created_at):", e.message);
         });
-        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(255) DEFAULT NULL", function(e) {
+        pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(255) DEFAULT NULL", function(e) {
           if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (profile_picture):", e.message);
         });
-        connection.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS calculator_active BOOLEAN DEFAULT FALSE", function(e) {
+        pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (is_active):", e.message);
+          // Pastikan user lama yang is_active nya NULL/kosong diupdate jadi 1 (Aktif)
+          pool.query("UPDATE users SET is_active = 1 WHERE is_active IS NULL");
+        });
+        pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login DATETIME DEFAULT CURRENT_TIMESTAMP", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (last_login):", e.message);
+        });
+        pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS calculator_active BOOLEAN DEFAULT FALSE", function(e) {
           if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter users (calculator_active):", e.message);
         });
 
         // INJECT DEFAULT ADMIN ACCOUNT
         const bcrypt = require('bcrypt');
-        connection.query("SELECT id FROM users WHERE email = 'admin@cekuangku.com'", function(err, result) {
+        pool.query("SELECT id FROM users WHERE email = 'admin@cekuangku.com'", function(err, result) {
             if (!err && result.length === 0) {
                 bcrypt.hash('admin123', 10, function(errHash, hash) {
                     if (!errHash) {
-                        connection.query("INSERT INTO users (nama, email, password, role) VALUES ('Administrator', 'admin@cekuangku.com', ?, 'admin')", [hash], function(insertErr) {
+                        pool.query("INSERT INTO users (nama, email, password, role) VALUES ('Administrator', 'admin@cekuangku.com', ?, 'admin')", [hash], function(insertErr) {
                             if (!insertErr) console.log("🌟 Default Admin account created! (admin@cekuangku.com)");
                         });
                     }
@@ -78,7 +92,7 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
       }
     });
 
-    connection.query(createTransactionsTable, function(err) {
+    pool.query(createTransactionsTable, function(err) {
       if (err) console.log("Error buat tabel transactions:", err.message);
       else console.log("✅ Tabel 'transactions' siap.");
     });
@@ -94,7 +108,7 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
       )
     `;
 
-    connection.query(createCategoriesTable, function(err) {
+    pool.query(createCategoriesTable, function(err) {
       if (err) console.log("Error buat tabel categories:", err.message);
       else console.log("✅ Tabel 'categories' siap.");
     });
@@ -108,13 +122,40 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
         amount DECIMAL(15,2) NOT NULL,
         month INT NOT NULL,
         year INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        budget_type VARCHAR(20) DEFAULT 'monthly',
+        start_date DATE DEFAULT NULL,
+        end_date DATE DEFAULT NULL,
+        duration_days INT DEFAULT NULL,
+        is_archived TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `;
 
-    connection.query(createBudgetsTable, function(err) {
+    pool.query(createBudgetsTable, function(err) {
       if (err) console.log("Error buat tabel budgets:", err.message);
-      else console.log("✅ Tabel 'budgets' siap.");
+      else {
+        console.log("✅ Tabel 'budgets' siap.");
+        // Auto-migrate new columns for custom duration budgets
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS budget_type VARCHAR(20) DEFAULT 'monthly'", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (budget_type):", e.message);
+        });
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS start_date DATE DEFAULT NULL", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (start_date):", e.message);
+        });
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS end_date DATE DEFAULT NULL", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (end_date):", e.message);
+        });
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS duration_days INT DEFAULT NULL", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (duration_days):", e.message);
+        });
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS is_archived TINYINT(1) DEFAULT 0", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (is_archived):", e.message);
+        });
+        pool.query("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP", function(e) {
+          if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter budgets (created_at):", e.message);
+        });
+      }
     });
     // Auto-create tabel wallets
     const createWalletsTable = `
@@ -130,7 +171,7 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
     `;
 
-    connection.query(createWalletsTable, function(err) {
+    pool.query(createWalletsTable, function(err) {
       if (err) console.log("Error buat tabel wallets:", err.message);
       else {
         console.log("✅ Tabel 'wallets' siap.");
@@ -140,7 +181,7 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
           ALTER TABLE transactions 
           ADD COLUMN IF NOT EXISTS wallet_id INT DEFAULT NULL AFTER type;
         `;
-        connection.query(alterTransactionsWalletId, function(err2) {
+        pool.query(alterTransactionsWalletId, function(err2) {
           if (err2 && err2.code !== 'ER_DUP_FIELDNAME') console.log("Error alter tabel transactions (wallet_id):", err2.message);
           else {
             console.log("✅ Kolom 'wallet_id' di tabel transactions siap.");
@@ -151,9 +192,15 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
               ADD CONSTRAINT fk_transaction_wallet
               FOREIGN KEY (wallet_id) REFERENCES wallets(id) ON DELETE SET NULL;
             `;
-            connection.query(alterTransactionsFk, function(err3) {
+            pool.query(alterTransactionsFk, function(err3) {
               if (err3 && err3.code !== 'ER_DUP_KEY' && err3.code !== 'ER_CANT_CREATE_TABLE') console.log("Error tambah FK wallet_id:", err3.message);
               else console.log("✅ Foreign Key 'wallet_id' siap.");
+            });
+            
+            // Auto-create kolom attachment di tabel transactions
+            pool.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS attachment VARCHAR(255) DEFAULT NULL", function(e) {
+                if (e && e.code !== 'ER_DUP_FIELDNAME') console.log("Error alter tabel transactions (attachment):", e.message);
+                else console.log("✅ Kolom 'attachment' di tabel transactions siap.");
             });
           }
         });
@@ -171,36 +218,42 @@ initConnection.query("CREATE DATABASE IF NOT EXISTS projectkel5", function(err) 
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
     `;
 
-    connection.query(createFeedbacksTable, function(err) {
+    pool.query(createFeedbacksTable, function(err) {
       if (err) console.log("Error buat tabel feedbacks:", err.message);
       else console.log("✅ Tabel 'feedbacks' siap.");
     });
 
   }
   
-  // Tutup koneksi init (yang tanpa database)
-  initConnection.end();
+  // Tutup koneksi init (yang tanpa database) secara aman
+  try {
+    initConnection.destroy(); 
+  } catch(e) {}
 });
 
-// Koneksi utama ke database projectkel5
-const connection = mysql.createConnection({
+// Koneksi utama ke database projectkel5 menggunakan POOL agar lebih stabil
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'projectkel5'
+  database: 'projectkel5',
+  port: 3307,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-connection.connect(function(err) {
+// Verifikasi koneksi pool
+pool.getConnection((err, conn) => {
   if (err) {
     console.log("==============================================");
-    console.log("❌ Koneksi ke database gagal!");
-    console.log("Pastikan MySQL/XAMPP sudah RUNNING.");
-    console.log("Lalu jalankan ulang: npm run dev");
-    console.log("==============================================");
+    console.log("❌ Koneksi ke database (Pool) gagal!");
     console.log("Detail:", err.message);
+    console.log("==============================================");
   } else {
-    console.log("✅ Database terhubung ke 'projectkel5'.");
+    console.log("✅ Database terhubung melalui Pool.");
+    conn.release();
   }
 });
 
-module.exports = connection;
+module.exports = pool;

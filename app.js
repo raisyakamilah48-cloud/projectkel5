@@ -39,6 +39,20 @@ app.use(session({
   cookie: { maxAge: 3600000 } // 1 jam
 }));
 
+// --- AUTO-DEACTIVATION JOB ---
+// Menonaktifkan akun pengguna (selain admin) yang tidak login selama 30 hari.
+function runAutoDeactivation() {
+    const query = "UPDATE users SET is_active = 0 WHERE role != 'admin' AND last_login < DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    db.query(query, function(err, result) {
+        if (err) console.error("❌ Gagal menjalankan Auto-Deactivation:", err);
+        else if (result.affectedRows > 0) {
+            console.log(`🛡️  [SYSTEM] Auto-Deactivation: Berhasil me-nonaktifkan ${result.affectedRows} akun inaktif.`);
+        }
+    });
+}
+runAutoDeactivation(); // Jalankan saat start
+setInterval(runAutoDeactivation, 24 * 60 * 60 * 1000); // Cek ulang setiap 24 jam
+
 // --- ROUTING ---
 
 // 1. HALAMAN LANDING PAGE (/)

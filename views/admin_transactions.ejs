@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managemen Transaksi - Admin CekUangku</title>
+    <link rel="icon" type="image/png" href="/images/asset-avatar/Main.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/stylesheets/custom-dialog.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+            --income: #10b981;
+            --expense: #ef4444;
+            --glass: rgba(255, 255, 255, 0.7);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; color: var(--text-primary); }
+
+        .main-area { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+        .top-header { background: var(--glass); backdrop-filter: blur(12px); padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .page-title h2 { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+        
+        .content-area { padding: 32px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        /* ---- SIDEBAR CSS STYLES (SYNCED) ---- */
+        .sidebar { width: var(--sidebar-w); background: var(--card-bg); height: 100vh; display: flex; flex-direction: column; border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; z-index: 100; transition: transform .3s ease; }
+        .sidebar-brand { padding: 24px 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-brand .brand-icon { width: 52px; height: 52px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); overflow: hidden; }
+        .sidebar-brand .brand-name { font-size: 1.25rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-secondary); padding: 12px 16px 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 10px; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all .2s ease; margin-bottom: 2px; }
+        .nav-link:hover { background: #f1f5f9; color: var(--primary); }
+        .nav-link.active { background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.05)); color: var(--primary); font-weight: 600; }
+        .nav-link.active i { color: var(--primary); }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+        .sidebar-footer { padding: 16px 16px 20px; border-top: 1px solid var(--border); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { flex: 1; overflow: hidden; }
+        .user-info .name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .user-info .status { font-size: 0.75rem; color: #10b981; display: flex; align-items: center; gap: 4px; }
+        .user-info .status::before { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
+        .btn-logout { color: var(--text-secondary); text-decoration: none; font-size: 1rem; transition: color .2s; }
+        .btn-logout:hover { color: #ef4444; }
+
+        @media(max-width: 900px) {
+            .sidebar { transform: translateX(-100%); z-index: 100; }
+            .sidebar.open { transform: translateX(0); }
+            .main-area { margin-left: 0; }
+            .menu-toggle { display: block !important; }
+        }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.25rem; color: var(--text-primary); cursor: pointer; padding: 8px; }
+
+        /* Card Layout Styles */
+        .user-cards-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 10px; }
+        
+        .user-item-card { background: var(--card-bg); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .user-item-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: var(--primary-light); }
+        .user-item-card.expanded { border-color: var(--primary); box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.15); }
+
+        .card-header-trigger { padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; transition: background 0.2s; }
+        .card-header-trigger:hover { background: #f8fafc; }
+
+        .user-main-info { display: flex; align-items: center; gap: 20px; }
+        .user-avatar-circle { width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.3); overflow: hidden; }
+        .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .user-text .name { display: block; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+        .user-text .email { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+
+        .user-summary-stats { display: flex; gap: 32px; align-items: center; }
+        .stat-group { text-align: right; }
+        .stat-group .label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 4px; }
+        .stat-group .value { font-size: 1rem; font-weight: 700; }
+        .stat-group.income .value { color: var(--income); }
+        .stat-group.expense .value { color: var(--expense); }
+
+        .expand-icon { width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; }
+        .user-item-card.expanded .expand-icon { transform: rotate(180deg); background: var(--primary); color: white; }
+
+        /* Card Body (Collapsible) */
+        .card-body-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; background: #ffffff; }
+        .user-item-card.expanded .card-body-content { max-height: 2000px; /* Large enough to fit any content */ }
+
+        .transactions-list-wrapper { padding: 0 32px 32px; border-top: 1px dashed var(--border); }
+        .tx-list-header { padding: 24px 0 16px; display: flex; justify-content: space-between; align-items: center; }
+        .tx-list-header h4 { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+        .tx-count-badge { background: #f1f5f9; color: var(--text-secondary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+        .tx-table-custom { width: 100%; border-collapse: collapse; }
+        .tx-table-custom th { text-align: left; padding: 12px 16px; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; background: #f8fafc; border-radius: 8px; }
+        .tx-table-custom td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .tx-table-custom tr:last-child td { border-bottom: none; }
+
+        .tx-type-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; }
+        .tx-type-badge.income { background: #dcfce7; color: #166534; }
+        .tx-type-badge.expense { background: #fee2e2; color: #991b1b; }
+
+        .amount-val { font-weight: 700; }
+        .amount-val.income { color: var(--income); }
+        .amount-val.expense { color: var(--expense); }
+
+        /* Header Stats */
+        .header-stats-row { display: flex; gap: 20px; margin-bottom: 24px; }
+        .header-stat-card { flex: 1; background: var(--card-bg); padding: 20px 24px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .h-stat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .h-stat-info .h-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+        .h-stat-info .h-value { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 32px; border: 1px dashed var(--border); }
+        .empty-state i { font-size: 4rem; color: #cbd5e1; margin-bottom: 24px; }
+        .empty-state h3 { font-size: 1.5rem; color: var(--text-primary); margin-bottom: 8px; }
+        .empty-state p { color: var(--text-secondary); }
+
+        /* Search Bar */
+        .search-area { margin-bottom: 32px; }
+        .search-box { position: relative; width: 100%; }
+        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.1rem; }
+        .search-box input { width: 100%; padding: 16px 20px 16px 56px; border-radius: 18px; border: 1px solid var(--border); background: var(--card-bg); outline: none; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); transform: scale(1.005); }
+
+    </style>
+</head>
+<body>
+
+    <%- include('partials/sidebar', { activeMenu: 'admin_transactions' }) %>
+
+    <div class="main-area">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+                <div class="page-title">
+                    <h2>💎 Monitoring Transaksi</h2>
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 700; background: #f1f5f9; padding: 8px 16px; border-radius: 12px;"><i class="fas fa-shield-alt" style="color:var(--primary); margin-right:8px;"></i> Mode Super Administrator</span>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="header-stats-row">
+                <div class="header-stat-card">
+                    <div class="h-stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="h-stat-info">
+                        <div class="h-label">Total Transaksi Global</div>
+                        <div class="h-value"><%= totalTransactions %></div>
+                    </div>
+                </div>
+                <div class="header-stat-card">
+                    <div class="h-stat-icon" style="background: #f0fdf4; color: var(--secondary);"><i class="fas fa-arrow-down"></i></div>
+                    <div class="h-stat-info">
+                        <div class="h-label">Total Pemasukan</div>
+                        <div class="h-value" style="color: var(--secondary);">Rp <%= globalIncome.toLocaleString('id-ID') %></div>
+                    </div>
+                </div>
+                <div class="header-stat-card">
+                    <div class="h-stat-icon" style="background: #fef2f2; color: var(--expense);"><i class="fas fa-arrow-up"></i></div>
+                    <div class="h-stat-info">
+                        <div class="h-label">Total Pengeluaran</div>
+                        <div class="h-value" style="color: var(--expense);">Rp <%= globalExpense.toLocaleString('id-ID') %></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-area">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Cari nama pengguna atau email...">
+                </div>
+            </div>
+
+            <% if (groupedTransactions && groupedTransactions.length > 0) { %>
+                <div class="user-cards-grid">
+                    <% groupedTransactions.forEach(function(group) { %>
+                        <div class="user-item-card" id="card-<%= group.id %>">
+                            <div class="card-header-trigger" onclick="toggleUserCollapse('<%= group.id %>')">
+                                <div class="user-main-info">
+                                    <div class="user-avatar-circle">
+                                        <% if (group.avatar) { %>
+                                            <img src="<%= group.avatar %>" alt="Avatar">
+                                        <% } else { %>
+                                            <%= group.name.charAt(0).toUpperCase() %>
+                                        <% } %>
+                                    </div>
+                                    <div class="user-text">
+                                        <span class="name"><%= group.name %></span>
+                                        <span class="email"><%= group.email %></span>
+                                    </div>
+                                </div>
+                                
+                                <div style="display:flex; align-items:center; gap:40px;">
+                                    <div class="user-summary-stats">
+                                        <div class="stat-group income">
+                                            <span class="label">Total Pemasukan</span>
+                                            <span class="value">Rp <%= group.totalIncome.toLocaleString('id-ID') %></span>
+                                        </div>
+                                        <div class="stat-group expense">
+                                            <span class="label">Total Pengeluaran</span>
+                                            <span class="value">Rp <%= group.totalExpense.toLocaleString('id-ID') %></span>
+                                        </div>
+                                    </div>
+                                    <div class="expand-icon">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body-content" id="body-<%= group.id %>">
+                                <div class="transactions-list-wrapper">
+                                    <div class="tx-list-header">
+                                        <h4>Riwayat Transaksi</h4>
+                                        <span class="tx-count-badge"><%= group.transactions.length %> Record</span>
+                                    </div>
+                                    
+                                    <table class="tx-table-custom">
+                                        <thead>
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Kategori</th>
+                                                <th>Deskripsi</th>
+                                                <th>Tipe</th>
+                                                <th style="text-align: center;">Bukti</th>
+                                                <th style="text-align: right;">Jumlah</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% group.transactions.forEach(function(tx) { %>
+                                                <tr>
+                                                    <td style="white-space:nowrap;">
+                                                        <div style="font-weight:600;"><%= new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
+                                                        <div style="font-size:0.7rem; color:var(--text-secondary);"><%= new Date(tx.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="cat-info">
+                                                            <div class="cat-icon" style="background: <%= tx.type === 'income' ? '#10b981' : '#ef4444' %>"></div>
+                                                            <%= tx.category %>
+                                                        </div>
+                                                    </td>
+                                                    <td style="color:var(--text-secondary); font-size:0.8rem; max-width:300px;"><%= tx.description || '-' %></td>
+                                                    <td>
+                                                        <span class="tx-type-badge <%= tx.type %>">
+                                                            <i class="fas <%= tx.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up' %>"></i>
+                                                            <%= tx.type === 'income' ? 'Masuk' : 'Keluar' %>
+                                                        </span>
+                                                    </td>
+                                                    <td style="text-align: center;">
+                                                        <button type="button" onclick="viewAttachment('<%= tx.attachment || '' %>')" style="background:transparent; border:none; cursor:pointer; color: <%= tx.attachment ? 'var(--primary)' : 'var(--text-muted)' %>; font-size:1rem; transition: color 0.2s; padding:2px;" title="Lihat Bukti Foto" onmouseover="this.style.color='<%= tx.attachment ? 'var(--primary-dark)' : 'var(--text-secondary)' %>'" onmouseout="this.style.color='<%= tx.attachment ? 'var(--primary)' : 'var(--text-muted)' %>'">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <span class="amount-val <%= tx.type === 'income' ? 'income' : 'expense' %>">
+                                                            <%= tx.type === 'income' ? '+' : '-' %> Rp <%= parseFloat(tx.amount).toLocaleString('id-ID') %>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>Belum ada data transaksi</h3>
+                    <p>Semua aktivitas keuangan pengguna akan muncul secara terorganisir di sini.</p>
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleUserCollapse(userId) {
+            const card = document.getElementById('card-' + userId);
+            const body = document.getElementById('body-' + userId);
+            
+            // Toggle class for rotation and shadow
+            card.classList.toggle('expanded');
+            
+            // For smoother transition we handle height manually or just let CSS do it
+            // CSS transition is already set on .card-body-content
+        }
+
+        // Search Logic
+        const globalSearch = document.getElementById('globalSearch');
+        const userCards = document.querySelectorAll('.user-item-card');
+
+        globalSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            userCards.forEach(card => {
+                const name = card.querySelector('.name').innerText.toLowerCase();
+                const email = card.querySelector('.email').innerText.toLowerCase();
+                
+                if (name.includes(query) || email.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Fitur Lihat Bukti Foto
+        function viewAttachment(path) {
+            if (path && path.trim() !== '') {
+                // Gunakan CekUangkuDialog jika tersedia, atau buka di tab baru jika belum diload
+                if (typeof CekUangkuDialog !== 'undefined') {
+                    const imgHtml = `<img src="${path}" style="width:100%; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-top:8px;">`;
+                    CekUangkuDialog.alert(imgHtml, 'Bukti Transaksi', 'info');
+                } else {
+                    window.open(path, '_blank');
+                }
+            } else {
+                if (typeof CekUangkuDialog !== 'undefined') {
+                    CekUangkuDialog.alert('Transaksi ini tidak memiliki bukti foto.', 'Informasi', 'warning');
+                } else {
+                    alert('Transaksi ini tidak memiliki bukti foto.');
+                }
+            }
+        }
+    </script>
+    <script src="/javascripts/custom-dialog.js"></script>
+</body>
+</html>

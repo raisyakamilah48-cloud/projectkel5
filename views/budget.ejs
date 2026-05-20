@@ -9,6 +9,249 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Custom Date Range Modal Logic
+        function openDateModal() {
+            document.getElementById('customDateModal').style.display = 'flex';
+        }
+        function closeDateModal() {
+            document.getElementById('customDateModal').style.display = 'none';
+        }
+        function applyDateRange() {
+            const start = document.getElementById('modalStartDate').value;
+            const end = document.getElementById('modalEndDate').value;
+            if (start && end) {
+                const startDate = new Date(start);
+                const endDate = new Date(end);
+                if (endDate < startDate) {
+                    CekUangkuDialog.alert('Tanggal berakhir tidak boleh lebih kecil dari tanggal mulai!', 'Error', 'error');
+                    return;
+                }
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                const input = document.getElementById('durationDaysInput');
+                input.value = diffDays;
+                
+                input.style.transition = 'all 0.3s';
+                input.style.backgroundColor = 'var(--success-light)';
+                input.style.color = 'var(--success)';
+                setTimeout(() => {
+                    input.style.backgroundColor = '';
+                    input.style.color = '';
+                }, 1000);
+                
+                closeDateModal();
+            } else {
+                CekUangkuDialog.alert('Harap pilih kedua tanggal!', 'Peringatan', 'warning');
+            }
+        }
+        
+        let isFlipped = false;
+        let isAnimating = false;
+
+        function toggleBudgetHistory() {
+            if (isAnimating) return; // prevent double-click mid-animation
+            isAnimating = true;
+
+            const front = document.getElementById('budgetFront');
+            const back = document.getElementById('budgetBack');
+            const btn = document.getElementById('btnToggleHistory');
+            const current = isFlipped ? back : front;
+            const next = isFlipped ? front : back;
+
+            isFlipped = !isFlipped;
+
+            // Update button immediately
+            if (isFlipped) {
+                btn.innerHTML = '<i class="fas fa-arrow-left"></i> Kembali';
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'white';
+            } else {
+                btn.innerHTML = '<i class="fas fa-history"></i> Riwayat';
+                btn.style.background = 'var(--info-light)';
+                btn.style.color = 'var(--primary)';
+            }
+
+            // Phase 1: flip out current panel
+            current.style.transition = 'transform 0.25s ease-in, opacity 0.25s ease-in';
+            current.style.transform = 'scaleX(0)';
+            current.style.opacity = '0';
+
+            setTimeout(() => {
+                current.style.display = 'none';
+                current.style.transition = '';
+                current.style.transform = '';
+                current.style.opacity = '';
+
+                // Phase 2: flip in next panel
+                next.style.display = 'block';
+                next.style.transform = 'scaleX(0)';
+                next.style.opacity = '0';
+                next.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+
+                // Force reflow
+                next.getBoundingClientRect();
+                next.style.transform = 'scaleX(1)';
+                next.style.opacity = '1';
+
+                setTimeout(() => {
+                    next.style.transition = '';
+                    isAnimating = false;
+                    applyBudgetFilters();
+                }, 260);
+            }, 260);
+        }
+
+        // Recreate an expired budget — open a pre-filled modal for review
+        function recreateBudget(category, amount, budgetType, durationDays) {
+            // Pre-fill modal fields
+            document.getElementById('recreateCategory').value = category;
+            document.getElementById('recreateAmount').value = parseInt(amount).toLocaleString('id-ID');
+            document.getElementById('recreateAmountRaw').value = amount;
+            document.getElementById('recreateBudgetType').value = budgetType;
+
+            const durationGroup = document.getElementById('recreateDurationGroup');
+            const durationInput = document.getElementById('recreateDurationDays');
+            if (budgetType === 'custom') {
+                durationGroup.style.display = 'block';
+                durationInput.value = durationDays || '';
+            } else {
+                durationGroup.style.display = 'none';
+                durationInput.value = '';
+            }
+
+            // Show modal
+            document.getElementById('recreateModal').style.display = 'flex';
+        }
+
+        function closeRecreateModal() {
+            document.getElementById('recreateModal').style.display = 'none';
+        }
+
+        function formatRecreateRupiah(el) {
+            let value = el.value.replace(/\D/g, '');
+            document.getElementById('recreateAmountRaw').value = value;
+            el.value = value ? parseInt(value).toLocaleString('id-ID') : '';
+        }
+
+        function toggleRecreateDuration() {
+            const type = document.getElementById('recreateBudgetType').value;
+            document.getElementById('recreateDurationGroup').style.display = type === 'custom' ? 'block' : 'none';
+        }
+
+        // Calendar functions for recreate modal
+        function openRecreateDateModal() {
+            // Store context so applyRecreateDateRange knows where to write
+            document.getElementById('recreateDateModal').style.display = 'flex';
+        }
+        function closeRecreateDateModal() {
+            document.getElementById('recreateDateModal').style.display = 'none';
+        }
+        function applyRecreateDateRange() {
+            const start = document.getElementById('recreateModalStartDate').value;
+            const end = document.getElementById('recreateModalEndDate').value;
+            if (start && end) {
+                const startDate = new Date(start);
+                const endDate = new Date(end);
+                if (endDate < startDate) {
+                    CekUangkuDialog.alert('Tanggal berakhir tidak boleh lebih kecil dari tanggal mulai!', 'Error', 'error');
+                    return;
+                }
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                const input = document.getElementById('recreateDurationDays');
+                input.value = diffDays;
+                input.style.transition = 'all 0.3s';
+                input.style.backgroundColor = 'var(--success-light)';
+                input.style.color = 'var(--success)';
+                setTimeout(() => { input.style.backgroundColor = ''; input.style.color = ''; }, 1000);
+                closeRecreateDateModal();
+            } else {
+                CekUangkuDialog.alert('Harap pilih kedua tanggal!', 'Peringatan', 'warning');
+            }
+        }
+
+        function submitRecreate() {
+            const amount = document.getElementById('recreateAmountRaw').value;
+            if (!amount || parseInt(amount) <= 0) {
+                CekUangkuDialog.alert('Masukkan jumlah anggaran yang valid!', 'Gagal', 'error');
+                return;
+            }
+            document.getElementById('recreateForm').submit();
+        }
+    
+        // Budget Filter Logic
+        function applyBudgetFilters() {
+            const catFilter = document.getElementById('filterCategory') ? document.getElementById('filterCategory').value.toLowerCase() : '';
+            const dateFilter = document.getElementById('filterDate') ? document.getElementById('filterDate').value : '';
+            const items = document.querySelectorAll('.budget-item');
+            const containerId = isFlipped ? 'budgetBack' : 'budgetFront';
+            const container = document.getElementById(containerId);
+            
+            let visibleBudget = 0; let visibleSpent = 0; let visibleCount = 0;
+            let chartLabels = [];
+            let chartData = [];
+            
+            items.forEach(item => {
+                const rawCat = item.getAttribute('data-category');
+                const itemCat = rawCat.toLowerCase();
+                const itemDate = item.getAttribute('data-created');
+                let matchCat = true; let matchDate = true;
+                
+                if (catFilter && itemCat !== catFilter) matchCat = false;
+                if (dateFilter && itemDate !== dateFilter) matchDate = false;
+                
+                if (matchCat && matchDate) {
+                    item.style.display = 'flex';
+                    if (item.closest('#' + containerId)) {
+                        const amt = parseFloat(item.getAttribute('data-amount')) || 0;
+                        const spent = parseFloat(item.getAttribute('data-spent')) || 0;
+                        visibleBudget += amt; visibleSpent += spent; visibleCount++;
+                        chartLabels.push(rawCat);
+                        chartData.push(amt);
+                    }
+                } else { 
+                    item.style.display = 'none'; 
+                }
+            });
+            
+            // Update chart if it exists
+            if (window.budgetChart) {
+                window.budgetChart.data.labels = chartLabels;
+                window.budgetChart.data.datasets[0].data = chartData;
+                const colors = ['#4361ee', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
+                window.budgetChart.data.datasets[0].backgroundColor = colors.slice(0, chartLabels.length);
+                window.budgetChart.update();
+            }
+            
+            if (document.getElementById('summaryTotalBudget')) document.getElementById('summaryTotalBudget').innerText = 'Rp ' + visibleBudget.toLocaleString('id-ID');
+            if (document.getElementById('summaryTotalCategory')) document.getElementById('summaryTotalCategory').innerText = visibleCount + ' kategori dianggarkan';
+            if (document.getElementById('summaryTotalSpent')) document.getElementById('summaryTotalSpent').innerText = 'Rp ' + visibleSpent.toLocaleString('id-ID');
+            
+            const pct = visibleBudget > 0 ? Math.round((visibleSpent / visibleBudget) * 100) : 0;
+            if (document.getElementById('summaryTotalPercent')) document.getElementById('summaryTotalPercent').innerText = visibleBudget > 0 ? pct + '% dari anggaran' : 'Belum ada anggaran';
+            
+            const remaining = visibleBudget - visibleSpent;
+            const remVal = document.getElementById('summaryTotalRemaining');
+            const remStat = document.getElementById('summaryRemainingStatus');
+            
+            if (remVal && remStat) {
+                if (remaining >= 0) { 
+                    remVal.style.color = 'var(--success)'; 
+                    remVal.innerText = 'Rp ' + remaining.toLocaleString('id-ID'); 
+                    remStat.style.color = 'var(--success)'; 
+                    remStat.innerHTML = '<i class="fas fa-check-circle"></i> Keuangan terkontrol'; 
+                } else { 
+                    remVal.style.color = 'var(--danger)'; 
+                    remVal.innerText = '-Rp ' + Math.abs(remaining).toLocaleString('id-ID'); 
+                    remStat.style.color = 'var(--danger)'; 
+                    remStat.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Anggaran terlampaui!'; 
+                }
+            }
+        }
+    </script>
+
 
     <style>
         :root {
@@ -263,7 +506,19 @@
             .menu-toggle { display: block !important; }
             .summary-grid { grid-template-columns: 1fr; }
         }
-        @media (max-width: 600px) { .content-area { padding: 20px 16px; } }
+        @media (max-width: 600px) {
+            .content-area { padding: 16px 12px; }
+            .top-header { padding: 16px; }
+            #budgetFilters { flex-direction: column; }
+        }
+
+        /* Prevent content overflow */
+        .main-area { overflow-x: hidden; }
+        .content-area { overflow-x: hidden; max-width: 100%; box-sizing: border-box; }
+        .card { max-width: 100%; box-sizing: border-box; word-break: break-word; }
+        .budget-item { max-width: 100%; box-sizing: border-box; }
+        #budgetFilters { max-width: 100%; box-sizing: border-box; }
+        .summary-value { font-size: clamp(1.1rem, 3vw, 1.5rem); word-break: break-word; }
 
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
         .menu-toggle:hover { background: #f1f5f9; }
@@ -279,7 +534,6 @@
 </head>
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
     <!-- ===== SIDEBAR ===== -->
     <%- include('partials/sidebar', { activeMenu: 'budget' }) %>
 
@@ -312,15 +566,15 @@
                         <span class="summary-label">Total Anggaran</span>
                         <div class="summary-icon blue"><i class="fas fa-bullseye"></i></div>
                     </div>
-                    <div class="summary-value">Rp <%= totalBudget.toLocaleString('id-ID') %></div>
-                    <div class="summary-sub"><%= budgetItems.length %> kategori dianggarkan</div>
+                    <div class="summary-value" id="summaryTotalBudget">Rp <%= totalBudget.toLocaleString('id-ID') %></div>
+                    <div class="summary-sub" id="summaryTotalCategory"><%= budgetItems.length %> kategori dianggarkan</div>
                 </div>
                 <div class="summary-card spent">
                     <div class="summary-top">
                         <span class="summary-label">Sudah Terpakai</span>
                         <div class="summary-icon red"><i class="fas fa-shopping-cart"></i></div>
                     </div>
-                    <div class="summary-value">Rp <%= totalSpent.toLocaleString('id-ID') %></div>
+                    <div class="summary-value" id="summaryTotalSpent">Rp <%= totalSpent.toLocaleString('id-ID') %></div>
                     <div class="summary-sub">
                         <% if (totalBudget > 0) { %>
                             <%= totalPercent %>% dari anggaran
@@ -334,10 +588,10 @@
                         <span class="summary-label">Sisa Anggaran</span>
                         <div class="summary-icon green"><i class="fas fa-piggy-bank"></i></div>
                     </div>
-                    <div class="summary-value" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
+                    <div class="summary-value" id="summaryTotalRemaining" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
                         <%= totalRemaining >= 0 ? '' : '-' %>Rp <%= Math.abs(totalRemaining).toLocaleString('id-ID') %>
                     </div>
-                    <div class="summary-sub" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
+                    <div class="summary-sub" id="summaryRemainingStatus" style="color: <%= totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)' %>;">
                         <i class="fas fa-<%= totalRemaining >= 0 ? 'check-circle' : 'exclamation-triangle' %>"></i>
                         <%= totalRemaining >= 0 ? 'Keuangan terkontrol' : 'Anggaran terlampaui!' %>
                     </div>
@@ -379,13 +633,34 @@
                             </div>
                         </div>
 
+                        <div class="form-group" style="margin-top: 16px;">
+                            <label class="form-label">Tipe Anggaran</label>
+                            <select name="budget_type" id="budgetTypeSelect" class="form-input" onchange="toggleDurationInput()">
+                                <option value="unlimited">Biasa (Tanpa Batas Waktu)</option>
+                                <option value="custom">Durasi Kustom (Berdasarkan Hari)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="durationGroup" style="display: none; margin-top: 16px;">
+                            <label class="form-label">Tentukan Durasi</label>
+                            <div style="display:flex; flex-direction:column; gap: 8px;">
+                                <button type="button" onclick="openDateModal()" class="form-input" style="background:var(--primary); color:white; border:none; cursor:pointer; text-align:center; border-radius: 8px; padding: 12px; font-weight: 600; display:flex; align-items:center; justify-content:center; gap:8px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                                    <i class="fas fa-calendar-alt"></i> Pilih Tanggal dari Kalender
+                                </button>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <input type="number" name="duration_days" id="durationDaysInput" class="form-input" placeholder="Atau isi manual (contoh: 30)" min="1" style="flex:1;">
+                                    <span style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">Hari</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn-submit">
                             <i class="fas fa-save"></i> Simpan Anggaran
                         </button>
                     </form>
 
                     <p style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); text-align: center;">
-                        <i class="fas fa-info-circle"></i> Jika kategori sudah ada, nilai anggaran akan diperbarui
+                        <i class="fas fa-info-circle"></i> Jika kategori memiliki anggaran aktif, nilainya akan diperbarui. Anggaran kedaluwarsa akan disimpan sebagai riwayat.
                     </p>
                 </div>
 
@@ -393,15 +668,20 @@
                 <div>
                     <!-- Budget Items -->
                     <div class="card" style="margin-bottom: 20px;">
-                        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                             <span><i class="fas fa-list-check"></i> Rincian Anggaran</span>
-                            <span style="font-size:0.8rem;color:var(--text-muted);background:#f1f5f9;padding:4px 12px;border-radius:20px;font-weight:600;">
-                                <%= budgetItems.length %> kategori
-                            </span>
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <span style="font-size:0.8rem;color:var(--text-muted);background:#f1f5f9;padding:4px 12px;border-radius:20px;font-weight:600;">
+                                    <%= budgetItems.length %> kategori
+                                </span>
+                                <button id="btnToggleHistory" onclick="toggleBudgetHistory()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;font-size:0.8rem;font-weight:600;background:var(--info-light);color:var(--primary);transition:all 0.2s;">
+                                    <i class="fas fa-history"></i> Riwayat
+                                </button>
+                            </div>
                         </div>
 
-                        <% if (budgetItems.length > 0) { %>
-                            <% 
+                        
+                        <% 
                             const catIcons = {
                                 'Makanan & Minuman': { icon: 'fa-utensils', cls: 'cat-food' },
                                 'Transportasi': { icon: 'fa-car', cls: 'cat-transport' },
@@ -411,72 +691,64 @@
                                 'Pendidikan': { icon: 'fa-graduation-cap', cls: 'cat-edu' },
                                 'Hiburan': { icon: 'fa-film', cls: 'cat-entertainment' }
                             };
-                            %>
-                            <% budgetItems.forEach(function(item) { %>
-                                <%
-                                    const catInfo = catIcons[item.category] || { icon: 'fa-tag', cls: 'cat-default' };
-                                    let barColor = 'linear-gradient(90deg, var(--primary), var(--accent))';
-                                    let pctColor = 'var(--primary)';
-                                    if (item.percent >= 80) { barColor = 'linear-gradient(90deg, #ef4444, #f97316)'; pctColor = 'var(--danger)'; }
-                                    else if (item.percent >= 50) { barColor = 'linear-gradient(90deg, #f59e0b, #eab308)'; pctColor = 'var(--warning)'; }
-                                %>
-                                <div class="budget-item" style="width: 100%; padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; box-sizing: border-box;">
-                                    <!-- Bagian Atas: Info Kategori & Angka -->
-                                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                                        <!-- Kiri: Ikon & Nama -->
-                                        <div style="display: flex; align-items: center; gap: 14px;">
-                                            <div class="budget-cat-icon <%= catInfo.cls %>" style="width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; display:flex; align-items:center; justify-content:center;">
-                                                <i class="fas <%= catInfo.icon %>"></i>
-                                            </div>
-                                            <div style="text-align: left;">
-                                                <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 2px;"><%= item.category %></div>
-                                                <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                                    Batas: <span style="font-weight: 600; color: var(--text-secondary);">Rp <%= item.budgetAmount.toLocaleString('id-ID') %></span>
-                                                </div>
-                                            </div>
-                                        </div>
+                            
+                            const activeBudgets = budgetItems.filter(i => !i.is_archived);
+                            const expiredBudgets = budgetItems.filter(i => i.is_archived);
+                        %>
 
-                                        <!-- Kanan: Terpakai & Hapus -->
-                                        <div style="display: flex; align-items: center; gap: 16px;">
-                                            <div style="text-align: right;">
-                                                <div style="font-weight: 700; font-size: 0.95rem; color:<%= pctColor %>;">Rp <%= item.spent.toLocaleString('id-ID') %></div>
-                                                <div style="font-size: 0.7rem; color: var(--text-muted);">Terpakai</div>
-                                            </div>
-                                            <form action="/budget/delete/<%= item.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus anggaran <%= item.category %>?', this)">
-                                                <button type="submit" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                    <!-- Bagian Bawah: Progress Bar Menyatu dengan Teks -->
-                                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                                        <div class="progress-track" style="flex: 1; height: 8px; border-radius: 10px; background: rgba(148, 163, 184, 0.2); overflow: hidden; margin: 0;">
-                                            <div class="progress-fill" style="height: 100%; border-radius: 10px; background: <%= barColor %>; width: <%= item.percent %>%; box-shadow: 0 0 6px <%= pctColor %>60;"></div>
-                                        </div>
-                                        
-                                        <div style="display: flex; gap: 8px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">
-                                            <span style="color:<%= pctColor %>;"><%= item.percent %>%</span>
-                                            <span style="color:var(--text-muted);">|</span>
-                                            <span>
-                                                <% if (item.remaining >= 0) { %>
-                                                    <span style="color: var(--success);">Sisa Rp <%= item.remaining.toLocaleString('id-ID') %></span>
-                                                <% } else { %>
-                                                    <span style="color: var(--danger);">Over Rp <%= Math.abs(item.remaining).toLocaleString('id-ID') %></span>
-                                                <% } %>
-                                            </span>
-                                        </div>
-                                    </div>
+                        <div style="width: 100%;">
+                            <div id="budgetFilters" style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Filter Kategori</label>
+                                    <select id="filterCategory" class="form-input" style="padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border); width: 100%; outline: none;" onchange="applyBudgetFilters()">
+                                        <option value="">Semua Kategori</option>
+                                        <% categories.forEach(function(c) { %>
+                                            <option value="<%= c.name %>"><%= c.name %></option>
+                                        <% }) %>
+                                    </select>
                                 </div>
-                            <% }) %>
-                        <% } else { %>
-                            <div class="empty-state">
-                                <i class="fas fa-bullseye"></i>
-                                <h3>Belum ada anggaran</h3>
-                                <p>Mulai dengan menambahkan batas anggaran per kategori di form sebelah kiri</p>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Tanggal Dibuat</label>
+                                    <input type="date" id="filterDate" class="form-input" style="padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border); width: 100%; outline: none;" onchange="applyBudgetFilters()">
+                                </div>
                             </div>
-                        <% } %>
+                        </div>
+
+                        <div style="width: 100%;">
+                                <!-- FRONT: Active Budgets -->
+                                <div id="budgetFront" style="width: 100%;">
+                                    <% if (activeBudgets.length > 0) { %>
+                                        <% activeBudgets.forEach(function(item) { %>
+                                            <%- include('partials/budget_item', { item: item, catIcons: catIcons }) %>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <div class="empty-state">
+                                            <i class="fas fa-bullseye"></i>
+                                            <h3>Belum ada anggaran aktif</h3>
+                                            <p>Mulai dengan menambahkan batas anggaran per kategori di form sebelah kiri</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+
+                                <!-- BACK: Archived Budgets (hidden by default) -->
+                                <div id="budgetBack" style="width: 100%; display: none;">
+                                    <div style="padding: 12px; background: var(--danger-light); color: var(--danger); border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem; font-weight: 600; text-align: center;">
+                                        <i class="fas fa-archive"></i> Riwayat Anggaran Kedaluwarsa
+                                    </div>
+                                    <% if (expiredBudgets.length > 0) { %>
+                                        <% expiredBudgets.forEach(function(item) { %>
+                                            <%- include('partials/budget_item', { item: item, catIcons: catIcons }) %>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <div class="empty-state">
+                                            <i class="fas fa-box-open"></i>
+                                            <h3>Belum ada riwayat</h3>
+                                            <p>Anggaran yang telah melewati batas waktu akan muncul di sini</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                        </div>
+
                     </div>
 
                     <!-- Chart Card -->
@@ -495,6 +767,21 @@
 
     <script>
         // Format Rupiah
+        function toggleDurationInput() {
+            const budgetType = document.getElementById('budgetTypeSelect').value;
+            const durationGroup = document.getElementById('durationGroup');
+            const durationInput = document.getElementById('durationDaysInput');
+            
+            if (budgetType === 'custom') {
+                durationGroup.style.display = 'block';
+                durationInput.required = true;
+            } else {
+                durationGroup.style.display = 'none';
+                durationInput.required = false;
+                durationInput.value = '';
+            }
+        }
+
         function formatBudgetRupiah(el) {
             let value = el.value.replace(/\D/g, '');
             document.getElementById('budgetRaw').value = value;
@@ -516,10 +803,10 @@
         <% if (budgetItems.length > 0) { %>
         // Budget Doughnut Chart
         (function() {
-            const items = <%- JSON.stringify(budgetItems) %>;
+            const items = <%- JSON.stringify(budgetItems) %>.filter(function(i) { return !i.is_archived; });
             const colors = ['#4361ee', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
 
-            new Chart(document.getElementById('budgetChart').getContext('2d'), {
+            window.budgetChart = new Chart(document.getElementById('budgetChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: items.map(function(i) { return i.category; }),
@@ -552,5 +839,125 @@
         })();
         <% } %>
     </script>
+
+    <!-- Custom Date Range Modal -->
+    <div id="customDateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:99999; align-items:center; justify-content:center;">
+        <div style="background:var(--card-bg); padding:24px; border-radius:16px; width:90%; max-width:400px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-primary);"><i class="fas fa-calendar-alt" style="color:var(--primary); margin-right:8px;"></i> Pilih Rentang Waktu</h3>
+                <button type="button" onclick="closeDateModal()" style="background:transparent; border:none; font-size:1.2rem; color:var(--text-muted); cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Tanggal Mulai</label>
+                    <input type="date" id="modalStartDate" class="form-input" style="width:100%;" min="2026-05-18">
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Tanggal Berakhir</label>
+                    <input type="date" id="modalEndDate" class="form-input" style="width:100%;" min="2026-05-18">
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:24px;">
+                <button type="button" onclick="closeDateModal()" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-weight:600; cursor:pointer;">Batal</button>
+                <button type="button" onclick="applyDateRange()" style="flex:1; padding:12px; border-radius:8px; border:none; background:var(--primary); color:white; font-weight:600; cursor:pointer;">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL BUAT ULANG ANGGARAN ===== -->
+    <div id="recreateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:99999; align-items:center; justify-content:center;">
+        <div style="background:var(--card-bg); padding:28px; border-radius:20px; width:90%; max-width:460px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
+
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <div>
+                    <h3 style="margin:0; font-size:1.2rem; color:var(--text-primary); font-weight:700;">
+                        <i class="fas fa-redo" style="color:var(--primary); margin-right:8px;"></i> Buat Ulang Anggaran
+                    </h3>
+                    <p style="margin:4px 0 0; font-size:0.8rem; color:var(--text-muted);">Periksa & ubah jika perlu, lalu simpan.</p>
+                </div>
+                <button type="button" onclick="closeRecreateModal()" style="background:transparent; border:none; font-size:1.2rem; color:var(--text-muted); cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+
+            <form id="recreateForm" action="/budget/add" method="POST">
+
+                <!-- Kategori (read-only) -->
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px;">Kategori</label>
+                    <input type="text" id="recreateCategory" name="category" class="form-input" readonly style="background:#f1f5f9; cursor:not-allowed; font-weight:600;">
+                </div>
+
+                <!-- Jumlah Anggaran -->
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px;">Batas Anggaran</label>
+                    <div style="position:relative;">
+                        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-weight:700; color:var(--text-muted); font-size:0.85rem;">Rp</span>
+                        <input type="text" id="recreateAmount" class="form-input" style="padding-left:40px; font-weight:700; font-size:1.1rem;" oninput="formatRecreateRupiah(this)" autocomplete="off">
+                        <input type="hidden" id="recreateAmountRaw" name="amount">
+                    </div>
+                </div>
+
+                <!-- Tipe Anggaran -->
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px;">Tipe Anggaran</label>
+                    <select id="recreateBudgetType" name="budget_type" class="form-input" onchange="toggleRecreateDuration()">
+                        <option value="unlimited">Biasa (Tanpa Batas Waktu)</option>
+                        <option value="custom">Durasi Kustom (Berdasarkan Hari)</option>
+                    </select>
+                </div>
+
+                <!-- Durasi (hanya tampil jika custom) -->
+                <div id="recreateDurationGroup" style="margin-bottom:16px; display:none;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px;">Tentukan Durasi</label>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button type="button" onclick="openRecreateDateModal()" style="background:var(--primary); color:white; border:none; cursor:pointer; border-radius:8px; padding:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; font-family:'Inter',sans-serif;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                            <i class="fas fa-calendar-alt"></i> Pilih Tanggal dari Kalender
+                        </button>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="number" id="recreateDurationDays" name="duration_days" class="form-input" placeholder="Atau isi manual (contoh: 30)" min="1" style="flex:1;">
+                            <span style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">Hari</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div style="display:flex; gap:12px; margin-top:24px;">
+                    <button type="button" onclick="closeRecreateModal()" style="flex:1; padding:13px; border-radius:12px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;">Batal</button>
+                    <button type="button" onclick="submitRecreate()" style="flex:2; padding:13px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-save"></i> Simpan Anggaran Baru
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ===== MODAL KALENDER UNTUK BUAT ULANG ===== -->
+    <div id="recreateDateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.7); backdrop-filter:blur(4px); z-index:999999; align-items:center; justify-content:center;">
+        <div style="background:var(--card-bg); padding:24px; border-radius:16px; width:90%; max-width:400px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-primary);"><i class="fas fa-calendar-alt" style="color:var(--primary); margin-right:8px;"></i> Pilih Rentang Waktu</h3>
+                <button type="button" onclick="closeRecreateDateModal()" style="background:transparent; border:none; font-size:1.2rem; color:var(--text-muted); cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Tanggal Mulai</label>
+                    <input type="date" id="recreateModalStartDate" class="form-input" style="width:100%;">
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Tanggal Berakhir</label>
+                    <input type="date" id="recreateModalEndDate" class="form-input" style="width:100%;">
+                </div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:24px;">
+                <button type="button" onclick="closeRecreateDateModal()" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-weight:600; cursor:pointer;">Batal</button>
+                <button type="button" onclick="applyRecreateDateRange()" style="flex:1; padding:12px; border-radius:8px; border:none; background:var(--primary); color:white; font-weight:600; cursor:pointer;">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

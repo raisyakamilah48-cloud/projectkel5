@@ -108,18 +108,25 @@ router.post('/login', async function(req, res) {
 
         const user = results[0];
 
-        // Cek Password
+        // 1. Cek apakah akun aktif
+        if (!user.is_active) {
+            return res.render('auth/login', { message: 'Akun Anda dinonaktifkan. Silakan hubungi administrator.' });
+        }
+
+        // 2. Cek Password
         const match = await bcrypt.compare(password, user.password);
         
         if (!match) {
             return res.render('auth/login', { message: 'Password salah!' });
         }
 
-        // Simpan Session
+        // 3. Update LAST LOGIN
+        db.query("UPDATE users SET last_login = NOW() WHERE id = ?", [user.id]);
+
+        // 4. Simpan Session
         req.session.user = user;
 
         // Redirect berdasarkan Role
-        // PERBAIKAN: Cek apakah role nya 'admin', bukan 'NULL'
         if (user.role === 'admin') {
             res.redirect('/admin');
         } else {

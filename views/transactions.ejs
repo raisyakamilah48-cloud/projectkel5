@@ -311,6 +311,29 @@
             margin-bottom: 16px;
         }
 
+        .btn-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+
         .trans-count {
             font-size: 0.8rem; color: var(--text-muted);
             background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 600;
@@ -430,6 +453,161 @@
 
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
         .menu-toggle:hover { background: #f1f5f9; }
+
+        /* ---- EXPORT MODAL ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn .2s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalSlide { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .modal-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 24px 48px -12px rgba(0,0,0,0.2);
+            animation: modalSlide .25s ease;
+        }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .modal-title-wrap .modal-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-title-wrap h3 {
+            font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
+        }
+
+        .modal-title-wrap p {
+            font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px;
+        }
+
+        .modal-close {
+            background: #f1f5f9; border: none; cursor: pointer;
+            width: 36px; height: 36px; border-radius: 10px;
+            color: var(--text-muted); font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s; flex-shrink: 0;
+        }
+        .modal-close:hover { background: var(--danger-light); color: var(--danger); }
+
+        .modal-divider {
+            display: flex; align-items: center; gap: 10px;
+            margin: 20px 0;
+            color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+        }
+        .modal-divider::before, .modal-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        .export-option-card {
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: all .2s;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .export-option-card:hover { border-color: var(--primary); background: rgba(67, 97, 238, 0.03); }
+
+        .export-option-card .opt-head {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .export-option-card .opt-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; flex-shrink: 0;
+        }
+
+        .opt-icon.green { background: var(--success-light); color: var(--success); }
+        .opt-icon.indigo { background: var(--info-light); color: var(--primary); }
+
+        .export-option-card .opt-title { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+        .export-option-card .opt-desc { font-size: 0.78rem; color: var(--text-muted); margin-left: 48px; }
+
+        .date-range-form { display: none; margin-top: 14px; }
+        .date-range-form.visible { display: block; }
+
+        .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .btn-export-modal {
+            width: 100%; padding: 13px;
+            border: none; border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all .3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: white;
+        }
+
+        .btn-export-modal.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            margin-top: 16px;
+        }
+        .btn-export-modal.green:hover { box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+
+        .btn-export-modal.indigo {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            margin-top: 8px;
+        }
+        .btn-export-modal.indigo:hover { box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); transform: translateY(-1px); }
+
+        /* ---- PROGRESS OVERLAY ---- */
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(16,185,129,0.35); transform: scale(1); }
+            50% { box-shadow: 0 12px 32px rgba(16,185,129,0.55); transform: scale(1.05); }
+        }
+
+        @keyframes shimmerBar {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes stepIn {
+            from { opacity: 0.35; transform: translateX(-4px); }
+            to   { opacity: 1;    transform: translateX(0); }
+        }
+
+        .exp-step.done .exp-step-dot {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+        .exp-step.done .exp-step-dot i {
+            color: white !important;
+        }
+        .exp-step.active {
+            opacity: 1 !important;
+            transform: translateX(0) !important;
+        }
+        .exp-step.active .exp-step-dot {
+            background: var(--info-light) !important;
+            box-shadow: 0 0 0 3px rgba(67,97,238,0.15);
+        }
+        .exp-step.active .exp-step-dot i {
+            color: var(--primary) !important;
+        }
     </style>
 </head>
 <body>
@@ -493,7 +671,7 @@
                 <div class="card" style="height:fit-content;position:sticky;top:96px;">
                     <div class="card-title"><i class="fas fa-plus-circle"></i> Tambah Transaksi</div>
 
-                    <form action="/transactions/add" method="POST" id="transForm">
+                    <form action="/transactions/add" method="POST" id="transForm" enctype="multipart/form-data">
 
                         <!-- Type Toggle -->
                         <div class="form-label">Tipe Transaksi</div>
@@ -561,6 +739,25 @@
                             </div>
                         </div>
 
+                        <!-- Attachment -->
+                        <div class="form-group">
+                            <label class="form-label">Bukti Foto (Opsional)</label>
+                            <div class="upload-wrapper" style="position:relative; width:100%; border:2px dashed var(--border); border-radius:12px; padding:20px; text-align:center; transition:all .3s; background:#fafbfc; cursor:pointer;" onclick="document.getElementById('attachmentInput').click()" onmouseover="this.style.borderColor='var(--primary)'; this.style.backgroundColor='#f8faff';" onmouseout="this.style.borderColor='var(--border)'; this.style.backgroundColor='#fafbfc';">
+                                <input type="file" name="attachment" id="attachmentInput" accept="image/jpeg, image/png, image/jpg, image/webp" style="display:none;" onchange="previewImage(event)">
+                                <div id="uploadPlaceholder">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size:2.2rem; color:var(--primary); opacity:0.8; margin-bottom:10px;"></i>
+                                    <p style="font-size:0.9rem; color:var(--text-secondary); font-weight:600;">Klik untuk upload foto</p>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">JPG, PNG, WEBP (Max 2MB)</p>
+                                </div>
+                                <div id="imagePreviewContainer" style="display:none; position:relative; width:fit-content; margin:0 auto;">
+                                    <img id="imagePreview" style="max-width:100%; max-height:160px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); object-fit:contain; border: 2px solid white;">
+                                    <button type="button" onclick="removeImage(event)" style="position:absolute; top:-12px; right:-12px; background:var(--danger); color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; box-shadow:0 3px 8px rgba(239, 68, 68, 0.4); display:flex; align-items:center; justify-content:center; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn-submit" id="submitBtn">
                             <i class="fas fa-save"></i> Simpan Transaksi
                         </button>
@@ -571,7 +768,12 @@
                 <div class="card">
                     <div class="trans-header">
                         <div class="card-title" style="margin-bottom:0;"><i class="fas fa-history"></i> Riwayat Transaksi</div>
-                        <span class="trans-count"><%= transactions.length %> transaksi</span>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <span class="trans-count"><%= transactions.length %> transaksi</span>
+                            <button id="btnOpenExport" onclick="openExportModal()" class="btn-export" title="Export ke Excel">
+                                <i class="fas fa-file-excel"></i> Export
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Search -->
@@ -599,6 +801,10 @@
                                                 <i class="fas fa-tag" style="font-size:0.65rem;"></i> <%= t.category || 'Lainnya' %> 
                                                 &nbsp;•&nbsp; 
                                                 <i class="fas fa-calendar" style="font-size:0.65rem;"></i> <%= new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                                &nbsp;•&nbsp; 
+                                                <button type="button" onclick="viewAttachment('<%= t.attachment || '' %>')" style="background:transparent; border:none; cursor:pointer; color: <%= t.attachment ? 'var(--primary)' : 'var(--text-muted)' %>; font-size:0.85rem; transition: color 0.2s; padding:2px;" title="Lihat Bukti Foto" onmouseover="this.style.color='<%= t.attachment ? 'var(--primary-dark)' : 'var(--text-secondary)' %>'" onmouseout="this.style.color='<%= t.attachment ? 'var(--primary)' : 'var(--text-muted)' %>'">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -627,6 +833,156 @@
             </div>
         </div>
     </main>
+
+    <!-- ====================================================
+         PROGRESS OVERLAY EKSPOR PREMIUM
+         ==================================================== -->
+    <div id="exportProgressOverlay" style="
+        display: none;
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        align-items: center; justify-content: center;
+        animation: fadeIn .25s ease;
+    ">
+        <div id="exportProgressBox" style="
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 32px 64px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,.05);
+            text-align: center;
+            animation: modalSlide .3s cubic-bezier(.34,1.56,.64,1);
+        ">
+            <!-- Icon Pulsing -->
+            <div id="expIconWrap" style="
+                width: 72px; height: 72px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                border-radius: 20px;
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 20px;
+                font-size: 1.8rem; color: white;
+                box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+                animation: iconPulse 1.8s ease-in-out infinite;
+            ">
+                <i class="fas fa-file-excel"></i>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <h3 id="expTitle" style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Menyiapkan Data...</h3>
+            <p id="expSubtitle" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 28px;">Mengambil riwayat transaksi dari server</p>
+
+            <!-- Progress Bar Track -->
+            <div style="
+                width: 100%;
+                background: var(--border);
+                border-radius: 100px;
+                height: 10px;
+                overflow: hidden;
+                margin-bottom: 10px;
+                position: relative;
+            ">
+                <div id="expProgressFill" style="
+                    height: 100%;
+                    width: 0%;
+                    background: linear-gradient(90deg, #10b981, #059669, #34d399, #10b981);
+                    background-size: 300% 100%;
+                    border-radius: 100px;
+                    transition: width .6s cubic-bezier(.4,0,.2,1);
+                    animation: shimmerBar 2s linear infinite;
+                "></div>
+            </div>
+
+            <!-- Percentage Label -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Progress</span>
+                <span id="expPercent" style="font-size: 0.8rem; font-weight: 700; color: #10b981;">0%</span>
+            </div>
+
+            <!-- Step Checklist -->
+            <div style="text-align: left; display: flex; flex-direction: column; gap: 10px;">
+                <div class="exp-step" id="expStep1" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-server" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Mengambil data dari server</span>
+                </div>
+                <div class="exp-step" id="expStep2" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-table" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Memformat ke spreadsheet</span>
+                </div>
+                <div class="exp-step" id="expStep3" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-palette" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Menerapkan desain & styling</span>
+                </div>
+                <div class="exp-step" id="expStep4" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-download" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Mengunduh file Excel</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================
+         MODAL EKSPOR EXCEL PREMIUM
+         ==================================================== -->
+    <div class="modal-overlay" id="exportModal" onclick="closeExportModal(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon"><i class="fas fa-file-excel"></i></div>
+                    <h3>Ekspor Laporan Transaksi</h3>
+                    <p>Pilih mode ekspor yang sesuai kebutuhan Anda</p>
+                </div>
+                <button class="modal-close" onclick="closeExportModalBtn()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Opsi 1: Semua Data -->
+            <div class="export-option-card" onclick="exportAllData()">
+                <div class="opt-head">
+                    <div class="opt-icon green"><i class="fas fa-database"></i></div>
+                    <div class="opt-title">Semua Data</div>
+                </div>
+                <div class="opt-desc">Ekspor seluruh riwayat transaksi Anda tanpa filter waktu</div>
+            </div>
+
+            <div class="modal-divider">atau</div>
+
+            <!-- Opsi 2: Rentang Tanggal -->
+            <div class="export-option-card" id="dateRangeCard" onclick="toggleDateRange()" style="margin-bottom: 0;">
+                <div class="opt-head">
+                    <div class="opt-icon indigo"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="opt-title">Berdasarkan Rentang Tanggal</div>
+                </div>
+                <div class="opt-desc">Pilih periode tertentu untuk ekspor data transaksi</div>
+
+                <!-- Form Tanggal (tersembunyi secara default) -->
+                <div class="date-range-form" id="dateRangeForm" onclick="event.stopPropagation()">
+                    <div class="date-row" style="margin-top: 14px;">
+                        <div>
+                            <label class="form-label">Tanggal Mulai</label>
+                            <input type="date" id="exportStartDate" class="form-input" style="font-size: 0.85rem;">
+                        </div>
+                        <div>
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input type="date" id="exportEndDate" class="form-input" style="font-size: 0.85rem;">
+                        </div>
+                    </div>
+                    <button class="btn-export-modal indigo" onclick="exportByDateRange()">
+                        <i class="fas fa-download"></i> Ekspor Rentang Waktu
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <script>
         // === Type Toggle + Category Filter ===
@@ -679,13 +1035,41 @@
             }
         }
 
-        // Validasi sebelum submit — pastikan amount terisi
+        // Data budget dari backend
+        const budgetData = <%- typeof budgetData !== 'undefined' ? budgetData : '{}' %>;
+
+        // Validasi sebelum submit — pastikan amount terisi dan cek budget
         document.getElementById('transForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Hentikan submit bawaan untuk validasi async
+            
             const raw = document.getElementById('amountRaw').value;
-            if (!raw || parseInt(raw) <= 0) {
-                e.preventDefault();
+            const amount = parseInt(raw);
+            if (!raw || amount <= 0) {
                 await CekUangkuDialog.alert('Masukkan jumlah yang valid!', 'Gagal', 'error');
+                return;
             }
+
+            const type = document.getElementById('typeInput').value;
+            const categorySelect = document.getElementById('categorySelect');
+            const category = categorySelect.value;
+
+            // Cek apakah transaksi melebihi budget
+            if (type === 'expense' && budgetData[category]) {
+                const remaining = budgetData[category].remaining;
+                if (amount > remaining) {
+                    const confirmed = await CekUangkuDialog.confirm(
+                        `Pengeluaran ini (Rp ${amount.toLocaleString('id-ID')}) melebihi sisa anggaran bulan ini untuk kategori <b>${category}</b> (sisa Rp ${remaining.toLocaleString('id-ID')}).<br><br>Apakah Anda yakin tetap ingin menyimpan transaksi ini?`, 
+                        'Peringatan Anggaran', 
+                        'warning'
+                    );
+                    if (!confirmed) {
+                        return; // Batalkan submit
+                    }
+                }
+            }
+
+            // Jika validasi lulus / dikonfirmasi, lakukan submit manual
+            this.submit();
         });
 
         // === Search/Filter ===
@@ -701,6 +1085,197 @@
                     item.style.display = 'none';
                 }
             });
+        }
+
+        // === Fitur Image Preview ===
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const previewImage = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage(event) {
+            event.stopPropagation(); // Mencegah form file input terbuka
+            document.getElementById('attachmentInput').value = '';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            document.getElementById('imagePreview').src = '';
+        }
+
+        // === Fitur Lihat Bukti Foto ===
+        function viewAttachment(path) {
+            if (path && path.trim() !== '') {
+                const imgHtml = `<img src="${path}" style="width:100%; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-top:8px;">`;
+                CekUangkuDialog.alert(imgHtml, 'Bukti Transaksi', 'info');
+            } else {
+                CekUangkuDialog.alert('Transaksi ini tidak memiliki bukti foto.', 'Informasi', 'warning');
+            }
+        }
+
+        // =============================================
+        // EXPORT MODAL LOGIC
+        // =============================================
+        function openExportModal() {
+            document.getElementById('exportModal').classList.add('active');
+            // Reset date range form
+            document.getElementById('dateRangeForm').classList.remove('visible');
+            document.getElementById('dateRangeCard').style.borderColor = '';
+            document.getElementById('dateRangeCard').style.background = '';
+            document.getElementById('exportStartDate').value = '';
+            document.getElementById('exportEndDate').value = '';
+        }
+
+        function closeExportModalBtn() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        // Tutup modal jika klik di luar box
+        function closeExportModal(e) {
+            if (e.target === document.getElementById('exportModal')) {
+                closeExportModalBtn();
+            }
+        }
+
+        // =============================================
+        // PROGRESS OVERLAY ENGINE
+        // =============================================
+        const PROGRESS_STEPS = [
+            { id: 'expStep1', title: 'Menyiapkan Data...', subtitle: 'Mengambil riwayat transaksi dari server', pct: 20 },
+            { id: 'expStep2', title: 'Memformat Spreadsheet...', subtitle: 'Menyusun baris data ke dalam lembar Excel', pct: 50 },
+            { id: 'expStep3', title: 'Menerapkan Styling...', subtitle: 'Memperindah tampilan laporan dengan warna & format', pct: 80 },
+            { id: 'expStep4', title: 'Mengunduh File...', subtitle: 'File Excel sedang dikirim ke perangkat Anda', pct: 100 },
+        ];
+
+        function setProgress(pct, title, subtitle) {
+            document.getElementById('expProgressFill').style.width = pct + '%';
+            document.getElementById('expPercent').textContent = pct + '%';
+            document.getElementById('expTitle').textContent = title;
+            document.getElementById('expSubtitle').textContent = subtitle;
+        }
+
+        function activateStep(index) {
+            // Mark previous steps as done
+            for (let i = 0; i < index; i++) {
+                const el = document.getElementById(PROGRESS_STEPS[i].id);
+                el.classList.remove('active');
+                el.classList.add('done');
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            }
+            // Activate current step
+            const cur = document.getElementById(PROGRESS_STEPS[index].id);
+            cur.classList.add('active');
+        }
+
+        function showProgressOverlay() {
+            // Reset all steps
+            PROGRESS_STEPS.forEach(function(s) {
+                const el = document.getElementById(s.id);
+                el.classList.remove('active', 'done');
+                el.style.opacity = '0.35';
+                el.style.transform = 'translateX(-4px)';
+            });
+            document.getElementById('expProgressFill').style.width = '0%';
+            document.getElementById('expPercent').textContent = '0%';
+
+            const overlay = document.getElementById('exportProgressOverlay');
+            overlay.style.display = 'flex';
+        }
+
+        function hideProgressOverlay() {
+            document.getElementById('exportProgressOverlay').style.display = 'none';
+        }
+
+        function runProgressAndDownload(downloadUrl) {
+            closeExportModalBtn();
+            showProgressOverlay();
+
+            const timings = [300, 900, 1600, 2400]; // ms untuk tiap step
+
+            PROGRESS_STEPS.forEach(function(step, i) {
+                setTimeout(function() {
+                    setProgress(step.pct, step.title, step.subtitle);
+                    activateStep(i);
+
+                    // Pada step terakhir, trigger download & tutup overlay
+                    if (i === PROGRESS_STEPS.length - 1) {
+                        setTimeout(function() {
+                            // Mark last step as done
+                            const last = document.getElementById(step.id);
+                            last.classList.remove('active');
+                            last.classList.add('done');
+                            last.style.opacity = '1';
+
+                            // Trigger unduhan tanpa navigasi (menggunakan hidden anchor)
+                            const anchor = document.createElement('a');
+                            anchor.href = downloadUrl;
+                            anchor.style.display = 'none';
+                            document.body.appendChild(anchor);
+                            anchor.click();
+                            document.body.removeChild(anchor);
+
+                            // Sembunyikan overlay setelah jeda singkat
+                            setTimeout(hideProgressOverlay, 900);
+                        }, 500);
+                    }
+                }, timings[i]);
+            });
+        }
+
+        // Opsi 1: ekspor semua data
+        function exportAllData() {
+            runProgressAndDownload('/transactions/export');
+        }
+
+        // Opsi 2: tampilkan/sembunyikan form rentang tanggal
+        function toggleDateRange() {
+            const form = document.getElementById('dateRangeForm');
+            const card = document.getElementById('dateRangeCard');
+            const isVisible = form.classList.contains('visible');
+            if (isVisible) {
+                form.classList.remove('visible');
+                card.style.borderColor = '';
+                card.style.background = '';
+            } else {
+                form.classList.add('visible');
+                card.style.borderColor = 'var(--primary)';
+                card.style.background = 'rgba(67, 97, 238, 0.03)';
+                // Default: bulan ini
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                const today = now.toISOString().split('T')[0];
+                document.getElementById('exportStartDate').value = firstDay;
+                document.getElementById('exportEndDate').value = today;
+            }
+        }
+
+        // Opsi 2: validasi dan jalankan ekspor dengan rentang tanggal
+        function exportByDateRange() {
+            const start = document.getElementById('exportStartDate').value;
+            const end = document.getElementById('exportEndDate').value;
+
+            if (!start || !end) {
+                CekUangkuDialog.alert('Harap isi kedua tanggal terlebih dahulu!', 'Peringatan', 'warning');
+                return;
+            }
+
+            if (new Date(start) > new Date(end)) {
+                CekUangkuDialog.alert('Tanggal mulai tidak boleh lebih dari tanggal selesai!', 'Peringatan', 'warning');
+                return;
+            }
+
+            runProgressAndDownload(`/transactions/export?start_date=${start}&end_date=${end}`);
         }
     </script>
 </body>

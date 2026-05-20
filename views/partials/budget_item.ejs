@@ -1,0 +1,105 @@
+
+                                <%
+                                    const catInfo = catIcons[item.category] || { icon: 'fa-tag', cls: 'cat-default' };
+                                    let barColor = 'linear-gradient(90deg, var(--primary), var(--accent))';
+                                    let pctColor = 'var(--primary)';
+                                    if (item.percent >= 80) { barColor = 'linear-gradient(90deg, #ef4444, #f97316)'; pctColor = 'var(--danger)'; }
+                                    else if (item.percent >= 50) { barColor = 'linear-gradient(90deg, #f59e0b, #eab308)'; pctColor = 'var(--warning)'; }
+                                    let expiredStyle = '';
+                                    if (item.is_archived) {
+                                        expiredStyle = 'filter: grayscale(1); opacity: 0.7;';
+                                    } else if (item.is_expired) {
+                                        expiredStyle = 'animation: blinkRed 1.5s infinite; border: 2px solid var(--danger); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1); border-radius: 12px; padding: 16px; margin-bottom: 12px; border-bottom: none;';
+                                    }
+                                %>
+                                <div class="budget-item" data-category="<%= item.category %>" data-created="<%= item.created_at %>" data-amount="<%= item.budgetAmount %>" data-spent="<%= item.spent %>" style="width: 100%; <%= (!item.is_expired || item.is_archived) ? 'padding: 16px 0; border-bottom: 1px solid var(--border);' : '' %> display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; <%= expiredStyle %>">
+                                    <!-- Bagian Atas: Info Kategori & Angka -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                        <!-- Kiri: Ikon & Nama -->
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <div class="budget-cat-icon <%= catInfo.cls %>" style="width: 44px; height: 44px; border-radius: 12px; font-size: 1.1rem; flex-shrink: 0; display:flex; align-items:center; justify-content:center;">
+                                                <i class="fas <%= catInfo.icon %>"></i>
+                                            </div>
+                                            <div style="text-align: left;">
+                                                <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 2px;">
+                                                    <%= item.category %>
+                                                    <% if (item.is_expired) { %>
+                                                        <span style="font-size: 0.65rem; background: var(--danger-light); color: var(--danger); padding: 2px 6px; border-radius: 4px; margin-left: 6px;">Kedaluwarsa</span>
+                                                    <% } %>
+                                                </div>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                                    Batas: <span style="font-weight: 600; color: var(--text-secondary);">Rp <%= item.budgetAmount.toLocaleString('id-ID') %></span>
+                                                </div>
+                                                <% if (item.created_at) { 
+                                                    const dCreated = new Date(item.created_at);
+                                                    const formattedCreated = dCreated.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                                                %>
+                                                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">
+                                                        <i class="fas fa-clock"></i> Dibuat: <%= formattedCreated %>
+                                                    </div>
+                                                <% } %>
+                                                <% if (item.budget_type === 'custom' && item.start_date) { 
+                                                    const formatDate = (dateStr) => {
+                                                        const d = new Date(dateStr);
+                                                        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                                                    };
+                                                %>
+                                                    <div style="font-size: 0.7rem; color: var(--info); font-weight: 500; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                                        <span><i class="far fa-calendar-alt"></i> <%= formatDate(item.start_date) %> - <%= formatDate(item.end_date) %></span>
+                                                        <% if (!item.is_expired && !item.is_archived && item.remaining_days !== null) { %>
+                                                            <span style="background: var(--info-light); color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.65rem;">Sisa <%= item.remaining_days %> hari</span>
+                                                        <% } %>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                        </div>
+
+                                        <!-- Kanan: Terpakai & Hapus -->
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div style="text-align: right;">
+                                                <div style="font-weight: 700; font-size: 0.95rem; color:<%= pctColor %>;">Rp <%= item.spent.toLocaleString('id-ID') %></div>
+                                                <div style="font-size: 0.7rem; color: var(--text-muted);">Terpakai</div>
+                                            </div>
+                                            
+                                            <div style="display: flex; gap: 4px;">
+                                                <% if (item.is_expired) { %>
+                                                    <button type="button" onclick="recreateBudget('<%= item.category %>', <%= item.budgetAmount %>, '<%= item.budget_type %>', <%= item.duration_days || 'null' %>)" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: var(--primary); cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='var(--info-light)';" onmouseout="this.style.background='transparent';" title="Buat Ulang Anggaran Ini">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
+                                                <% } %>                                                <% if (item.is_expired && !item.is_archived) { %>
+                                                    <form action="/budget/skip/<%= item.id %>" method="POST" style="margin:0;">
+                                                        <button type="submit" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: #f59e0b; cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='#fef3c7';" onmouseout="this.style.background='transparent';" title="Abaikan dan Pindahkan ke Riwayat">
+                                                            <i class="fas fa-forward"></i>
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                
+                                                <form action="/budget/delete/<%= item.id %>" method="POST" style="margin:0;" onsubmit="event.preventDefault(); CekUangkuDialog.confirmDelete('Hapus anggaran <%= item.category %>?', this)">
+                                                    <button type="submit" class="btn-delete-budget" style="width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bagian Bawah: Progress Bar Menyatu dengan Teks -->
+                                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                        <div class="progress-track" style="flex: 1; height: 8px; border-radius: 10px; background: rgba(148, 163, 184, 0.2); overflow: hidden; margin: 0;">
+                                            <div class="progress-fill" style="height: 100%; border-radius: 10px; background: <%= barColor %>; width: <%= item.percent %>%; box-shadow: 0 0 6px <%= pctColor %>60;"></div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: 8px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">
+                                            <span style="color:<%= pctColor %>;"><%= item.percent %>%</span>
+                                            <span style="color:var(--text-muted);">|</span>
+                                            <span>
+                                                <% if (item.remaining >= 0) { %>
+                                                    <span style="color: var(--success);">Sisa Rp <%= item.remaining.toLocaleString('id-ID') %></span>
+                                                <% } else { %>
+                                                    <span style="color: var(--danger);">Over Rp <%= Math.abs(item.remaining).toLocaleString('id-ID') %></span>
+                                                <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            

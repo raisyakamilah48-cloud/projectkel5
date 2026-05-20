@@ -36,16 +36,21 @@ const upload = multer({
 router.get('/', function(req, res, next) {
   if (!req.session.user) return res.redirect('/auth/login');
   
-  res.render('settings', { 
-    title: 'Setelan', 
-    user: req.session.user,
-    error: req.session.error || null,
-    success: req.session.success || null
-  });
+  const userId = req.session.user.id;
   
-  // Clear messages
-  req.session.error = null;
-  req.session.success = null;
+  db.query("SELECT * FROM feedbacks WHERE user_id = ? ORDER BY created_at DESC", [userId], function(err, feedbacks) {
+      res.render('settings', { 
+        title: 'Setelan', 
+        user: req.session.user,
+        feedbacks: feedbacks || [],
+        error: req.session.error || null,
+        success: req.session.success || null
+      });
+      
+      // Clear messages
+      req.session.error = null;
+      req.session.success = null;
+  });
 });
 
 // POST Update Profil

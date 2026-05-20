@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR(20) DEFAULT 'user',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   profile_picture VARCHAR(255) DEFAULT NULL,
-  calculator_active BOOLEAN DEFAULT FALSE
+  calculator_active BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  last_login DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- =============================================
@@ -92,7 +94,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 
 -- =============================================
 -- TABEL: budgets
--- Menyimpan batas anggaran per kategori per bulan
+-- Menyimpan batas anggaran per kategori per bulan atau durasi kustom
 -- =============================================
 CREATE TABLE IF NOT EXISTS budgets (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -101,6 +103,12 @@ CREATE TABLE IF NOT EXISTS budgets (
   amount DECIMAL(15,2) NOT NULL COMMENT 'Batas anggaran',
   month INT NOT NULL COMMENT 'Bulan (1-12)',
   year INT NOT NULL COMMENT 'Tahun',
+  budget_type VARCHAR(20) DEFAULT 'monthly',
+  start_date DATE DEFAULT NULL,
+  end_date DATE DEFAULT NULL,
+  duration_days INT DEFAULT NULL,
+  is_archived TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

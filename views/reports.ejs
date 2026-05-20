@@ -342,6 +342,174 @@
 
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--text-secondary); }
         .menu-toggle:hover { background: #f1f5f9; }
+
+        /* ---- EXPORT PDF MODAL ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; animation: pdf-fadeIn .2s ease; }
+
+        @keyframes pdf-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pdf-modalSlide { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .pdf-modal-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 24px 48px -12px rgba(0,0,0,0.22);
+            animation: pdf-modalSlide .25s ease;
+        }
+
+        .pdf-modal-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .pdf-modal-title-wrap .pdf-modal-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+        }
+
+        .pdf-modal-title-wrap h3 {
+            font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
+        }
+
+        .pdf-modal-title-wrap p {
+            font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px;
+        }
+
+        .pdf-modal-close {
+            background: #f1f5f9; border: none; cursor: pointer;
+            width: 36px; height: 36px; border-radius: 10px;
+            color: var(--text-muted); font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s; flex-shrink: 0;
+        }
+        .pdf-modal-close:hover { background: var(--danger-light); color: var(--danger); }
+
+        .pdf-modal-divider {
+            display: flex; align-items: center; gap: 10px;
+            margin: 20px 0;
+            color: var(--text-muted); font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+        .pdf-modal-divider::before, .pdf-modal-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        .pdf-export-option-card {
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: all .2s;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .pdf-export-option-card:hover { border-color: var(--danger); background: rgba(239, 68, 68, 0.03); }
+
+        .pdf-export-option-card .opt-head {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .pdf-export-option-card .opt-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; flex-shrink: 0;
+        }
+
+        .pdf-opt-icon-red { background: var(--danger-light); color: var(--danger); }
+        .pdf-opt-icon-blue { background: var(--info-light); color: var(--primary); }
+
+        .pdf-export-option-card .opt-title { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+        .pdf-export-option-card .opt-desc { font-size: 0.78rem; color: var(--text-muted); margin-left: 48px; }
+
+        .pdf-date-range-form { display: none; margin-top: 14px; }
+        .pdf-date-range-form.visible { display: block; }
+
+        .pdf-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .pdf-form-label {
+            display: block;
+            font-size: 0.82rem; font-weight: 600;
+            color: #1e293b; margin-bottom: 6px;
+        }
+
+        .pdf-form-input {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px; font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b; background: #fafbfc;
+            outline: none; transition: all .2s;
+            color-scheme: light;
+        }
+        .pdf-form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
+        .pdf-form-input::-webkit-calendar-picker-indicator { filter: none; cursor: pointer; }
+
+        .btn-pdf-export-modal {
+            width: 100%; padding: 13px;
+            border: none; border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all .3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: white;
+        }
+
+        .btn-pdf-export-modal.red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            margin-top: 16px;
+        }
+        .btn-pdf-export-modal.red:hover { box-shadow: 0 8px 20px rgba(239, 68, 68, 0.45); transform: translateY(-1px); }
+
+        .btn-pdf-export-modal.indigo {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            margin-top: 8px;
+        }
+        .btn-pdf-export-modal.indigo:hover { box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); transform: translateY(-1px); }
+
+        /* ---- PDF PROGRESS OVERLAY ---- */
+        @keyframes pdf-iconPulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(239,68,68,0.35); transform: scale(1); }
+            50% { box-shadow: 0 12px 32px rgba(239,68,68,0.55); transform: scale(1.05); }
+        }
+
+        @keyframes pdf-shimmerBar {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .pdf-exp-step.done .pdf-exp-step-dot {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        }
+        .pdf-exp-step.done .pdf-exp-step-dot i {
+            color: white !important;
+        }
+        .pdf-exp-step.active {
+            opacity: 1 !important;
+            transform: translateX(0) !important;
+        }
+        .pdf-exp-step.active .pdf-exp-step-dot {
+            background: var(--danger-light) !important;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+        }
+        .pdf-exp-step.active .pdf-exp-step-dot i {
+            color: var(--danger) !important;
+        }
     </style>
 </head>
 <body>
@@ -363,9 +531,12 @@
                     <p>Analisis lengkap pemasukan dan pengeluaran kamu</p>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="btn-action btn-primary-sm" onclick="window.print()">
-                    <i class="fas fa-print"></i> Cetak Laporan
+            <div class="header-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-action" style="display:none; background: var(--border); color: var(--text-primary); border: 1px solid var(--border);" onclick="window.print()">
+                    <i class="fas fa-print"></i> Cetak Layar
+                </button>
+                <button id="btn-export-pdf" class="btn-action btn-primary-sm" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf"></i> Unduh PDF Premium
                 </button>
             </div>
         </header>
@@ -700,6 +871,300 @@
             });
         })();
         <% } %>
+
+        // === PREMIUM PDF EXPORT FUNCTION — membuka modal pilihan ===
+        function exportToPDF() {
+            openPdfExportModal();
+        }
+
+        // =============================================
+        // PDF EXPORT MODAL LOGIC
+        // =============================================
+        function openPdfExportModal() {
+            document.getElementById('pdfExportModal').classList.add('active');
+            // Reset state
+            document.getElementById('pdfDateRangeForm').classList.remove('visible');
+            document.getElementById('pdfDateRangeCard').style.borderColor = '';
+            document.getElementById('pdfDateRangeCard').style.background = '';
+            document.getElementById('pdfExportStartDate').value = '';
+            document.getElementById('pdfExportEndDate').value = '';
+        }
+
+        function closePdfExportModalBtn() {
+            document.getElementById('pdfExportModal').classList.remove('active');
+        }
+
+        function closePdfExportModal(e) {
+            if (e.target === document.getElementById('pdfExportModal')) {
+                closePdfExportModalBtn();
+            }
+        }
+
+        function togglePdfDateRange() {
+            const form = document.getElementById('pdfDateRangeForm');
+            const card = document.getElementById('pdfDateRangeCard');
+            const isVisible = form.classList.contains('visible');
+            if (isVisible) {
+                form.classList.remove('visible');
+                card.style.borderColor = '';
+                card.style.background = '';
+            } else {
+                form.classList.add('visible');
+                card.style.borderColor = 'var(--primary)';
+                card.style.background = 'rgba(67, 97, 238, 0.03)';
+                // Default: bulan ini
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                const today = now.toISOString().split('T')[0];
+                document.getElementById('pdfExportStartDate').value = firstDay;
+                document.getElementById('pdfExportEndDate').value = today;
+            }
+        }
+
+        // =============================================
+        // PDF PROGRESS OVERLAY ENGINE
+        // =============================================
+        const PDF_PROGRESS_STEPS = [
+            { id: 'pdfExpStep1', title: 'Menyiapkan Data Laporan...', subtitle: 'Mengambil data transaksi dari server', pct: 20 },
+            { id: 'pdfExpStep2', title: 'Membangun Struktur PDF...', subtitle: 'Menyusun halaman dan layout laporan', pct: 50 },
+            { id: 'pdfExpStep3', title: 'Menerapkan Desain Premium...', subtitle: 'Memperindah grafik, warna, dan tipografi', pct: 80 },
+            { id: 'pdfExpStep4', title: 'Mengunduh File PDF...', subtitle: 'File laporan sedang dikirim ke perangkat Anda', pct: 100 },
+        ];
+
+        function setPdfProgress(pct, title, subtitle) {
+            document.getElementById('pdfExpProgressFill').style.width = pct + '%';
+            document.getElementById('pdfExpPercent').textContent = pct + '%';
+            document.getElementById('pdfExpTitle').textContent = title;
+            document.getElementById('pdfExpSubtitle').textContent = subtitle;
+        }
+
+        function activatePdfStep(index) {
+            for (let i = 0; i < index; i++) {
+                const el = document.getElementById(PDF_PROGRESS_STEPS[i].id);
+                el.classList.remove('active');
+                el.classList.add('done');
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            }
+            const cur = document.getElementById(PDF_PROGRESS_STEPS[index].id);
+            cur.classList.add('active');
+        }
+
+        function showPdfProgressOverlay() {
+            PDF_PROGRESS_STEPS.forEach(function(s) {
+                const el = document.getElementById(s.id);
+                el.classList.remove('active', 'done');
+                el.style.opacity = '0.35';
+                el.style.transform = 'translateX(-4px)';
+            });
+            document.getElementById('pdfExpProgressFill').style.width = '0%';
+            document.getElementById('pdfExpPercent').textContent = '0%';
+            document.getElementById('pdfExportProgressOverlay').style.display = 'flex';
+        }
+
+        function hidePdfProgressOverlay() {
+            document.getElementById('pdfExportProgressOverlay').style.display = 'none';
+        }
+
+        function runPdfProgressAndDownload(downloadUrl) {
+            closePdfExportModalBtn();
+            showPdfProgressOverlay();
+
+            const timings = [300, 900, 1600, 2400];
+
+            PDF_PROGRESS_STEPS.forEach(function(step, i) {
+                setTimeout(function() {
+                    setPdfProgress(step.pct, step.title, step.subtitle);
+                    activatePdfStep(i);
+
+                    if (i === PDF_PROGRESS_STEPS.length - 1) {
+                        setTimeout(function() {
+                            const last = document.getElementById(step.id);
+                            last.classList.remove('active');
+                            last.classList.add('done');
+                            last.style.opacity = '1';
+
+                            const anchor = document.createElement('a');
+                            anchor.href = downloadUrl;
+                            anchor.style.display = 'none';
+                            document.body.appendChild(anchor);
+                            anchor.click();
+                            document.body.removeChild(anchor);
+
+                            setTimeout(hidePdfProgressOverlay, 900);
+                        }, 500);
+                    }
+                }, timings[i]);
+            });
+        }
+
+        // Ekspor semua data
+        function pdfExportAllData() {
+            runPdfProgressAndDownload('/reports/export-pdf');
+        }
+
+        // Validasi dan ekspor rentang tanggal
+        function pdfExportByDateRange() {
+            const start = document.getElementById('pdfExportStartDate').value;
+            const end = document.getElementById('pdfExportEndDate').value;
+
+            if (!start || !end) {
+                alert('Harap isi kedua tanggal terlebih dahulu!');
+                return;
+            }
+
+            if (new Date(start) > new Date(end)) {
+                alert('Tanggal mulai tidak boleh lebih dari tanggal selesai!');
+                return;
+            }
+
+            runPdfProgressAndDownload(`/reports/export-pdf?start_date=${start}&end_date=${end}`);
+        }
     </script>
+
+    <!-- ====================================================
+         PDF PROGRESS OVERLAY
+         ==================================================== -->
+    <div id="pdfExportProgressOverlay" style="
+        display: none;
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        align-items: center; justify-content: center;
+        animation: pdf-fadeIn .25s ease;
+    ">
+        <div style="
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 32px 64px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,.05);
+            text-align: center;
+            animation: pdf-modalSlide .3s cubic-bezier(.34,1.56,.64,1);
+        ">
+            <!-- Icon Pulsing -->
+            <div style="
+                width: 72px; height: 72px;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                border-radius: 20px;
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 20px;
+                font-size: 1.8rem; color: white;
+                box-shadow: 0 8px 24px rgba(239,68,68,0.35);
+                animation: pdf-iconPulse 1.8s ease-in-out infinite;
+            ">
+                <i class="fas fa-file-pdf"></i>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <h3 id="pdfExpTitle" style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Menyiapkan Laporan...</h3>
+            <p id="pdfExpSubtitle" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 28px;">Mengambil data transaksi dari server</p>
+
+            <!-- Progress Bar Track -->
+            <div style="
+                width: 100%; background: var(--border);
+                border-radius: 100px; height: 10px;
+                overflow: hidden; margin-bottom: 10px;
+            ">
+                <div id="pdfExpProgressFill" style="
+                    height: 100%; width: 0%;
+                    background: linear-gradient(90deg, #ef4444, #dc2626, #f87171, #ef4444);
+                    background-size: 300% 100%;
+                    border-radius: 100px;
+                    transition: width .6s cubic-bezier(.4,0,.2,1);
+                    animation: pdf-shimmerBar 2s linear infinite;
+                "></div>
+            </div>
+
+            <!-- Percentage Label -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Progress</span>
+                <span id="pdfExpPercent" style="font-size: 0.8rem; font-weight: 700; color: #ef4444;">0%</span>
+            </div>
+
+            <!-- Step Checklist -->
+            <div style="text-align: left; display: flex; flex-direction: column; gap: 10px;">
+                <div class="pdf-exp-step" id="pdfExpStep1" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="pdf-exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-server" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Mengambil data dari server</span>
+                </div>
+                <div class="pdf-exp-step" id="pdfExpStep2" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="pdf-exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-file-alt" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Membangun struktur PDF</span>
+                </div>
+                <div class="pdf-exp-step" id="pdfExpStep3" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="pdf-exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-palette" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Menerapkan desain premium</span>
+                </div>
+                <div class="pdf-exp-step" id="pdfExpStep4" style="display: flex; align-items: center; gap: 10px; opacity: 0.35; transition: opacity .4s, transform .4s; transform: translateX(-4px);">
+                    <div class="pdf-exp-step-dot" style="width: 28px; height: 28px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .4s;">
+                        <i class="fas fa-download" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </div>
+                    <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">Mengunduh file PDF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================
+         MODAL EKSPOR PDF PREMIUM
+         ==================================================== -->
+    <div class="modal-overlay" id="pdfExportModal" onclick="closePdfExportModal(event)">
+        <div class="pdf-modal-box">
+            <div class="pdf-modal-header">
+                <div class="pdf-modal-title-wrap">
+                    <div class="pdf-modal-icon"><i class="fas fa-file-pdf"></i></div>
+                    <h3>Ekspor Laporan Keuangan</h3>
+                    <p>Pilih mode ekspor yang sesuai kebutuhan Anda</p>
+                </div>
+                <button class="pdf-modal-close" onclick="closePdfExportModalBtn()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Opsi 1: Semua Data -->
+            <div class="pdf-export-option-card" onclick="pdfExportAllData()">
+                <div class="opt-head">
+                    <div class="opt-icon pdf-opt-icon-red"><i class="fas fa-database"></i></div>
+                    <div class="opt-title">Semua Data</div>
+                </div>
+                <div class="opt-desc">Ekspor seluruh riwayat laporan keuangan tanpa filter waktu</div>
+            </div>
+
+            <div class="pdf-modal-divider">atau</div>
+
+            <!-- Opsi 2: Rentang Tanggal -->
+            <div class="pdf-export-option-card" id="pdfDateRangeCard" onclick="togglePdfDateRange()" style="margin-bottom: 0;">
+                <div class="opt-head">
+                    <div class="opt-icon pdf-opt-icon-blue"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="opt-title">Berdasarkan Rentang Tanggal</div>
+                </div>
+                <div class="opt-desc">Pilih periode tertentu untuk ekspor data laporan keuangan</div>
+
+                <!-- Form Tanggal (tersembunyi secara default) -->
+                <div class="pdf-date-range-form" id="pdfDateRangeForm" onclick="event.stopPropagation()">
+                    <div class="pdf-date-row" style="margin-top: 14px;">
+                        <div>
+                            <label class="pdf-form-label">Tanggal Mulai</label>
+                            <input type="date" id="pdfExportStartDate" class="pdf-form-input">
+                        </div>
+                        <div>
+                            <label class="pdf-form-label">Tanggal Selesai</label>
+                            <input type="date" id="pdfExportEndDate" class="pdf-form-input">
+                        </div>
+                    </div>
+                    <button class="btn-pdf-export-modal indigo" onclick="pdfExportByDateRange()">
+                        <i class="fas fa-download"></i> Ekspor Rentang Waktu
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 </html>
