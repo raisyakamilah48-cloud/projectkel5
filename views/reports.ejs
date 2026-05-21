@@ -1003,18 +1003,17 @@
             runPdfProgressAndDownload('/reports/export-pdf');
         }
 
-        // Validasi dan ekspor rentang tanggal
-        function pdfExportByDateRange() {
+        async function pdfExportByDateRange() {
             const start = document.getElementById('pdfExportStartDate').value;
             const end = document.getElementById('pdfExportEndDate').value;
 
             if (!start || !end) {
-                alert('Harap isi kedua tanggal terlebih dahulu!');
+                await CekUangkuDialog.alert('Harap isi kedua tanggal terlebih dahulu!', 'Peringatan', 'warning');
                 return;
             }
 
             if (new Date(start) > new Date(end)) {
-                alert('Tanggal mulai tidak boleh lebih dari tanggal selesai!');
+                await CekUangkuDialog.alert('Tanggal mulai tidak boleh lebih dari tanggal selesai!', 'Peringatan', 'warning');
                 return;
             }
 

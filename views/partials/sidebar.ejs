@@ -52,7 +52,10 @@
                 <div class="name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><%= (typeof user !== 'undefined' && user && user.nama) ? user.nama : 'User' %></div>
                 <div class="status">Online</div>
             </div>
-            <a href="/auth/logout" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+            <a href="/auth/logout" class="btn-logout" title="Logout"
+               onclick="event.preventDefault(); confirmLogout(this.href)">
+               <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 </aside>

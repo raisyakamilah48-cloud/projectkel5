@@ -211,19 +211,19 @@ router.get('/export-pdf', cekLogin, function(req, res, next) {
                             // Garis Separator
                             doc.moveTo(40, 80).lineTo(doc.page.width - 40, 80).strokeColor('#E2E8F0').lineWidth(1).stroke();
 
-                            // Metadata Akun Pengguna
+                            // Metadata Akun Pengguna — card diperlebar agar muat 3 baris
                             doc.save();
-                            doc.fillOpacity(0.04).fillColor('#4361EE').roundedRect(40, 95, doc.page.width - 80, 45, 6).fill();
+                            doc.fillOpacity(0.04).fillColor('#4361EE').roundedRect(40, 95, doc.page.width - 80, 62, 6).fill();
                             doc.restore();
                             doc.save();
-                            doc.lineWidth(1).strokeColor('#E2E8F0').roundedRect(40, 95, doc.page.width - 80, 45, 6).stroke();
+                            doc.lineWidth(1).strokeColor('#E2E8F0').roundedRect(40, 95, doc.page.width - 80, 62, 6).stroke();
                             doc.restore();
 
                             const userNama = req.session.user.nama || 'Pengguna CekUangku';
                             const userEmail = req.session.user.email || '-';
-                            doc.font('Helvetica-Bold').fontSize(8).fillColor('#64748B').text('PEMILIK AKUN', 55, 103);
-                            doc.font('Helvetica-Bold').fontSize(11).fillColor('#1E293B').text(`${userNama} (${userEmail})`, 55, 115);
-                            doc.font('Helvetica').fontSize(8).fillColor('#4361EE').text(`📅 ${periodeLabel}`, doc.page.width - 180, 108, { align: 'right', width: 140 });
+                            doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#64748B').text('PEMILIK AKUN', 55, 103);
+                            doc.font('Helvetica-Bold').fontSize(10.5).fillColor('#1E293B').text(`${userNama} (${userEmail})`, 55, 113);
+                            doc.font('Helvetica').fontSize(7.5).fillColor('#4361EE').text(`Periode: ${periodeLabel}`, 55, 128);
                             
                             // Ringkasan Keuangan (Kartu)
                             const tIncome = parseFloat(finalTotals.totalIncome) || 0;
