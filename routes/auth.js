@@ -77,6 +77,7 @@ router.post('/register', async function(req, res) {
             db.query("SELECT * FROM users WHERE id = ?", [newUserId], function(err, userData) {
                 if (userData && userData.length > 0) {
                     req.session.user = userData[0];
+                    req.session.isNewUser = true;
                     console.log("Auto Login Berhasil untuk:", userData[0].email);
                     return res.redirect('/dashboard');
                 } else {

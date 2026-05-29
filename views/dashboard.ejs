@@ -809,5 +809,191 @@
         })();
         <% } %>
     </script>
+
+    <% if (typeof showOnboarding !== 'undefined' && showOnboarding) { %>
+    <!-- Tailwind CSS (Scoped) for Onboarding Modal -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false }
+        }
+    </script>
+    <!-- ONBOARDING MODAL -->
+    <div id="onboardingModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300" style="font-family: 'Inter', sans-serif;">
+        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col transform transition-all scale-100 opacity-100 mx-4">
+            
+            <button id="ob-btn-close" class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-white/80 hover:bg-slate-100 rounded-full transition-colors cursor-pointer" style="border: none;" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div id="ob-content" class="p-8">
+                <h3 id="ob-title" class="text-2xl font-bold text-slate-800 mb-2"></h3>
+                <p id="ob-desc" class="text-slate-600 text-[14px] leading-relaxed mb-6"></p>
+                
+                <div class="relative rounded-2xl overflow-hidden bg-slate-100 shadow-inner border border-slate-200" style="aspect-ratio: 16/9;">
+                    <video id="ob-video" class="w-full h-full object-cover transition-opacity duration-300" autoplay loop muted playsinline>
+                        <source id="ob-video-src" src="" type="video/mp4">
+                    </video>
+                    <img id="ob-image" src="" alt="Onboarding Image" class="absolute inset-0 w-full h-full object-cover hidden transition-opacity duration-300">
+                </div>
+            </div>
+            
+            <div class="px-8 py-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                <div class="flex items-center space-x-2" id="ob-dots"></div>
+                
+                <div class="flex items-center space-x-3">
+                    <button id="ob-btn-prev" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors hidden cursor-pointer" style="background: none; border: none;">
+                        Sebelumnya
+                    </button>
+                    <button id="ob-btn-next" class="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer" style="border: none;">
+                        Selanjutnya
+                    </button>
+                    <button id="ob-btn-finish" class="px-5 py-2 text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 hidden cursor-pointer" style="border: none;">
+                        Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const obSteps = [
+            {
+                title: "Langkah 1: Buat Dompet",
+                desc: "Langkah pertama untuk menggunakan CekUangku adalah membuat dompet. Silakan buat dompet terlebih dahulu pada halaman Dompet.",
+                video: "/Asset-Vidio/Pembuatan Dompet (Setp 1).mp4"
+            },
+            {
+                title: "Langkah 2: Buat Kategori",
+                desc: "Setelah memiliki dompet, buat kategori pengeluaran dan pemasukan pada halaman Kategori agar catatan lebih rapi.",
+                video: "/Asset-Vidio/Pembuatan Kategoi (step 2).mp4"
+            },
+            {
+                title: "Langkah 3: Catat Transaksi",
+                desc: "Kini Anda siap! Catat setiap pemasukan dan pengeluaran Anda pada halaman Transaksi dengan memilih dompet dan kategori yang telah dibuat.",
+                video: "/Asset-Vidio/Transaksi (Step 3).mp4"
+            },
+            {
+                title: "Langkah 4: Pantau Keuangan",
+                desc: "Lihat rekap dan ringkasan kesehatan finansial Anda pada halaman Dashboard atau Laporan.",
+                video: "/Asset-Vidio/Penutup.mp4"
+            },
+            {
+                title: "Selamat Menikmati",
+                desc: "Silakan eksplorasi semua fitur yang ada untuk mengatur keuangan Anda menjadi lebih baik! Selamat mengelola keuangan!",
+                image: "/images/asset-avatar/Happy.png"
+            }
+        ];
+
+        let currentObStep = 0;
+
+        const obTitle = document.getElementById('ob-title');
+        const obDesc = document.getElementById('ob-desc');
+        const obVideo = document.getElementById('ob-video');
+        const obVideoSrc = document.getElementById('ob-video-src');
+        const obImage = document.getElementById('ob-image');
+        const obDots = document.getElementById('ob-dots');
+        const obBtnPrev = document.getElementById('ob-btn-prev');
+        const obBtnNext = document.getElementById('ob-btn-next');
+        const obBtnFinish = document.getElementById('ob-btn-finish');
+        const obBtnClose = document.getElementById('ob-btn-close');
+        const obModal = document.getElementById('onboardingModal');
+
+        function renderObStep(stepIndex) {
+            const step = obSteps[stepIndex];
+            
+            obTitle.style.opacity = 0;
+            obDesc.style.opacity = 0;
+            
+            setTimeout(() => {
+                obTitle.textContent = step.title;
+                obDesc.textContent = step.desc;
+                obTitle.style.opacity = 1;
+                obDesc.style.opacity = 1;
+            }, 150);
+
+            if (step.image) {
+                obVideo.classList.add('hidden');
+                obVideo.pause();
+                obImage.src = step.image;
+                obImage.classList.remove('hidden');
+            } else {
+                obImage.classList.add('hidden');
+                obVideo.classList.remove('hidden');
+                obVideo.pause();
+                obVideoSrc.src = step.video;
+                obVideo.load();
+                const playPromise = obVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => { console.log("Video auto-play prevented"); });
+                }
+            }
+
+            // Update existing dots to animate smoothly
+            Array.from(obDots.children).forEach((dot, idx) => {
+                if (idx === stepIndex) {
+                    dot.className = 'h-2 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] bg-blue-600 w-6';
+                } else {
+                    dot.className = 'h-2 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] bg-slate-300 w-2';
+                }
+            });
+
+            if (stepIndex === 0) {
+                obBtnPrev.classList.add('hidden');
+            } else {
+                obBtnPrev.classList.remove('hidden');
+            }
+
+            if (stepIndex === obSteps.length - 1) {
+                obBtnNext.classList.add('hidden');
+                obBtnFinish.classList.remove('hidden');
+            } else {
+                obBtnNext.classList.remove('hidden');
+                obBtnFinish.classList.add('hidden');
+            }
+        }
+
+        obBtnNext.addEventListener('click', () => {
+            if (currentObStep < obSteps.length - 1) {
+                currentObStep++;
+                renderObStep(currentObStep);
+            }
+        });
+
+        obBtnPrev.addEventListener('click', () => {
+            if (currentObStep > 0) {
+                currentObStep--;
+                renderObStep(currentObStep);
+            }
+        });
+
+        obBtnFinish.addEventListener('click', () => {
+            obModal.style.opacity = '0';
+            setTimeout(() => {
+                obModal.remove();
+            }, 300);
+        });
+
+        if (obBtnClose) {
+            obBtnClose.addEventListener('click', () => {
+                obModal.style.opacity = '0';
+                setTimeout(() => {
+                    obModal.remove();
+                }, 300);
+            });
+        }
+
+        // Initialize Dots
+        obSteps.forEach((_, idx) => {
+            const dot = document.createElement('div');
+            dot.className = `h-2 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${idx === currentObStep ? 'bg-blue-600 w-6' : 'bg-slate-300 w-2'}`;
+            obDots.appendChild(dot);
+        });
+
+        obTitle.style.transition = 'opacity 0.3s ease';
+        obDesc.style.transition = 'opacity 0.3s ease';
+        renderObStep(currentObStep);
+    </script>
+    <% } %>
 </body>
 </html>

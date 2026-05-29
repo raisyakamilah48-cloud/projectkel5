@@ -190,8 +190,26 @@
 
         <!-- CTA BOX -->
         <section style="padding: 100px 20px; position: relative; z-index: 10; display: flex; justify-content: center;">
-            <div class="cta-box magnetic">
-                <img src="/images/asset-avatar/Happy.png" alt="Happy" style="width: 100px; margin-bottom: 25px;">
+            <div class="cta-box">
+                
+                <!-- 3D Floating Credit Card -->
+                <div class="credit-card-3d-wrapper" id="cta3DCardWrapper">
+                    <div class="credit-card-3d" id="cta3DCardInner">
+                        <div class="cc-front">
+                            <div style="display:flex; justify-content: space-between; align-items:flex-start;">
+                                <div class="cc-chip"></div>
+                                <div class="cc-logo">CEKUANGKU</div>
+                            </div>
+                            <div class="cc-number">**** **** **** 2026</div>
+                            <div class="cc-name">PENGGUNA CERDAS</div>
+                        </div>
+                        <div class="cc-back">
+                            <div class="cc-stripe"></div>
+                            <div class="cc-cvv">123</div>
+                        </div>
+                    </div>
+                </div>
+
                 <h2>Siap Untuk Perubahan?</h2>
                 <p>Bergabunglah bersama ribuan orang lainnya yang telah memulai perjalanan finansial mereka bersama
                     CekUangku. Catat pendapatan dan pengeluaran Anda dengan mudah dan tepat.</p>
@@ -253,8 +271,22 @@
             let spotlightX = 0, spotlightY = 0;
             let avatarX = 0, avatarY = 0;
 
-            // lerp variables for badges
+            // lerp variables for badges & 3d card
             let b1X = 0, b1Y = 0, b2X = 0, b2Y = 0, b3X = 0, b3Y = 0;
+            let cardRotX = 0, cardRotY = 0;
+            
+            // 3D Card Elements
+            const cta3DCardWrapper = document.getElementById('cta3DCardWrapper');
+            const cta3DCardInner = document.getElementById('cta3DCardInner');
+            let isHoveringCard = false;
+
+            if (cta3DCardWrapper) {
+                cta3DCardWrapper.addEventListener('mouseenter', () => isHoveringCard = true);
+                cta3DCardWrapper.addEventListener('mouseleave', () => {
+                    isHoveringCard = false;
+                    // Will smoothly animate back to 0 in the render loop
+                });
+            }
 
             // --- Theme Toggle Logic ---
             const updateIcon = (isDark) => {
@@ -375,6 +407,27 @@
                     }
                 }
 
+                // 3D Card Interactive Rotation
+                if (cta3DCardInner) {
+                    let targetRotX = 0;
+                    let targetRotY = 0;
+
+                    if (isHoveringCard) {
+                        const rect = cta3DCardWrapper.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        
+                        targetRotX = ((mouseY - centerY) / (rect.height / 2)) * 20;
+                        targetRotY = ((mouseX - centerX) / (rect.width / 2)) * -20;
+                    }
+
+                    // Apply spring-like smoothing (Emil's recommendation for organic feel)
+                    cardRotX += (targetRotX - cardRotX) * 0.08;
+                    cardRotY += (targetRotY - cardRotY) * 0.08;
+
+                    cta3DCardInner.style.transform = `rotateX(${cardRotX}deg) rotateY(${cardRotY}deg)`;
+                }
+
                 requestAnimationFrame(animate);
             };
 
@@ -409,6 +462,26 @@
                     cursor.style.opacity = '1';
                     cursor.style.background = 'var(--primary)';
                     cursor.style.mixBlendMode = 'difference';
+                });
+            });
+
+            // --- 3D Bento Grid Effect (Premium / Luxury Archetype) ---
+            document.querySelectorAll('.bento-item').forEach(item => {
+                item.addEventListener('mousemove', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    // Very subtle tilt (max 6 degrees) for Premium feel
+                    const rotX = ((e.clientY - centerY) / (rect.height / 2)) * 6;
+                    const rotY = ((e.clientX - centerX) / (rect.width / 2)) * -6;
+                    
+                    item.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    // Smoothly reset back to 0 using the CSS transition defined in CSS file
+                    item.style.transform = `rotateX(0deg) rotateY(0deg)`;
                 });
             });
 

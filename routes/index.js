@@ -67,6 +67,12 @@ router.get('/', function(req, res, next) {
                 const totalBalance = walletResult && walletResult[0].total ? parseFloat(walletResult[0].total) : (totalIncome - totalExpense);
                 const transactionCount = countResult ? countResult[0].total : 0;
 
+                // Cek onboarding
+                const showOnboarding = req.session.isNewUser ? true : false;
+                if (showOnboarding) {
+                    delete req.session.isNewUser;
+                }
+
                 // Render dashboard dengan semua data
                 res.render('dashboard', {
                   title: 'Dashboard',
@@ -77,7 +83,8 @@ router.get('/', function(req, res, next) {
                   transactionCount: transactionCount,
                   recentTransactions: recentTransactions || [],
                   categoryData: categoryData || [],
-                  monthlyData: monthlyData || []
+                  monthlyData: monthlyData || [],
+                  showOnboarding: showOnboarding
                 });
               });
             });
